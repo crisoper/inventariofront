@@ -40,7 +40,7 @@
       </div>
       <div class="children-routes" style="flex-grow: 1">
         <div style="display: flex; justify-content: center; align-items: center;" class="my-2 mx-2">
-          <img src="@/assets/img/admin-template-main.png" width="200" alt="Main Logo" />
+          <img src="@/assets/img/logo.png" width="200" alt="Main Logo" />
         </div>
         <div class="my-3">
           <span style="font-size: 17; font-weight: bold; color: #506fe4;">{{ selectedMain.meta.title }}</span>

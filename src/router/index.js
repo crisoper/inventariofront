@@ -84,7 +84,7 @@ router.beforeEach(async (to, from, next) => {
            loader.style.display = 'none'
          }
        })
-        next('/dashboard');
+        next('/home');
       } else {
         if(authStore.getRoles && authStore.getRoles.length > 0) {
           nextTick(() => {
