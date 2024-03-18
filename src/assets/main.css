@@ -1,0 +1,41 @@
+@import './soyuz/assets/css/bootstrap.min.css';
+@import './soyuz/assets/css/style.css';
+
+* {
+  margin: 0;
+  padding: 0;
+}
+#app {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  font-weight: normal;
+}
+
+a,
+.green {
+  text-decoration: none;
+  transition: 0.4s;
+}
+
+.total-venta {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9999 !important; /* Asegúrate de que este valor sea mayor que el z-index de cualquier modal o diálogo */
+}
+
+
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+
+  #app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0;
+  }
+}
