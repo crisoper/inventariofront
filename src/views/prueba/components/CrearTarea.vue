@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import TareasResource from "@/api/prueba/tareas";
 import { ElMessage } from "element-plus";
+import TareasResource from "@/api/prueba/tareas";
 const tareasResource = new TareasResource();
 
 export default {
