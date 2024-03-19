@@ -5,6 +5,7 @@ import { useAuthStore } from '../stores/auth';
 import getPageTitle from '../utils/get-page-title';
 import { getToken } from '../utils/auth';
 import authRoutes from './modules/auth';
+import pruebasRoutes from './modules/prueba';
 
 export const routes =  [
   {
@@ -48,6 +49,7 @@ export const routes =  [
 ];
 export const asyncRoutes = [
   authRoutes,
+  pruebasRoutes,
   {
     path: '/:pathMatch(.*)*',
     name: "NotFound",
@@ -84,7 +86,7 @@ router.beforeEach(async (to, from, next) => {
            loader.style.display = 'none'
          }
        })
-        next('/dashboard');
+        next('/home');
       } else {
         if(authStore.getRoles && authStore.getRoles.length > 0) {
           nextTick(() => {
