@@ -4,14 +4,12 @@
       <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
         <el-input v-model="filterText" placeholder="Buscar por nombre" />
       </el-col>
-      <el-col :xs="12" :sm="12" :md="6" :lg="6" :xl="5">
+      <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
         <el-button type="success" @click="loadData">
           <template #icon>
             <v-icon name="co-reload" />
           </template>
         </el-button>
-      </el-col>
-      <el-col :xs="12" :sm="12" :md="6" :lg="6" :xl="5">
         <el-button type="primary" @click="syncPermissions">
           <template #icon>
             <v-icon name="md-cloudsync" />
@@ -61,7 +59,7 @@ watch(
     return props.idRole
   },
   (newValue, oldValue) => {
-    if (newValue != oldValue && newValue != '' && newValue != null) {
+    if (newValue != oldValue) {
       loading.value = true
       cargarListaPermisos()
       cargarListaPermisosRol()

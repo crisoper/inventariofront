@@ -1,44 +1,44 @@
 <template>
-  <el-row type="flex" justify="space-bettwen" style="margin: 15px 0">
-    <el-col :sm="24" :md="12">
-      <el-row :gutter="10">
-        <el-col :xs="18" :sm="20" :md="5" class="actions-component">
-          <el-button type="primary" @click="openDialogCreate = true">
-            <template #icon>
-              <v-icon name="md-add-round" />
-            </template>
-            Nuevo
-          </el-button>
-        </el-col>
-        <el-col :xs="6" :sm="4" :md="3" class="actions-component">
-          <el-button type="success" @click="getList">
-            <template #icon>
-              <v-icon name="co-reload" />
-            </template>
-          </el-button>
-        </el-col>
-      </el-row>
-    </el-col>
-    <el-col :sm="24" :md="12" class="actions-component">
+  <el-row :gutter="10" type="flex" justify="start" style="margin: 15px 0">
+    <el-col :xs="24" :sm="24" :md="24" class="actions-component">
       <el-input
         v-model="query.keyword"
-        placeholder="Buscar por doc. de identidad, apellidos o nombres"
+        placeholder="Buscar por nombre"
         @change="getList"
       >
-        <template #prefix>
-          <v-icon name="hi-search" />
+        <template #append>
+          <el-button @click="getList">
+            <template #icon>
+              <v-icon :name="'bi-search'" />
+            </template>
+          </el-button>
         </template>
       </el-input>
     </el-col>
   </el-row>
-  <el-table v-loading="loading" :data="tableData" style="width: 100%" :height="alturaPorDispositivo('65vh','50vh')">
-    <el-table-column type="index" label="#" width="100" />
-    <el-table-column prop="name" label="NOMBRE" />
-    <el-table-column prop="count_user" label="NRO. USUARIOS" />
-    <el-table-column align="center">
+  <el-table v-loading="loading" border :data="tableData" style="width: 100%">
+    <el-table-column type="index" label="#" width="80" />
+    <el-table-column prop="name" label="NOMBRE" min-width="120" />
+    <el-table-column prop="count_user" label="NRO. USUARIOS" min-width="120" />
+    <el-table-column fixed="right" align="center" width="150">
+      <template #header>
+        <el-button type="primary" plain @click="addItem()" v-permission="['autenticacion.roles.crear']">
+          <template #icon>
+            <v-icon name="ri-add-fill" />
+          </template>
+        </el-button>
+        <el-button type="primary" plain @click="exportarDatos()" v-permission="['autenticacion.roles.exportar']">
+          <template #icon>
+            <v-icon name="la-database-solid" />
+          </template>
+        </el-button>
+      </template>
       <template #default="scope">
         <el-dropdown trigger="click" @command="handleCommand">
-          <span class="el-dropdown-link"> Opciones </span>
+          <span class="el-dropdown-link">
+            Opciones
+            <v-icon name="fa-caret-down" />
+          </span>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item :command="{ item: scope.row.id, action: 'PERMISSIONS' }">
@@ -71,23 +71,29 @@
       v-model:current-page="query.page"
       v-model:page-size="query.limit"
       :total="total"
-      :page-sizes="[10, 15, 25, 50]"
+      :page-sizes="[7, 15, 25, 50]"
       layout="total, sizes, prev, pager, next, jumper"
       background
       @size-change="getList"
       @current-change="getList"
     />
   </el-row>
-  <el-dialog v-model="openDialogCreate" :width="calcularAnchoDialog('75%','90%')">
-    <template #header>Nuevo rol</template>
+  <el-dialog v-model="openDialogCreate" :width="calcularAnchoDialog('75%','90%')" top="7vh">
+    <template #header>
+      <h2>Nuevo rol</h2>
+    </template>
     <create-role @close="handleCloseCreate" />
   </el-dialog>
-  <el-dialog v-model="openDialogEdit" :width="calcularAnchoDialog('75%','90%')">
-    <template #header>Editar rol</template>
+  <el-dialog v-model="openDialogEdit" :width="calcularAnchoDialog('75%','90%')" top="7vh">
+    <template #header>
+      <h2>Editar rol</h2>
+    </template>
     <edit-role :id-role="idItemToEdit" @close="handleCloseEdit" :before-close="handleCloseEdit" />
   </el-dialog>
-  <el-dialog top="5vh" v-model="openDialogPermissions"  :width="calcularAnchoDialog('60%','90%')">
-    <template #header>Permisos del rol</template>
+  <el-dialog v-model="openDialogPermissions"  :width="calcularAnchoDialog('75%','90%')" top="7vh">
+    <template #header>
+      <h2>Permisos del rol</h2>
+    </template>
     <role-permissions
       :id-role="idItemToEditPermissions"
       @close="handleClosePermissions"
@@ -103,7 +109,10 @@ import RolePermissions from './components/RolePermissions.vue'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import RoleRequest from '@/api/auth/role';
 import { nextTick, onMounted, reactive, ref } from 'vue';
-import { calcularAnchoDialog, alturaPorDispositivo } from '@/utils/responsive';
+import { calcularAnchoDialog } from '@/utils/responsive';
+import { useAuthStore } from "@/stores/auth";
+const authStore = useAuthStore()
+const validPermision = authStore.validPermision
 
 const roleRequest = new RoleRequest();
 
@@ -115,7 +124,7 @@ const tableData = ref([]);
 const total = ref(0);
 const query = reactive({
   keyword: '',
-  limit: 10,
+  limit: 7,
   page: 1,
 });
 const idItemToEdit = ref('');
@@ -158,19 +167,18 @@ const handleClosePermissions = () => {
 };
 
 const handleCommand = ({ item, action }) => {
-  if (action == 'PERMISSIONS') {
+  console.log(item, action)
+  if (action == 'PERMISSIONS' && validPermision('autenticacion.roles.asignarpermisos')) {
     idItemToEditPermissions.value = item;
     nextTick(() => {
       openDialogPermissions.value = true;
     });
-  }
-  if (action == 'EDIT') {
+  } else if (action == 'EDIT' && validPermision('autenticacion.roles.actualizar')) {
     idItemToEdit.value = item;
     nextTick(() => {
       openDialogEdit.value = true;
     });
-  }
-  if (action == 'DELETE') {
+  } else if (action == 'DELETE' && validPermision('autenticacion.roles.eliminar')) {
     ElMessageBox.confirm('¿Está seguro que desea eliminar el rol?', 'Eliminar rol', {
       confirmButtonText: 'Sí',
       cancelButtonText: 'Cancelar',
@@ -193,6 +201,33 @@ const handleCommand = ({ item, action }) => {
       .catch((error) => {
         console.log(error);
       });
+  } else {
+    ElNotification({
+      // title: 'Atención',
+      message: 'Usted no tiene permiso para realizar esta acción',
+      type: 'info',
+      // duration: 2000,
+    });
   }
+};
+
+const addItem = () => {
+  openDialogCreate.value = true
+};
+
+const exportarDatos = () => {
+  loading.value = true
+  roleRequest
+    .exportar()
+    .then((response) => {
+      loading.value = false
+      const link = document.createElement('a')
+      link.href = response
+      document.body.appendChild(link)
+      link.click()
+    })
+    .catch(() => {
+      loading.value = false
+    })
 };
 </script>

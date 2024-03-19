@@ -77,7 +77,7 @@ export default {
           authStore.signIn(this.authForm)
             .then(() => {
               this.loading = true
-              this.$router.push('/dashboard');
+              this.$router.push('/home');
             })
             .catch(
               (error) => {

@@ -1,378 +1,287 @@
 <template>
-  <div v-loading="loading">
-    <el-form :model="formData" :rules="formRules" ref="createUserForm" label-position="top">
-      <el-row :gutter="10">
-        <el-col :sm="24" :md="16">
-          <el-form-item>
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Tipo Doc. Identidad" prop="tipo_doc_identidad">
-                <el-select
-                  v-model="formData.id_tipo_doc_identidad"
-                  placeholder="Seleccione un tipo"
-                >
-                  <el-option
-                    v-for="tipo in tiposDocIdentidad"
-                    :key="tipo.id"
-                    :label="tipo.nombre"
-                    :value="tipo.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="2" />
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Nro. Doc. Identidad" prop="nro_doc_identidad">
-                <el-input v-model="formData.nro_doc_identidad">
-                  <template #suffix>
-                    <v-icon name="hi-search" @click="fetchPersonByDNI" />
-                  </template>
-                </el-input>
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-
-          <el-form-item>
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Apellido Paterno" prop="apellido_paterno" @input="formData.apellido_paterno = formData.apellido_paterno.toUpperCase()">
-                <el-input v-model="formData.apellido_paterno"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="2" />
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Apellido Materno" prop="apellido_materno" @input="formData.apellido_materno = formData.apellido_materno.toUpperCase()">
-                <el-input v-model="formData.apellido_materno" />
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="24">
-              <el-form-item label="Nombres" prop="nombres" @input="formData.nombres = formData.nombres.toUpperCase()">
-                <el-input v-model="formData.nombres" />
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-
-          <el-form-item>
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Fecha de Nacimiento" prop="fecha_nacimiento">
-                <el-date-picker
-                  v-model="formData.fecha_nacimiento"
-                  type="date"
-                  format="DD-MM-YYYY"
-                  value-format="YYYY-MM-DD"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="2" />
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Género" prop="genero">
-                <el-select v-model="formData.genero">
-                  <el-option label="Masculino" value="MASCULINO"></el-option>
-                  <el-option label="Femenino" value="FEMENINO"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-
-          <el-form-item>
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Celular" prop="celular">
-                <el-input v-model="formData.celular"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="2" />
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Email" prop="email" @input="formData.email = formData.email.toUpperCase()">
-                <el-input v-model="formData.email" />
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-
-          <el-form-item>
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Pais" prop="id_pais">
-                <el-select
-                  v-model="formData.id_pais"
-                  filterable
-                  placeholder="Seleccione un pais"
-                  @change="fetchDepartamentos"
-                >
-                  <el-option
-                    v-for="pais in paises"
-                    :key="pais.id"
-                    :label="pais.nombre"
-                    :value="pais.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="2" />
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Departamento" prop="id_departamento">
-                <el-select
-                  v-model="formData.id_departamento"
-                  filterable
-                  placeholder="Seleccione un departamento"
-                >
-                  <el-option
-                    v-for="departamento in departamentos"
-                    :key="departamento.id"
-                    :label="departamento.nombre"
-                    :value="departamento.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
+  <el-form
+    ref="formRefUser"
+    :model="formData"
+    :rules="reglasValidacion"
+    label-width="120px"
+    class="demo-form"
+    label-position="top"
+  >
+    <div v-loading="loadingData" class="p-3">
+      <el-card class="box-card" shadow="never">
+        <template #header>
+          <div class="card-header">
+            <strong>Persona</strong>
+            <el-button v-if="formData.id === undefined" @click="searchAsociacion()" class="iconSearch" title="Buscar persona" size="small">
+              <template #icon>
+                <v-icon :name="'bi-search'" />
+              </template>
+            </el-button>
+          </div>
+        </template>
+        <el-row :gutter="12">
+          <el-col :xs="24" :sm="24" :md="8">
+            <el-form-item label="Nro documento" prop="persona_nro_doc_identidad" class="input-readonly">
+              <el-input v-model="formData.persona_nro_doc_identidad" placeholder="Nro documento" readonly/>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="24" :md="16">
+            <el-form-item label="Nombre" prop="persona_nombre_completo" class="input-readonly">
+              <el-input v-model="formData.persona_nombre_completo" placeholder="Nombre" readonly/>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="24" :md="8">
+            <el-form-item label="Correo" prop="persona_email" class="input-readonly">
+              <el-input v-model="formData.persona_email" placeholder="Correo" readonly/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-card>
+      <el-row :gutter="12">
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Email" prop="email">
+            <el-input ref="emailField" v-model="formData.email" placeholder="Email" />
           </el-form-item>
         </el-col>
-        <el-col :sm="24" :md="8">
-          <label>
-            Roles
-          </label>
-          <div style="height: 40vh; overflow-y: auto;margin-top: 7px;">
-            <el-input v-model="filterText" placeholder="Buscar rol" />
-            <el-divider />
-            <el-tree
-              ref="treeRefRoles"
-              node-key="id"
-              :data="roles"
-              :props="defaultProps"
-              show-checkbox
-              :filter-node-method="filterNode"
-            />
-          </div>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Rol" prop="role_id">
+            <el-select v-model="formData.role_id" placeholder="Rol" style="width: 100%">
+              <el-option
+                v-for="rol in roles"
+                :key="rol.id"
+                :label="rol.name"
+                :value="rol.id"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item v-if="formData.id === undefined" label="Clave" prop="password">
+            <el-input v-model="formData.password" placeholder="Clave" />
+          </el-form-item>
+          <el-form-item v-else label="Nueva clave" prop="password">
+            <el-input v-model="formData.password" placeholder="Clave" />
+            <span class="text-muted small">Dejar en blanco si no desea cambiar</span>
+          </el-form-item>
         </el-col>
       </el-row>
-    </el-form>
-    <el-row :gutter="10" type="flex" justify="center">
-      <el-col :sm="24" :md="4">
-        <el-button @click="close('canceled')">Cancelar</el-button>
-      </el-col>
-      <el-col :sm="24" :md="4">
-        <el-button @click="submitForm">Guardar</el-button>
-      </el-col>
-
-    </el-row>
-  </div>
+      <el-row type="flex" class="row-bg mt-4" justify="end">
+        <el-button v-if="formData.id === undefined" @click="resetForm('formRefUser')">Cancelar</el-button>
+        <el-button type="primary" @click="submitForm('formRefUser')">
+          {{ formData.id === undefined ? 'Guardar' : 'Actualizar' }}
+        </el-button>
+      </el-row>
+    </div>
+    <!-- <el-dialog
+      v-model="dialogBuscarPersona"
+      title="Buscar persona"
+      width="85%"
+      top="7vh"
+    >
+      <div>
+        <form-buscar-persona
+          ref="modalBuscarPropietario"
+          @childEmitPersona="parentProcessEmitPersona($event)"
+        />
+      </div>
+    </el-dialog> -->
+  </el-form>
 </template>
 
-<script setup>
-// imports de api
-import TipoDocIdentidadRequest from '@/api/maestros/tipodocidentidad'
-const tipoDocIdentidadRequest = new TipoDocIdentidadRequest()
-import RoleRequest from '@/api/auth/role'
-const roleRequest = new RoleRequest()
-import PaisRequest from '@/api/maestros/pais'
-const paisRequest = new PaisRequest()
-import DepartamentoRequest from '@/api/maestros/departamento'
-const departamentoRequest = new DepartamentoRequest()
-import UtilsRequest from '@/api/utils/utils'
-const utilsRequest = new UtilsRequest()
-import UserRequest from '@/api/auth/usuario'
-const userRequest = new UserRequest()
-import { onMounted, ref } from 'vue'
+<script>
 import { ElNotification } from 'element-plus'
-
-
-
-const emit = defineEmits(['close'])
-const loading = ref(false)
-const createUserForm = ref()
-
-const filterNode = (value, roles) => {
-  if (!value) return true
-  return roles.name.includes(value)
-}
-
-const formData = ref({
-  apellido_paterno: '',
-  apellido_materno: '',
-  nombres: '',
-  nro_doc_identidad: '',
-  fecha_nacimiento: '',
-  genero: '',
-  celular: '',
-  email: '',
-  id_pais: '',
-  id_departamento: '',
-  id_tipo_doc_identidad: null,
-  roles: null
-})
-
-const formRules = ref({
-  apellido_paterno: [{ required: true, message: 'Ingrese el apellido paterno', trigger: 'blur' }],
-  apellido_materno: [{ required: true, message: 'Ingrese el apellido materno', trigger: 'blur' }],
-  nombres: [{ required: true, message: 'Ingrese los nombres', trigger: 'blur' }],
-  nro_doc_identidad: [
-    { required: true, message: 'Ingrese el número de documento', trigger: 'blur' }
-  ],
-  fecha_nacimiento: [
-    { required: true, message: 'Seleccione la fecha de nacimiento', trigger: 'change' }
-  ],
-  genero: [{ required: true, message: 'Seleccione el género', trigger: 'change' }],
-  celular: [{ required: true, message: 'Ingrese el número de celular', trigger: 'blur' }],
-  email: [{ required: true, message: 'Ingrese el correo electrónico', trigger: 'blur' }],
-  id_departamento: [{ required: true, message: 'Seleccione el departamento', trigger: 'change' }],
-  id_pais: [{ required: true, message: 'Seleccione el pais', trigger: 'change' }],
-  id_tipo_doc_identidad: [
-    { required: true, message: 'Seleccione el tipo de doc. identidad', trigger: 'blur' }
-  ]
-})
-
-const tiposDocIdentidad = ref([])
-const paises = ref([])
-const roles = ref([])
-const departamentos = ref([])
-const filterText = ref('')
-const treeRefRoles = ref()
-
-const defaultProps = {
-  label: 'name',
-  id: 'id'
-}
-// Recuperando Informacion necesaria para registrar:
-onMounted(() => {
-  fecthTiposDocIdentidad()
-  fecthPaises()
-  fetchRoles()
-})
-
-const fecthTiposDocIdentidad = () => {
-  tipoDocIdentidadRequest
-    .all()
-    .then((response) => {
-      console.log(response)
-      tiposDocIdentidad.value = response.data
-    })
-    .catch((error) => {
-      console.log(error)
-      ElNotification({
-        type: 'error',
-        title: 'Error al precargar data del formulario',
-        duration: 2000
-      })
-      close('canceled')
-    })
-}
-
-const fecthPaises = () => {
-  paisRequest
-    .all()
-    .then((response) => {
-      console.log(response)
-      paises.value = response.data
-    })
-    .catch((error) => {
-      console.log(error)
-      ElNotification({
-        type: 'error',
-        title: 'Error al precargar data del formulario',
-        duration: 2000
-      })
-      close('canceled')
-    })
-}
-
-const fetchDepartamentos = () => {
-  if (formData.value.id_pais != null && formData.value.id_pais != '') {
-    departamentoRequest
-      .fetchByPaisId({ id_pais: formData.value.id_pais })
-      .then((response) => {
-        console.log(response)
-        departamentos.value = response.data
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }
-}
-
-const fetchRoles = () => {
-  roleRequest.all()
-    .then((response) => {
-      console.log(response)
-      roles.value = response.data
-    })
-    .catch((error) => {
-      console.log(error)
-      ElNotification({
-        type: 'error',
-        title: 'Error al precargar data del formulario',
-        duration: 2000
-      })
-      close('canceled')
-    })
-}
-
-const fetchPersonByDNI = () => {
-  const regDNI =
-    tiposDocIdentidad.value[
-      tiposDocIdentidad.value.findIndex((registro) => registro.nombre == 'DNI')
-    ]
-  if (regDNI.id == formData.value.id_tipo_doc_identidad) {
-    if (formData.value.nro_doc_identidad != '') {
-      loading.value = true
-      utilsRequest
-        .fetchPersonByDNI({ dni: formData.value.nro_doc_identidad })
-        .then((response) => {
-          const { data } = response
-          formData.value.apellido_paterno = data.apellido_paterno
-          formData.value.apellido_materno = data.apellido_materno
-          formData.value.nombres = data.nombre
-          loading.value = false
-        })
-        .catch((error) => {
-          console.log(error)
-          loading.value = false
-        })
-    } else {
-      ElNotification({
-        type: 'warning',
-        title: 'Debe ingresar el DNI'
-      })
+import RoleRequest from '@/api/auth/role'
+// import formBuscarPersona from '@/components/shared/app/personas/listabuscar.vue'
+import UserRequest from '@/api/auth/usuario'
+const roleRequest = new RoleRequest()
+const userRequest = new UserRequest()
+export default {
+  name: 'FormUser',
+  components: {
+    // formBuscarPersona
+  },
+  props: {
+    itemid: {
+      type: String,
+      default: () => {
+        return '-2000000'
+      }
     }
-  } else {
-    ElNotification({
-      type: 'warning',
-      title: 'Busqueda no disponible',
-      message: 'La busqueda está disponible solo para DNI'
-    })
-  }
-}
-
-// Método para enviar el formulario
-const submitForm = () => {
-  formData.value.roles = treeRefRoles.value.getCheckedKeys(true)
-  // Validar el formulario usando VeeValidate u otra biblioteca de validación
-  createUserForm.value.validate((valid) => {
-    if (valid) {
-      // El formulario es válido, puedes realizar acciones adicionales aquí
-      console.log('Formulario válido, enviando datos:', formData.value)
-      loading.value = true
-      userRequest.store(formData.value)
+  },
+  data() {
+    const validatePasswordUpdate = (rule, value, callback) => {
+      if (this.formData.id == undefined) {
+        callback(new Error('El campo es requerido'));
+      } else {
+        callback();
+      }
+    }
+    return {
+      loadingData: false,
+      createUserForm: '',
+      tiposDocIdentidad: [],
+      roles: [],
+      dialogBuscarPersona: false,
+      formData: {
+        id: undefined,
+        persona_email: undefined,
+        persona_nro_doc_identidad: undefined,
+        persona_nombre_completo: undefined,
+        id_persona: undefined,
+        email: undefined,
+        role_id: undefined,
+        password: undefined
+      },
+      reglasValidacion: {
+        persona_nombre_completo: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+        persona_nro_doc_identidad: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+        email: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+        role_id: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+        password: [{ validator: validatePasswordUpdate, trigger: 'blur' }],
+      },
+    }
+  },
+  watch: {
+    itemid: function() {
+      this.setCrearOUpdate()
+    }
+  },
+  computed: {},
+  created() {
+    this.fetchRoles()
+  },
+  methods: {
+    async fetchRoles() {
+      await roleRequest.all()
         .then((response) => {
           console.log(response)
-          ElNotification({
-            type: 'success',
-            title: 'Usuario creado',
-          })
-          loading.value = false
-          close('success')
+          this.roles = response.data
         })
         .catch((error) => {
           console.log(error)
-          loading.value = false
           ElNotification({
             type: 'error',
-            title: 'Ocurrio un error al registrar al usuario',
+            title: 'Error al precargar data del formulario',
+            duration: 2000
           })
+          close('canceled')
         })
-    } else {
-      console.error('Formulario no válido')
+    },
+    setCrearOUpdate() {
+      console.log('Create User' + this.itemid)
+      this.$nextTick(() => {
+        if (this.itemid !== 'action' && this.itemid !== 'create') {
+          this.item_id = this.itemid
+          this.getDataUpdate()
+        } else {
+          this.item_id = undefined
+          this.handleCreate()
+        }
+        this.resetForm('formRefUser')
+        this.resetModel()
+      })
+    },
+    handleCreate() {
+      console.log('Open form create, set focus')
+      // this.$refs['inputFocusCreate'].focus()
+    },
+    getDataUpdate() {
+      // this.$refs['inputFocusCreate'].focus()
+      this.resetModel()
+      this.loadingData = true
+      userRequest
+      .get(this.item_id)
+      .then((response) => {
+        const { data } = response
+        this.formData = {...data}
+        this.loadingData = false
+      })
+      .catch(() => {
+        this.loadingData = false
+      })
+    },
+    submitForm() {
+      this.$refs['formRefUser'].validate((valid) => {
+        if (valid) {
+          if (this.formData.id === undefined) {
+            this.saveCreateNewForm()
+          } else {
+            this.saveEditForm()
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    saveCreateNewForm() {
+      this.loadingData = true
+      userRequest
+        .store(this.formData)
+        .then((response) => {
+          const {state, message} = response
+          this.$message({
+            type: state,
+            message
+          })
+          this.loadingData = false
+          this.close('success')
+        })
+        .catch(() => {
+          this.loadingData = false
+        })
+    },
+    saveEditForm() {
+      this.loadingData = true
+      userRequest
+        .update(this.item_id, this.formData)
+        .then((response) => {
+          const {state, message} = response
+          this.$message({
+            type: state,
+            message
+          })
+          this.loadingData = false
+          this.close('success')
+        })
+        .catch(() => {
+          this.loadingData = false
+        })
+    },
+    close(status) { 
+      if (this.createUserForm) {
+        this.createUserForm.resetFields()
+      }
+      this.$emit('closeChild', status)
+    },
+    searchAsociacion() {
+      this.dialogBuscarPersona = true
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
+    },
+    resetModel() {
+      this.formData = {
+        id: this.itemid === 'create' ? undefined : this.itemid,
+        persona_email: undefined,
+        persona_nro_doc_identidad: undefined,
+        persona_nombre_completo: undefined,
+        id_persona: undefined,
+        email: undefined,
+        role_id: undefined,
+        password: undefined
+      }
+    },
+    parentProcessEmitPersona(data) {
+      console.log(data)
+      this.formData.id_persona = data.id
+      this.formData.persona_nro_doc_identidad = data.nro_doc_identidad
+      this.formData.persona_nombre_completo = data.nombre_completo
+      this.formData.persona_email = data.email
+      this.formData.email = data.email
+      this.formData.password = data.nro_doc_identidad
+      this.dialogBuscarPersona = false
+      this.$refs['emailField'].focus()
     }
-  })
-}
-
-
-const close = (status) => {
-  emit('close', status)
+  }
 }
 </script>

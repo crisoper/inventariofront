@@ -2,16 +2,13 @@
   <div v-loading="loading">
     <el-form ref="createRoleForm" :model="permission" :rules="rules" label-position="top">
       <el-form-item prop="name" label="Nombre">
-        <el-input v-model="permission.name" placeholder="Ejem: admin" />
+        <el-input v-model="permission.name" placeholder="Ejem: admin"  @input="permission.name = permission.name.toUpperCase()" />
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" type="flex" justify="center">
-      <el-col :xs="24" :md="7" style="margin: 0 0 7px 0">
-        <el-button @click="close('canceled')">CANCELAR</el-button>
-      </el-col>
-      <el-col :xs="24" :md="7">
-        <el-button type="primary" @click="submitForm(createRoleForm)">GUARDAR</el-button>
-      </el-col>
+    <el-row type="flex" justify="end">
+      <el-button @click="close('canceled')"> Cancelar </el-button>
+      <span style="width: 15px" />
+      <el-button type="primary" @click="submitForm(createRoleForm)"> Guardar </el-button>
     </el-row>
   </div>
 </template>

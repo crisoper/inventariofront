@@ -5,6 +5,13 @@
   margin: 0;
   padding: 0;
 }
+
+.bg-content-admin {
+  /* Color original */
+  /* background-color: #f2f3f7 !important; */
+  background-color: #dbdee9 !important;
+}
+
 #app {
   width: 100vw;
   height: 100vh;

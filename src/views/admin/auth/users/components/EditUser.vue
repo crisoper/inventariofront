@@ -1,179 +1,109 @@
 <template>
   <div v-loading="loading">
     <el-form :model="formData" :rules="formRules" ref="createUserForm" label-position="top">
-      <el-row :gutter="10">
-        <el-col :sm="24" :md="16">
-          <el-form-item>
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Tipo Doc. Identidad" prop="tipo_doc_identidad">
-                <el-select
-                  v-model="formData.id_tipo_doc_identidad"
-                  placeholder="Seleccione un tipo"
-                >
-                  <el-option
-                    v-for="tipo in tiposDocIdentidad"
-                    :key="tipo.id"
-                    :label="tipo.nombre"
-                    :value="tipo.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="2" />
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Nro. Doc. Identidad" prop="nro_doc_identidad">
-                <el-input v-model="formData.nro_doc_identidad" />
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-
-          <el-form-item>
-            <el-col :sm="24" :md="11">
-              <el-form-item
-                label="Apellido Paterno"
-                prop="apellido_paterno"
-                @input="formData.apellido_paterno = formData.apellido_paterno.toUpperCase()"
-              >
-                <el-input v-model="formData.apellido_paterno"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="2" />
-            <el-col :sm="24" :md="11">
-              <el-form-item
-                label="Apellido Materno"
-                prop="apellido_materno"
-                @input="formData.apellido_materno = formData.apellido_materno.toUpperCase()"
-              >
-                <el-input v-model="formData.apellido_materno" />
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="24">
-              <el-form-item
-                label="Nombres"
-                prop="nombres"
-                @input="formData.nombres = formData.nombres.toUpperCase()"
-              >
-                <el-input v-model="formData.nombres" />
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-
-          <el-form-item>
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Fecha de Nacimiento" prop="fecha_nacimiento">
-                <el-date-picker
-                  v-model="formData.fecha_nacimiento"
-                  type="date"
-                  format="DD/MM/YYYY"
-                  value-format="DD/MM/YYYY"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="2" />
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Género" prop="genero">
-                <el-select v-model="formData.genero">
-                  <el-option label="Masculino" value="MASCULINO"></el-option>
-                  <el-option label="Femenino" value="FEMENINO"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-
-          <el-form-item>
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Celular" prop="celular">
-                <el-input v-model="formData.celular"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="2" />
-            <el-col :sm="24" :md="11">
-              <el-form-item
-                label="Email"
-                prop="email"
-                @input="formData.email = formData.email.toUpperCase()"
-              >
-                <el-input v-model="formData.email" />
-              </el-form-item>
-            </el-col>
-          </el-form-item>
-
-          <el-form-item>
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Pais" prop="id_pais">
-                <el-select
-                  v-model="formData.id_pais"
-                  filterable
-                  placeholder="Seleccione un pais"
-                  @change="fetchDepartamentos"
-                >
-                  <el-option
-                    v-for="pais in paises"
-                    :key="pais.id"
-                    :label="pais.nombre"
-                    :value="pais.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :sm="24" :md="2" />
-            <el-col :sm="24" :md="11">
-              <el-form-item label="Departamento" prop="id_departamento">
-                <el-select
-                  v-model="formData.id_departamento"
-                  filterable
-                  placeholder="Seleccione un departamento"
-                >
-                  <el-option
-                    v-for="departamento in departamentos"
-                    :key="departamento.id"
-                    :label="departamento.nombre"
-                    :value="departamento.id"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
+      <el-row :gutter="12">
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Tipo documento" prop="tipo_doc_identidad">
+            <el-select
+              v-model="formData.id_tipo_doc_identidad"
+              placeholder="Seleccionar"
+            >
+              <el-option
+                v-for="tipo in tiposDocIdentidad"
+                :key="tipo.id"
+                :label="tipo.nombre"
+                :value="tipo.id"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
-        <el-col :sm="24" :md="8">
-          <label> Roles </label>
-          <div style="height: 40vh; overflow-y: auto; margin-top: 7px">
-            <el-input v-model="filterText" placeholder="Buscar rol" />
-            <el-divider />
-            <el-tree
-              ref="treeRefRoles"
-              node-key="id"
-              :data="roles"
-              :props="defaultProps"
-              :default-checked-keys="rolesUsuario"
-              show-checkbox
-              :filter-node-method="filterNode"
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Nro documento" prop="nro_doc_identidad">
+            <el-input v-model="formData.nro_doc_identidad" placeholder="Nro documento">
+              <template #suffix>
+                <v-icon name="hi-search" @click="fetchPersonByDNI" />
+              </template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="12">
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Apellido paterno" prop="apellido_paterno" @input="formData.apellido_paterno = formData.apellido_paterno.toUpperCase()">
+            <el-input v-model="formData.apellido_paterno" placeholder="Apellido paterno" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Apellido materno" prop="apellido_materno" @input="formData.apellido_materno = formData.apellido_materno.toUpperCase()">
+            <el-input v-model="formData.apellido_materno" placeholder="Apellido materno" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Nombres" prop="nombres" @input="formData.nombres = formData.nombres.toUpperCase()">
+            <el-input v-model="formData.nombres" placeholder="Nombres" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Fecha de nacimiento" prop="fecha_nacimiento">
+            <el-date-picker
+              v-model="formData.fecha_nacimiento"
+              type="date"
+              format="DD/MM/YYYY"
+              value-format="YYYY-MM-DD"
+              placeholder="Fecha de nacimiento"
             />
-          </div>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Género" prop="genero">
+            <el-select v-model="formData.genero" placeholder="Seleccionar">
+              <el-option label="Masculino" value="MASCULINO"></el-option>
+              <el-option label="Femenino" value="FEMENINO"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Celular" prop="celular">
+            <el-input v-model="formData.celular" placeholder="Celular" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Email" prop="email">
+            <el-input v-model="formData.email" placeholder="Email" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Rol" prop="rol_id">
+            <el-select v-model="formData.rol_id" placeholder="Rol" style="width: 100%">
+              <el-option
+                v-for="rol in roles"
+                :key="rol.id"
+                :label="rol.name"
+                :value="rol.id"
+              />
+            </el-select>
+          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
-    <el-row :gutter="10" type="flex" justify="center">
-      <el-col :sm="24" :md="4">
-        <el-button @click="close('canceled')">Cancelar</el-button>
-      </el-col>
-      <el-col :sm="24" :md="4">
-        <el-button @click="submitForm">Guardar</el-button>
-      </el-col>
+    <el-divider />
+    <el-row :gutter="10" type="flex" justify="end">
+      <el-button @click="close('canceled')">Cancelar</el-button>
+      <el-button type="primary" @click="submitForm">Guardar</el-button>
     </el-row>
   </div>
 </template>
 
 <script setup>
 // imports de api
-import TipoDocIdentidadRequest from '@/api/maestros/tipodocidentidad'
-const tipoDocIdentidadRequest = new TipoDocIdentidadRequest()
+// import TipoDocIdentidadRequest from '@/api/maestros/tipodocidentidad'
+// const tipoDocIdentidadRequest = new TipoDocIdentidadRequest()
 import RoleRequest from '@/api/auth/role'
 const roleRequest = new RoleRequest()
-import PaisRequest from '@/api/maestros/pais'
-const paisRequest = new PaisRequest()
-import DepartamentoRequest from '@/api/maestros/departamento'
-const departamentoRequest = new DepartamentoRequest()
+// import PaisRequest from '@/api/maestros/pais'
+// const paisRequest = new PaisRequest()
+// import DepartamentoRequest from '@/api/maestros/departamento'
+// const departamentoRequest = new DepartamentoRequest()
 import UserRequest from '@/api/auth/usuario'
 const userRequest = new UserRequest()
 import { onMounted, reactive, ref, watch } from 'vue'
@@ -189,11 +119,6 @@ const props = defineProps({
 const emit = defineEmits(['close'])
 const loading = ref(false)
 const createUserForm = ref()
-
-const filterNode = (value, roles) => {
-  if (!value) return true
-  return roles.name.includes(value)
-}
 
 const formData = ref({
   apellido_paterno: '',
@@ -211,40 +136,25 @@ const formData = ref({
 })
 
 const formRules = ref({
-  apellido_paterno: [{ required: true, message: 'Ingrese el apellido paterno', trigger: 'blur' }],
-  apellido_materno: [{ required: true, message: 'Ingrese el apellido materno', trigger: 'blur' }],
-  nombres: [{ required: true, message: 'Ingrese los nombres', trigger: 'blur' }],
-  nro_doc_identidad: [
-    { required: true, message: 'Ingrese el número de documento', trigger: 'blur' }
-  ],
-  fecha_nacimiento: [
-    { required: true, message: 'Seleccione la fecha de nacimiento', trigger: 'change' }
-  ],
-  genero: [{ required: true, message: 'Seleccione el género', trigger: 'change' }],
-  celular: [{ required: true, message: 'Ingrese el número de celular', trigger: 'blur' }],
-  email: [{ required: true, message: 'Ingrese el correo electrónico', trigger: 'blur' }],
-  id_departamento: [{ required: true, message: 'Seleccione el departamento', trigger: 'change' }],
-  id_pais: [{ required: true, message: 'Seleccione el pais', trigger: 'change' }],
-  id_tipo_doc_identidad: [
-    { required: true, message: 'Seleccione el tipo de doc. identidad', trigger: 'blur' }
-  ]
+  apellido_paterno: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+  apellido_materno: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+  nombres: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+  nro_doc_identidad: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+  fecha_nacimiento: [{ required: true, message: 'Campo requerido', trigger: 'change' }],
+  genero: [{ required: true, message: 'Campo requerido', trigger: 'change' }],
+  celular: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+  email: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+  id_tipo_doc_identidad: [{ required: true, message: 'Campo requerido', trigger: 'blur' }],
+  rol_id: [{ required: true, message: 'Campo requerido', trigger: 'blur' }]
 })
 
 const tiposDocIdentidad = ref([])
-const paises = ref([])
 const roles = ref([])
 const departamentos = ref([])
-const filterText = ref('')
-const treeRefRoles = ref()
 
-const defaultProps = {
-  label: 'name',
-  id: 'id'
-}
 // Recuperando Informacion necesaria para registrar:
 onMounted(() => {
   fecthTiposDocIdentidad()
-  fecthPaises()
   fetchRoles()
   cargarRegistro()
 })
@@ -255,24 +165,6 @@ const fecthTiposDocIdentidad = () => {
     .then((response) => {
       console.log(response)
       tiposDocIdentidad.value = response.data
-    })
-    .catch((error) => {
-      console.log(error)
-      ElNotification({
-        type: 'error',
-        title: 'Error al precargar data del formulario',
-        duration: 2000
-      })
-      close('canceled')
-    })
-}
-
-const fecthPaises = () => {
-  paisRequest
-    .all()
-    .then((response) => {
-      console.log(response)
-      paises.value = response.data
     })
     .catch((error) => {
       console.log(error)
@@ -338,18 +230,18 @@ const cargarRegistro = () => {
     .then((response) => {
       console.log(response)
       const { data } = response
-
+      // const date = new Date(data.persona.fecha_nacimiento);
       formData.value.apellido_paterno = data.persona.apellido_paterno
       formData.value.apellido_materno = data.persona.apellido_materno
       formData.value.nombres = data.persona.nombres
       formData.value.nro_doc_identidad = data.persona.nro_doc_identidad
       formData.value.fecha_nacimiento = data.persona.fecha_nacimiento
+      // formData.value.fecha_nacimiento = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
       formData.value.genero = data.persona.genero
       formData.value.celular = data.persona.celular
       formData.value.email = data.persona.email
-      formData.value.id_pais = data.persona.departamento.pais.id
-      formData.value.id_departamento = data.persona.id_departamento
       formData.value.id_tipo_doc_identidad = data.persona.id_tipo_doc_identidad
+      formData.value.rol_id = data.rol_id
       rolesUsuario.value = data.roles
       fetchDepartamentos()
       loading.value = false
@@ -368,7 +260,6 @@ const cargarRegistro = () => {
 
 // Método para enviar el formulario
 const submitForm = () => {
-  formData.value.roles = treeRefRoles.value.getCheckedKeys(true)
   // Validar el formulario usando VeeValidate u otra biblioteca de validación
   createUserForm.value.validate((valid) => {
     if (valid) {
@@ -416,6 +307,7 @@ const resetForm = () => {
       id_pais: '',
       id_departamento: '',
       id_tipo_doc_identidad: null,
+      rol_id: null,
       roles: null
     })
   )

@@ -5,13 +5,10 @@
         <el-input v-model="permission.name" placeholder="Ejem: listar-usuarios" />
       </el-form-item>
     </el-form>
-    <el-row :gutter="10" type="flex" justify="center">
-      <el-col :xs="24" :md="7" style="margin: 0 0 7px 0">
-        <el-button @click="close('canceled')">CANCELAR</el-button>
-      </el-col>
-      <el-col :xs="24" :md="7">
-        <el-button type="primary" @click="submitForm(createPermissionForm)">GUARDAR</el-button>
-      </el-col>
+    <el-divider />
+    <el-row :gutter="10" type="flex" justify="end">
+      <el-button @click="close('canceled')">Cancelar</el-button>
+      <el-button type="primary" @click="submitForm(createPermissionForm)">Guardar</el-button>
     </el-row>
   </div>
 </template>
