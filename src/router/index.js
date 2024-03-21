@@ -6,6 +6,7 @@ import getPageTitle from '../utils/get-page-title';
 import { getToken } from '../utils/auth';
 import authRoutes from './modules/auth';
 import pruebasRoutes from './modules/prueba';
+import almacenRoutes from './modules/mantenimiento'
 
 export const routes =  [
   {
@@ -50,6 +51,7 @@ export const routes =  [
 export const asyncRoutes = [
   authRoutes,
   pruebasRoutes,
+  almacenRoutes,
   {
     path: '/:pathMatch(.*)*',
     name: "NotFound",
@@ -57,6 +59,7 @@ export const asyncRoutes = [
     hidden: true,
   },
 ]
+
 
 const initRouter = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
