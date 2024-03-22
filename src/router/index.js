@@ -6,6 +6,7 @@ import getPageTitle from '../utils/get-page-title';
 import { getToken } from '../utils/auth';
 import authRoutes from './modules/auth';
 import pruebasRoutes from './modules/prueba';
+import inventarioRoutes from './modules/inventario';
 
 export const routes =  [
   {
@@ -50,6 +51,7 @@ export const routes =  [
 export const asyncRoutes = [
   authRoutes,
   pruebasRoutes,
+  inventarioRoutes,
   {
     path: '/:pathMatch(.*)*',
     name: "NotFound",

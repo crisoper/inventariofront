@@ -1,0 +1,82 @@
+* {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .bg-content-admin {
+    /* Color original */
+    /* background-color: #f2f3f7 !important; */
+    background-color: #dbdee9 !important;
+  }
+  
+  #app {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    font-weight: normal;
+  }
+  
+  a,
+  .green {
+    text-decoration: none;
+    transition: 0.4s;
+  }
+  
+  .total-venta {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 9999 !important; /* Asegúrate de que este valor sea mayor que el z-index de cualquier modal o diálogo */
+  }
+
+  .iconSearch {
+    float: right;
+    cursor: pointer;
+    color: #409eff;
+    font-size: 1.05em !important;
+    background-color: rgba(54, 158, 255, 0.1) !important;
+  }
+  
+  .pointer {
+    cursor: pointer;
+  }
+  
+  .icon-btn {
+    cursor: pointer;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+  .el-dialog__header {
+    background-color: #506fe4 !important;
+    color: #fcfcfc !important;
+    margin-right: 0px !important;
+  }
+
+  .el-dialog__header h1,
+  .el-dialog__header h2,
+  .el-dialog__header h3,
+  .el-dialog__header h4,
+  .el-dialog__header h5,
+  .el-dialog__header h6
+  {
+    color: #fcfcfc !important;
+  }
+
+  .el-dialog__headerbtn {
+    color: aqua ip !important;
+  }
+  
+  @media (min-width: 1024px) {
+    body {
+      display: flex;
+      place-items: center;
+    }
+  
+    #app {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 0;
+    }
+  }
+  

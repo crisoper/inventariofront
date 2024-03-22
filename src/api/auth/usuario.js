@@ -4,7 +4,7 @@ import Resource from '../resource'
 
 class UserRequest extends Resource {
   constructor() {
-    super('usuarios')
+    super('auth/usuarios')
   }
 
   fetchVendedores() {

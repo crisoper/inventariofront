@@ -21,23 +21,23 @@
       <el-table-column type="index" label="#" width="100" align="center" header-align="center" />
       <el-table-column label="DOC. IDENTIDAD" width="140">
         <template #default="scope">
-          {{ scope.row.persona.nro_doc_identidad }}
+          {{ scope.row.persona?.nro_doc_identidad }}
         </template>
       </el-table-column>
       <el-table-column label="NOMBRE" min-width="160">
         <template #default="scope">
-          {{ scope.row.persona.nombre_completo }}
+          {{ scope.row.persona?.nombre_completo }}
         </template>
       </el-table-column>
       <el-table-column prop="email" label="CORREO" min-width="160" />
       <el-table-column fixed="right" align="center" width="160" >
         <template #header>
-          <el-button type="primary" plain @click="addItem()" v-permission="['autenticacion.usuarios.crear']">
+          <el-button type="primary" plain @click="addItem()" v-permission="['auth.usuarios.crear']">
             <template #icon>
               <v-icon name="ri-add-fill" />
             </template>
           </el-button>
-          <el-button type="primary" plain @click="exportarDatos()" v-permission="['autenticacion.usuarios.exportar']">
+          <el-button type="primary" plain @click="exportarDatos()" v-permission="['auth.usuarios.exportar']">
             <template #icon>
               <v-icon name="la-database-solid" />
             </template>
@@ -174,9 +174,9 @@ export default {
     handleCommand(commandData) {
       const { item, action } = commandData
       console.log(item, action)
-      if (action == 'EDIT' && validPermision('autenticacion.usuarios.actualizar')) {
+      if (action == 'EDIT' && validPermision('auth.usuarios.actualizar')) {
         this.editItem(item)
-      } else if (action == 'DELETE' && validPermision('autenticacion.usuarios.eliminar')) {
+      } else if (action == 'DELETE' && validPermision('auth.usuarios.eliminar')) {
         ElMessageBox.confirm('¿Está seguro que desea eliminar el usuario?', 'Eliminar usuario', {
           confirmButtonText: 'Sí',
           cancelButtonText: 'Cancelar',
@@ -221,16 +221,10 @@ export default {
       })
     },
     handleClose(done) {
-      ElMessageBox.confirm('¡Seguro que desea cerrar esta ventana?')
-        .then(() => {
-          this.$nextTick(() => {
-            this.item_id = 'action'
-          })
-          done()
-        })
-        .catch(() => {
-          // catch error
-        })
+      this.$nextTick(() => {
+        this.item_id = 'action'
+      })
+      done()
     },
     exportarDatos() {
       this.loading = true

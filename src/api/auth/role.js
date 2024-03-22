@@ -4,7 +4,7 @@ import Resource from '../resource'
 
 class RoleRequest extends Resource {
   constructor() {
-    super('roles')
+    super('auth/roles')
   }
   all() {
     return request({
