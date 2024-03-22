@@ -7,34 +7,34 @@ class Resource {
   constructor(uri) {
     this.uri = uri
   }
-  list(query) {
+  list(query) { // corresponde al metodo o funcion index del controlador
     return request({
       url: '/' + this.uri,
       method: 'get',
       params: query
     })
   }
-  get(id) {
+  get(id) { // corresponde al metodo o funcion show del controlador
     return request({
       url: '/' + this.uri + '/' + id,
       method: 'get'
     })
   }
-  store(resource) {
+  store(resource) { // corresponde al metodo o funcion store del controlador
     return request({
       url: '/' + this.uri,
       method: 'post',
       data: resource
     })
   }
-  update(id, resource) {
+  update(id, resource) { // corresponde al metodo o funcion update del controlador
     return request({
       url: '/' + this.uri + '/' + id,
       method: 'put',
       data: resource
     })
   }
-  destroy(id) {
+  destroy(id) { // corresponde al metodo o funcion destroy del controlador
     return request({
       url: '/' + this.uri + '/' + id,
       method: 'delete'

@@ -14,15 +14,16 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearTareaDialog = true"
+          @click="crearMarcaDialog = true"
         >
           Nuevo
         </el-button>
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
+      <el-table-column prop="codigo" label="Código" />
       <el-table-column prop="nombre" label="Nombre" />
-      <el-table-column prop="completado" label="Completado" />
+      <el-table-column prop="descripcion" label="Descripción" />
       <el-table-column label="Opciones">
         <template #default="scope">
           <el-button @click="abrirDialogEditar(scope.row.id)">
@@ -34,28 +35,29 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- Nueva tarea -->
-    <el-dialog v-model="crearTareaDialog" title="Crear Tarea">
-      <CrearTarea @close="cerrarDialago" />
+    <!-- Nueva marca -->
+    <el-dialog v-model="crearMarcaDialog" title="Crear Marca">
+      <CrearMarca @close="cerrarDialogo" />
     </el-dialog>
-    <!-- Nueva tarea -->
-    <el-dialog v-model="editarTareaDialog" title="Crear Tarea">
-      <EditarTarea :id="idRegistroEditar" @close="cerrarDialagoEditar" />
+    <!-- Editar marca -->
+    <el-dialog v-model="editarMarcaDialog" title="Editar Marca">
+      <EditarMarca :id="idRegistroEditar" @close="cerrarDialogoEditar" />
     </el-dialog>
   </div>
 </template>
 
 <script>
 // Componentes
-import EditarTarea from "./components/EditarTarea.vue";
-import CrearTarea from "./components/CrearTarea.vue";
+// import EditarMarca from "./components/EditarMarca.vue";
+import CrearMarca from "./components/CrearMarca.vue";
 // Resource
-import TareasResource from "@/api/prueba/tareas";
+import MarcaResource from "@/api/mantenimiento/marca";
 import { ElMessage } from "element-plus";
-const tareasResource = new TareasResource();
+const marcaResource = new MarcaResource();
+
 export default {
-  name: "TareasView",
-  components: { CrearTarea, EditarTarea },
+  name: "MarcaView",
+  components: { CrearMarca },
   data() {
     return {
       loading: false,
@@ -66,8 +68,8 @@ export default {
         page: 1,
       },
       listaItem: [],
-      crearTareaDialog: false,
-      editarTareaDialog: false,
+      crearMarcaDialog: false,
+      editarMarcaDialog: false,
       idRegistroEditar: null,
     };
   },
@@ -77,7 +79,7 @@ export default {
   methods: {
     async fetchData() {
       this.loading = true;
-      tareasResource
+      marcaResource
         .list(this.query)
         .then((response) => {
           const { data } = response;
@@ -89,38 +91,38 @@ export default {
           this.loading = false;
         });
     },
-    cerrarDialago() {
-      this.crearTareaDialog = false;
+    cerrarDialogo() {
+      this.crearMarcaDialog = false;
       this.fetchData();
     },
     abrirDialogEditar(id_registro) {
       this.idRegistroEditar = id_registro;
       this.$nextTick(() => {
-        this.editarTareaDialog = true;
+        this.editarMarcaDialog = true;
       });
     },
     eliminarRegistro(id_registro) {
       this.loading = true;
-      tareasResource
+      marcaResource
         .destroy(id_registro)
         .then(() => {
           ElMessage({
-            message: "Tarea Elimanda",
+            message: "Marca Eliminada",
             type: "success",
           });
           this.fetchData();
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrio un error",
+            message: "Ocurrió un error",
             type: "error",
           });
           console.log(error);
           this.loading = false;
         });
     },
-    cerrarDialagoEditar() {
-      this.editarTareaDialog = false;
+    cerrarDialogoEditar() {
+      this.editarMarcaDialog = false;
       this.fetchData();
     },
   },

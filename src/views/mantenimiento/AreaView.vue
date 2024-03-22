@@ -14,15 +14,16 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearTareaDialog = true"
+          @click="crearAreaDialog = true"
         >
           Nuevo
         </el-button>
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
+      <el-table-column prop="codigo" label="codigo" />
       <el-table-column prop="nombre" label="Nombre" />
-      <el-table-column prop="completado" label="Completado" />
+      <el-table-column prop="descripcion" label="descripcion" />
       <el-table-column label="Opciones">
         <template #default="scope">
           <el-button @click="abrirDialogEditar(scope.row.id)">
@@ -34,28 +35,29 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- Nueva tarea -->
-    <el-dialog v-model="crearTareaDialog" title="Crear Tarea">
-      <CrearTarea @close="cerrarDialago" />
+    <!-- Nueva área -->
+    <el-dialog v-model="crearAreaDialog" title="Crear Área">
+      <CrearArea @close="cerrarDialago" />
     </el-dialog>
-    <!-- Nueva tarea -->
-    <el-dialog v-model="editarTareaDialog" title="Crear Tarea">
-      <EditarTarea :id="idRegistroEditar" @close="cerrarDialagoEditar" />
+    <!-- Editar área -->
+    <el-dialog v-model="editarAreaDialog" title="Editar Área">
+      <EditarArea :id="idRegistroEditar" @close="cerrarDialagoEditar" />
     </el-dialog>
   </div>
 </template>
 
 <script>
 // Componentes
-import EditarTarea from "./components/EditarTarea.vue";
-import CrearTarea from "./components/CrearTarea.vue";
+// import EditarArea from "./components/EditarArea.vue";
+import CrearArea from "./components/CrearArea.vue";
 // Resource
-import TareasResource from "@/api/prueba/tareas";
+import AreaResource from "@/api/mantenimiento/area";
 import { ElMessage } from "element-plus";
-const tareasResource = new TareasResource();
+const areaResource = new AreaResource();
+
 export default {
-  name: "TareasView",
-  components: { CrearTarea, EditarTarea },
+  name: "AreaView",
+  components: { CrearArea },
   data() {
     return {
       loading: false,
@@ -66,8 +68,8 @@ export default {
         page: 1,
       },
       listaItem: [],
-      crearTareaDialog: false,
-      editarTareaDialog: false,
+      crearAreaDialog: false,
+      editarAreaDialog: false,
       idRegistroEditar: null,
     };
   },
@@ -77,7 +79,7 @@ export default {
   methods: {
     async fetchData() {
       this.loading = true;
-      tareasResource
+      areaResource
         .list(this.query)
         .then((response) => {
           const { data } = response;
@@ -90,29 +92,29 @@ export default {
         });
     },
     cerrarDialago() {
-      this.crearTareaDialog = false;
+      this.crearAreaDialog = false;
       this.fetchData();
     },
     abrirDialogEditar(id_registro) {
       this.idRegistroEditar = id_registro;
       this.$nextTick(() => {
-        this.editarTareaDialog = true;
+        this.editarAreaDialog = true;
       });
     },
     eliminarRegistro(id_registro) {
       this.loading = true;
-      tareasResource
+      areaResource
         .destroy(id_registro)
         .then(() => {
           ElMessage({
-            message: "Tarea Elimanda",
+            message: "Área Eliminada",
             type: "success",
           });
           this.fetchData();
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrio un error",
+            message: "Ocurrió un error",
             type: "error",
           });
           console.log(error);
@@ -120,7 +122,7 @@ export default {
         });
     },
     cerrarDialagoEditar() {
-      this.editarTareaDialog = false;
+      this.editarAreaDialog = false;
       this.fetchData();
     },
   },

@@ -123,9 +123,7 @@ const areasResource = new Resource("inventario/all/areas");
 const productosResource = new Resource("inventario/all/productos");
 export default {
   name: "InventarioInventariarView",
-  components: {
-    Plus
-  },
+  components: {},
   props: {
     itemid: {
       type: String,

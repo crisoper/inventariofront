@@ -21,8 +21,9 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
+      <el-table-column prop="codigo" label="codigo" />
       <el-table-column prop="nombre" label="Nombre" />
-      <el-table-column prop="completado" label="Completado" />
+      <el-table-column prop="descripcion" label="descripcion" />
       <el-table-column label="Opciones">
         <template #default="scope">
           <el-button @click="abrirDialogEditar(scope.row.id)">
@@ -47,15 +48,15 @@
 
 <script>
 // Componentes
-import EditarTarea from "./components/EditarTarea.vue";
-import CrearTarea from "./components/CrearTarea.vue";
+// import EditarTarea from "./components/EditarTarea.vue";
+// import CrearTarea from "./components/CrearTarea.vue";
 // Resource
-import TareasResource from "@/api/prueba/tareas";
+import TareasResource from "@/api/mantenimiento/producto";
 import { ElMessage } from "element-plus";
 const tareasResource = new TareasResource();
 export default {
-  name: "TareasView",
-  components: { CrearTarea, EditarTarea },
+  name: "AlmacenView",
+  // components: { CrearTarea, EditarTarea },
   data() {
     return {
       loading: false,

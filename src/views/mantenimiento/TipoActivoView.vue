@@ -14,7 +14,7 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearTareaDialog = true"
+          @click="crearTipoActivoDialog = true"
         >
           Nuevo
         </el-button>
@@ -22,7 +22,7 @@
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column prop="nombre" label="Nombre" />
-      <el-table-column prop="completado" label="Completado" />
+      <el-table-column prop="descripcion" label="descripcion" />
       <el-table-column label="Opciones">
         <template #default="scope">
           <el-button @click="abrirDialogEditar(scope.row.id)">
@@ -34,28 +34,28 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- Nueva tarea -->
-    <el-dialog v-model="crearTareaDialog" title="Crear Tarea">
-      <CrearTarea @close="cerrarDialago" />
+    <!-- Nuevo tipo de activo -->
+    <el-dialog v-model="crearTipoActivoDialog" title="Nuevo Tipo de Activo">
+      <CrearTipoActivo @close="cerrarDialago" />
     </el-dialog>
-    <!-- Nueva tarea -->
-    <el-dialog v-model="editarTareaDialog" title="Crear Tarea">
-      <EditarTarea :id="idRegistroEditar" @close="cerrarDialagoEditar" />
+    <!-- Editar tipo de activo -->
+    <el-dialog v-model="editarTipoActivoDialog" title="Editar Datos">
+      <EditarTipoActivo :id="idRegistroEditar" @close="cerrarDialagoEditar" />
     </el-dialog>
   </div>
 </template>
 
 <script>
 // Componentes
-import EditarTarea from "./components/EditarTarea.vue";
-import CrearTarea from "./components/CrearTarea.vue";
-// Resource
-import TareasResource from "@/api/prueba/tareas";
+import EditarTipoActivo from "./components/EditarTipoActivo.vue";
+import CrearTipoActivo from "./components/CrearTipoActivo.vue";
+// Recurso
+import TipoActivoResource from "@/api/mantenimiento/tipoActivo";
 import { ElMessage } from "element-plus";
-const tareasResource = new TareasResource();
+const tipoActivoResource = new TipoActivoResource();
 export default {
-  name: "TareasView",
-  components: { CrearTarea, EditarTarea },
+  name: "TipoActivoView",
+  components: { CrearTipoActivo, EditarTipoActivo },
   data() {
     return {
       loading: false,
@@ -66,8 +66,8 @@ export default {
         page: 1,
       },
       listaItem: [],
-      crearTareaDialog: false,
-      editarTareaDialog: false,
+      crearTipoActivoDialog: false,
+      editarTipoActivoDialog: false,
       idRegistroEditar: null,
     };
   },
@@ -77,7 +77,7 @@ export default {
   methods: {
     async fetchData() {
       this.loading = true;
-      tareasResource
+      tipoActivoResource
         .list(this.query)
         .then((response) => {
           const { data } = response;
@@ -90,29 +90,29 @@ export default {
         });
     },
     cerrarDialago() {
-      this.crearTareaDialog = false;
+      this.crearTipoActivoDialog = false;
       this.fetchData();
     },
     abrirDialogEditar(id_registro) {
       this.idRegistroEditar = id_registro;
       this.$nextTick(() => {
-        this.editarTareaDialog = true;
+        this.editarTipoActivoDialog = true;
       });
     },
     eliminarRegistro(id_registro) {
       this.loading = true;
-      tareasResource
+      tipoActivoResource
         .destroy(id_registro)
         .then(() => {
           ElMessage({
-            message: "Tarea Elimanda",
+            message: "Tipo de Activo eliminado",
             type: "success",
           });
           this.fetchData();
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrio un error",
+            message: "Ocurrió un error al eliminar el tipo de activo",
             type: "error",
           });
           console.log(error);
@@ -120,7 +120,7 @@ export default {
         });
     },
     cerrarDialagoEditar() {
-      this.editarTareaDialog = false;
+      this.editarTipoActivoDialog = false;
       this.fetchData();
     },
   },

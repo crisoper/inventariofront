@@ -7,6 +7,7 @@ import { getToken } from '../utils/auth';
 import authRoutes from './modules/auth';
 import pruebasRoutes from './modules/prueba';
 import inventarioRoutes from './modules/inventario';
+import almacenRoutes from './modules/mantenimiento'
 
 export const routes =  [
   {
@@ -52,6 +53,7 @@ export const asyncRoutes = [
   authRoutes,
   pruebasRoutes,
   inventarioRoutes,
+  almacenRoutes,
   {
     path: '/:pathMatch(.*)*',
     name: "NotFound",
@@ -59,6 +61,7 @@ export const asyncRoutes = [
     hidden: true,
   },
 ]
+
 
 const initRouter = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
