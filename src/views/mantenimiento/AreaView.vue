@@ -19,6 +19,15 @@
           Nuevo
         </el-button>
       </el-col>
+      <el-col :span="5">
+        <el-button
+          type="primary"
+          style="width: 100% !important"
+          @click="exportarDatos()"
+        >
+          Exportar
+        </el-button>
+      </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column prop="codigo" label="codigo" />
@@ -54,6 +63,9 @@ import CrearArea from "./components/CrearArea.vue";
 import AreaResource from "@/api/mantenimiento/area";
 import { ElMessage } from "element-plus";
 const areaResource = new AreaResource();
+
+import Resource from '@/api/resource'
+const exportResource = new Resource('exportar/areas')
 
 export default {
   name: "AreaView",
@@ -124,6 +136,22 @@ export default {
     cerrarDialagoEditar() {
       this.editarAreaDialog = false;
       this.fetchData();
+    },
+    async exportarDatos() {
+      this.loadingData = true
+      await exportResource
+        .list(this.query)
+        .then((response) => {
+          this.loadingData = false
+          const link = document.createElement('a')
+          link.href = response
+          document.body.appendChild(link)
+          link.click()
+        })
+        .catch(() => {
+          this.$message('Se ha producido una excepción')
+          this.loadingData = false
+        })
     },
   },
 };
