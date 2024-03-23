@@ -2,10 +2,16 @@
   <div>
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane label="Productos en el inventario" name="first">
-        <InventarioProductos />
+        <InventarioProductos
+          :inventarioid="inventario_id"
+          @close="inventarioClose($event)"
+        />
       </el-tab-pane>
       <el-tab-pane label="Agregar al inventario" name="second">
-        <InventarioInventariar />
+        <InventarioInventariar
+          :inventarioid="inventario_id"
+          @close="inventariarClose($event)"
+        />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -22,27 +28,54 @@ export default {
     InventarioProductos
   },
   props: {
-    inventario_id: {
-      type: String,
+    inventarioid: {
+      type: Number,
+      required: true,
       default: () => {
-        return "-2000000";
+        return -10;
       },
     },
   },
   data() {
     return {
-      activeName: 'first'
+      activeName: 'first',
+      inventario_id: 0,
     };
   },
   watch: {
-    itemid: function () {
+    inventarioid: function () {
       this.setCrearOUpdate();
     },
   },
   computed: {},
-  created() {},
+  created() {
+    this.activeName = 'first'
+  },
+  mounted() {
+    this.activeName = 'first'
+  },
   methods: {
+    setCrearOUpdate() {
+      console.log("Inventariar inventarioid: " + this.inventarioid)
+      this.$nextTick(() => {
+        this.inventario_id = this.inventarioid
+        // if (this.inventarioid !== "action" && this.inventarioid !== "create") {
+        //   this.getDataUpdate()
+        // } else {
+        //   this.item_id = undefined
+        //   this.handleCreate()
+        // }
+        // this.resetForm("formAdditem")
+        // this.resetModel()
+      })
+    },
     handleClick(data) {
+      console.log(data.props.name)
+    },
+    inventarioClose(data) {
+      console.log(data)
+    },
+    inventariarClose(data) {
       console.log(data)
     }
   },

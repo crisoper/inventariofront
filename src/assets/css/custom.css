@@ -53,6 +53,10 @@
     margin-right: 0px !important;
   }
 
+  span.el-dialog__title {
+    color: #fcfcfc !important;
+  }
+
   .el-dialog__header h1,
   .el-dialog__header h2,
   .el-dialog__header h3,
@@ -65,6 +69,10 @@
 
   .el-dialog__headerbtn {
     color: aqua ip !important;
+  }
+  
+  .hidden-icon-valid {
+    color: red;
   }
   
   @media (min-width: 1024px) {

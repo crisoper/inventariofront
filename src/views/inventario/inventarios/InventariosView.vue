@@ -133,7 +133,7 @@
         tableData: [],
         total: 0,
         item_id: 'action',
-        inventario_id: 0,
+        inventario_id: -17,
         query: {
           keyword: '',
           limit: 7,
@@ -244,9 +244,12 @@
           })
       },
       verDetalle(model) {
-        console.log(model)
+        // console.log(model)
         this.titleDialogoDetalleInventario = model.nombre
         this.dialogoDetalleInventario = true
+        this.$nextTick(() => {
+          this.inventario_id = model.id
+        })
       },
       closeInventarioLayoutDetalle(done) {
         this.dialogoDetalleInventario = false

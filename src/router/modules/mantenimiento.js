@@ -50,8 +50,8 @@ const mantenimientoRoutes = {
       },
       {
         path: '/productos',
-        component: () => import('@/views/mantenimiento/AlmacenView.vue'),
-        name: 'Productos',
+        component: () => import('@/views/mantenimiento/ProductosView.vue'),
+        name: 'MantenimientoProductos',
         meta: { title: 'Productos', icon: 'md-playlistaddcheck-round' }
       },
     ]

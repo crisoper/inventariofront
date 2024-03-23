@@ -11,12 +11,12 @@ const pruebasRoutes = {
     main: true, // para indicar que es la ruta principal del modulo
   },
   children: [
-    {
-      path: "/productos",
-      component: () => import("@/views/inventario/productos/ProductosView.vue"),
-      name: "InventarioProductos",
-      meta: { title: "Productos", icon: "md-playlistaddcheck-round" },
-    },
+    // {
+    //   path: "/productos",
+    //   component: () => import("@/views/inventario/productos/ProductosView.vue"),
+    //   name: "InventarioProductos",
+    //   meta: { title: "Productos", icon: "md-playlistaddcheck-round" },
+    // },
     {
       path: "/inventario",
       component: () => import("@/views/inventario/inventarios/InventariosView.vue"),
