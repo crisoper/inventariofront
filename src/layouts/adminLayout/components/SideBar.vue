@@ -16,7 +16,8 @@
             color: #ffffff !important;
           "
         >
-          <div v-for="ruta in rutasBase" :key="ruta.name" class="my-2">
+          <div v-for="ruta in rutasBase" :key="ruta.name" class="main-link my-1 mx-1 py-2 px-2"
+                    :class="{ mainactive: selectedMain.name == ruta.name }">
             <div v-if="!ruta.meta.hidden">
               <router-link :to="ruta.name" custom>
                 <el-tooltip
@@ -28,8 +29,7 @@
                   <v-icon
                     :name="ruta.meta.icon"
                     scale="1.5"
-                    class="main-link"
-                    :class="{ mainactive: selectedMain.name == ruta.name }"
+                    
                     @click="setSelectetMain(ruta)"
                   />
                 </el-tooltip>
@@ -106,7 +106,9 @@ const setSelectetMain = (ruta) => {
 }
 
 .main-link {
-  color: #73767a;
+  color: #c2c2c2;
+  cursor: pointer;
+  border-radius: 10px;
 }
 
 .main-link:focus {

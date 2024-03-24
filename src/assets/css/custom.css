@@ -74,6 +74,13 @@
   .hidden-icon-valid {
     color: red;
   }
+
+  .el-dialog__close {
+    color: #ddddd9!important;
+  }
+  .el-dialog__close:hover {
+    color: #FFFFF0!important;
+  }
   
   @media (min-width: 1024px) {
     body {

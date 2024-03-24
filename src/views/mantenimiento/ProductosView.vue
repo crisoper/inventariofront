@@ -14,7 +14,7 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearTipoBienDialog = true"
+          @click="crearProductoDialog = true"
         >
           Nuevo
         </el-button>
@@ -35,8 +35,8 @@
       </el-table-column>
     </el-table>
     <!-- Nuevo tipo de bien -->
-    <el-dialog v-model="crearTipoBienDialog" title="Nuevo Tipo de Bien">
-      <CrearTipoBien @close="cerrarDialago" />
+    <el-dialog v-model="crearProductoDialog" title="Nuevo Producto" top="10px">
+      <CrearProducto @close="cerrarDialogCrear" />
     </el-dialog>
     <!-- Editar tipo de bien -->
     <el-dialog v-model="editarTipoBienDialog" title="Editar Datos">
@@ -48,14 +48,14 @@
 <script>
 // Componentes
 import EditarTipoBien from "./components/EditarTipoBien.vue";
-import CrearTipoBien from "./components/CrearTipoBien.vue";
+import CrearProducto from "./components/CrearProducto.vue";
 // Recurso
-import TipoBienResource from "@/api/mantenimiento/tipoBien";
+import ProductoResource from "@/api/mantenimiento/producto";
 import { ElMessage } from "element-plus";
-const tipoBienResource = new TipoBienResource();
+const productoResource = new ProductoResource();
 export default {
   name: "TipoBienView",
-  components: { CrearTipoBien, EditarTipoBien },
+  components: { CrearProducto, EditarTipoBien },
   data() {
     return {
       loading: false,
@@ -66,7 +66,7 @@ export default {
         page: 1,
       },
       listaItem: [],
-      crearTipoBienDialog: false,
+      crearProductoDialog: false,
       editarTipoBienDialog: false,
       idRegistroEditar: null,
     };
@@ -77,7 +77,7 @@ export default {
   methods: {
     async fetchData() {
       this.loading = true;
-      tipoBienResource
+      productoResource
         .list(this.query)
         .then((response) => {
           const { data } = response;
@@ -89,8 +89,8 @@ export default {
           this.loading = false;
         });
     },
-    cerrarDialago() {
-      this.crearTipoBienDialog = false;
+    cerrarDialogCrear() {
+      this.crearProductoDialog = false;
       this.fetchData();
     },
     abrirDialogEditar(id_registro) {
@@ -101,7 +101,7 @@ export default {
     },
     eliminarRegistro(id_registro) {
       this.loading = true;
-      tipoBienResource
+      productoResource
         .destroy(id_registro)
         .then(() => {
           ElMessage({
