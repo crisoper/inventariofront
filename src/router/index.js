@@ -5,7 +5,7 @@ import { useAuthStore } from '../stores/auth';
 import getPageTitle from '../utils/get-page-title';
 import { getToken } from '../utils/auth';
 import authRoutes from './modules/auth';
-import pruebasRoutes from './modules/prueba';
+// import pruebasRoutes from './modules/prueba';
 import inventarioRoutes from './modules/inventario';
 import almacenRoutes from './modules/mantenimiento'
 
@@ -47,11 +47,24 @@ export const routes =  [
       }
     ],
   },
-  
+  {
+    path: '/miperfil',
+    component: AdminLayout,
+    redirect: '/usuario',
+    hidden: true,
+    children: [
+      {
+        path: 'usuario',
+        component: () => import('@/views/profile/index.vue'),
+        name: 'Profile',
+        meta: { title: 'Profile', icon: 'user', noCache: true }
+      }
+    ]
+  }
 ];
 export const asyncRoutes = [
   authRoutes,
-  pruebasRoutes,
+  // pruebasRoutes,
   inventarioRoutes,
   almacenRoutes,
   {

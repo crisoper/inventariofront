@@ -13,7 +13,7 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>
+            <el-dropdown-item @click="openProfile">
               <span>
                 <el-avatar :size="18" style="margin-right: 10px">
                   <img src="@/assets/avatar/avatar0.svg" alt="User Avatar" />
@@ -94,6 +94,10 @@ const handleClose = async (action) => {
   } finally {
     loading.value = false
   }
+}
+
+const openProfile = () =>{
+  router.push('/miperfil/usuario')
 }
 
 const openDialog = () => {

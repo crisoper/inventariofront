@@ -1,7 +1,7 @@
 <template>
   <div v-loading="loading">
-    <el-form ref="nuevoAlmacenForm" :model="nuevoAlmacen" :rules="rules">
-      <el-row>
+    <el-form ref="nuevoAlmacenForm" :model="nuevoAlmacen" :rules="rules" label-position="top">
+      <el-row :gutter="10">
         <el-col :span="12">
           <el-form-item label="Código" prop="codigo">
             <el-input v-model="nuevoAlmacen.codigo" />
@@ -39,7 +39,7 @@ export default {
   },
   watch: {
     id: function (newVal, oldVal) {
-      if (newVal != null && newVal != oldVal) {
+      if (newVal != null && newVal != oldVal && newVal > 0) {
         this.cargarInformacionRegistro();
       }
     },
@@ -49,7 +49,7 @@ export default {
   },
   data() {
     return {
-      tarea: {
+      nuevoAlmacen: {
         codigo: "",
         nombre: "",
         descripcion: "",
@@ -80,7 +80,8 @@ export default {
         .get(this.id)
         .then((response) => {
           const { data } = response;
-          this.tarea = data;
+          console.log(data)
+          this.nuevoAlmacen = data;
           this.loading = false;
         })
         .catch((error) => {
@@ -95,7 +96,7 @@ export default {
     actulizarRegistro() {
       this.loading = true;
       almacenResource
-        .update(this.id, this.tarea)
+        .update(this.id, this.nuevoAlmacen)
         .then((response) => {
           ElMessage({
             message: "Registro actualizado",

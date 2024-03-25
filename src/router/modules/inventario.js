@@ -7,7 +7,7 @@ const pruebasRoutes = {
   name: "Inventario",
   meta: {
     title: "Inventario",
-    icon: "hi-identification",
+    icon: "md-inventory-outlined",
     main: true, // para indicar que es la ruta principal del modulo
   },
   children: [
@@ -21,7 +21,7 @@ const pruebasRoutes = {
       path: "/inventario",
       component: () => import("@/views/inventario/inventarios/InventariosView.vue"),
       name: "InventarioInventario",
-      meta: { title: "Inventario", icon: "md-playlistaddcheck-round" },
+      meta: { title: "Inventario", icon: "md-inventory-outlined" },
     },
   ],
 };

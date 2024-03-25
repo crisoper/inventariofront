@@ -124,6 +124,9 @@ export default {
     cerrarDialagoEditar() {
       this.editarAlmacenDialog = false;
       this.fetchData();
+      this.$nextTick(() => {
+        this.idRegistroEditar = -1;
+      })
     },
   },
 };
