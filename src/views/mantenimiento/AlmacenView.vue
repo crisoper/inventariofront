@@ -8,8 +8,13 @@
       align="middle"
     >
       <el-col :span="13">
-        <el-input v-model="query.keyword" @keyup.enter="fetchData()" />
+        <el-input
+          v-model="query.keyword"
+          @keyup.enter="fetchData()"
+          placeholder="Buscar almacén"
+        />
       </el-col>
+
       <el-col :span="5">
         <el-button
           type="primary"
@@ -17,6 +22,15 @@
           @click="crearAlmacenDialog = true"
         >
           Nuevo
+        </el-button>
+      </el-col>
+      <el-col :span="5">
+        <el-button
+          type="primary"
+          style="width: 100% !important"
+          @click="exportarDatos()"
+        >
+          Exportar
         </el-button>
       </el-col>
     </el-row>
@@ -54,6 +68,10 @@ import CrearAlmacen from "./components/CrearAlmacen.vue";
 import AlmacenResource from "@/api/mantenimiento/almacen";
 import { ElMessage } from "element-plus";
 const almacenResource = new AlmacenResource();
+
+import Resource from "@/api/resource";
+const exportResource = new Resource("exportar/almacen");
+
 export default {
   name: "AlmacenView",
   components: { CrearAlmacen, EditarAlmacen },
@@ -126,7 +144,23 @@ export default {
       this.fetchData();
       this.$nextTick(() => {
         this.idRegistroEditar = -1;
-      })
+      });
+    },
+    async exportarDatos() {
+      this.loadingData = true;
+      await exportResource
+        .list(this.query)
+        .then((response) => {
+          this.loadingData = false;
+          const link = document.createElement("a");
+          link.href = response;
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch(() => {
+          this.$message("Se ha producido una excepción");
+          this.loadingData = false;
+        });
     },
   },
 };

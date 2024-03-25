@@ -21,8 +21,8 @@ const mantenimientoRoutes = {
       {
         path: '/areas',
         component: () => import('@/views/mantenimiento/AreaView.vue'),
-        name: 'Areas',
-        meta: { title: 'Areas', icon: 'bi-person-workspace' }
+        name: 'Áreas',
+        meta: { title: 'Áreas', icon: 'bi-person-workspace' }
       },
       {
         path: '/categorias',

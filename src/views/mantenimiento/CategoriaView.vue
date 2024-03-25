@@ -8,8 +8,13 @@
       align="middle"
     >
       <el-col :span="13">
-        <el-input v-model="query.keyword" @keyup.enter="fetchData()" />
+        <el-input
+          v-model="query.keyword"
+          @keyup.enter="fetchData()"
+          placeholder="Buscar categoría"
+        />
       </el-col>
+
       <el-col :span="5">
         <el-button
           type="primary"
@@ -17,6 +22,15 @@
           @click="crearCategoriaDialog = true"
         >
           Nuevo
+        </el-button>
+      </el-col>
+      <el-col :span="5">
+        <el-button
+          type="primary"
+          style="width: 100% !important"
+          @click="exportarDatos()"
+        >
+          Exportar
         </el-button>
       </el-col>
     </el-row>
@@ -53,6 +67,9 @@ import CrearCategoria from "./components/CrearCategoria.vue";
 import CategoriaResource from "@/api/mantenimiento/categoria";
 import { ElMessage } from "element-plus";
 const categoriaResource = new CategoriaResource();
+
+import Resource from "@/api/resource";
+const exportResource = new Resource("exportar/categoria");
 
 export default {
   name: "CategoriaView",
@@ -123,6 +140,22 @@ export default {
     cerrarDialogoEditar() {
       this.editarCategoriaDialog = false;
       this.fetchData();
+    },
+    async exportarDatos() {
+      this.loadingData = true;
+      await exportResource
+        .list(this.query)
+        .then((response) => {
+          this.loadingData = false;
+          const link = document.createElement("a");
+          link.href = response;
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch(() => {
+          this.$message("Se ha producido una excepción");
+          this.loadingData = false;
+        });
     },
   },
 };
