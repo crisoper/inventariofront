@@ -1,13 +1,14 @@
 <template>
   <div v-loading="loading">
-    <el-form ref="nuevaCategoriaForm" :model="nuevaCategoria" :rules="rules">
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="Nombre" prop="nombre">
-            <el-input v-model="nuevaCategoria.nombre" />
-          </el-form-item>
-        </el-col>
-      </el-row>
+    <el-form
+      ref="nuevaCategoriaForm"
+      :model="nuevaCategoria"
+      :rules="rules"
+      label-position="top"
+    >
+      <el-form-item label="Nombre" prop="nombre">
+        <el-input v-model="nuevaCategoria.nombre" />
+      </el-form-item>
       <el-form-item label="Descripción" prop="descripcion">
         <el-input v-model="nuevaCategoria.descripcion" />
       </el-form-item>

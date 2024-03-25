@@ -9,7 +9,7 @@
       <el-row :gutter="10">
         <el-col :span="12">
           <el-form-item label="Código" prop="codigo">
-            <el-input v-model="nuevaMarca.codigo" />
+            <el-input v-model="nuevaMarca.codigo" readonly disabled />
           </el-form-item>
         </el-col>
         <el-col :span="12">

@@ -1,10 +1,20 @@
 <template>
   <div v-loading="loading">
-    <el-form ref="nuevaAreaForm" :model="nuevaArea" :rules="rules">
-      <el-row>
+    <el-form
+      ref="nuevaAreaForm"
+      :model="nuevaArea"
+      :rules="rules"
+      label-position="top"
+    >
+      <el-row :gutter="10">
         <el-col :span="12">
           <el-form-item label="Código" prop="codigo">
-            <el-input v-model="nuevaArea.codigo" />
+            <el-input
+              v-model="nuevaArea.codigo"
+              placeholder="El codigo es autogenerado"
+              readonly
+              disabled
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">

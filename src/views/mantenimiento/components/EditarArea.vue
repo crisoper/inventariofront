@@ -9,7 +9,7 @@
       <el-row :gutter="10">
         <el-col :span="12">
           <el-form-item label="Código" prop="codigo">
-            <el-input v-model="nuevaArea.codigo" />
+            <el-input v-model="nuevaArea.codigo" readonly disabled />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -61,13 +61,6 @@ export default {
       },
       rules: {
         nombre: [
-          {
-            required: true,
-            message: "Este campo es obligatorio",
-            trigger: "blur",
-          },
-        ],
-        codigo: [
           {
             required: true,
             message: "Este campo es obligatorio",

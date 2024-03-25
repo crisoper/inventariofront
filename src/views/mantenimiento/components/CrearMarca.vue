@@ -1,13 +1,22 @@
 <template>
   <div v-loading="loading">
-    <el-form ref="nuevaMarcaForm" :model="nuevaMarca" :rules="rules" label-position="top">
-      <el-row :gutter="12">
-        <el-col :xs="24">
+    <el-form
+      ref="nuevaMarcaForm"
+      :model="nuevaMarca"
+      :rules="rules"
+      label-position="top"
+    >
+      <el-row :gutter="10">
+        <el-col :span="12">
           <el-form-item label="Código" prop="codigo">
-            <el-input v-model="nuevaMarca.codigo" :disabled="true" placeholder="Autogenerado" />
+            <el-input
+              v-model="nuevaMarca.codigo"
+              :disabled="true"
+              placeholder="Autogenerado"
+            />
           </el-form-item>
         </el-col>
-        <el-col :xs="24">
+        <el-col :span="12">
           <el-form-item label="Nombre" prop="nombre">
             <el-input v-model="nuevaMarca.nombre" />
           </el-form-item>
