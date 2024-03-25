@@ -29,21 +29,25 @@
         </el-input>
       </el-col>
     </el-row>
-    <el-table :border="true" :stripe="true" :data="detalleInventario" style="width: 100% !important">
+    <el-table
+      ref="multipleTableRef"
+      :border="true"
+      :stripe="true"
+      :data="detalleInventario"
+      style="width: 100% !important"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55" />
       <el-table-column prop="codigo_barras" label="CÓDIGO" width="110" />
       <el-table-column prop="area_nombre" label="ÁREA" min-width="180" />
       <el-table-column prop="producto_nombre" label="PRODUCTO" min-width="180" />
       <el-table-column label="Acciones" width="90">
         <template #header>
-          <!-- <el-button
-            type="danger"
-            :icon="Refresh"
-            @click="exportarDatos()"
-          /> -->
           <el-button
+            :disabled="!multipleSelection.length > 0"
             type="primary"
-            :icon="Refresh"
-            @click="loadData()"
+            :icon="Printer"
+            @click="imprimirEtiquetasSeleccionados()"
           />
         </template>
         <template #default="scope">
@@ -95,10 +99,12 @@
 </template>
 
 <script>
-import { Delete, Close, Refresh, Search, ScaleToOriginal } from "@element-plus/icons-vue"
+import { ElNotification } from 'element-plus'
+import { Delete, Close, Refresh, Search, ScaleToOriginal, Printer } from "@element-plus/icons-vue"
 import Resource from "@/api/resource"
 const areasResource = new Resource("inventario/all/areas")
 const invdetalleResource = new Resource("inventario/inventariodetalle")
+const imprimirEtiquetas = new Resource("inventario/imprimiretiquetasmasivo")
 
 export default {
   name: "FormUser",
@@ -129,6 +135,7 @@ export default {
       Close,
       Refresh,
       Search,
+      Printer,
       loadingData: false,
       lAreas: [],
       query: {
@@ -139,7 +146,8 @@ export default {
         inventario_id: -99
       },
       total: 0,
-      detalleInventario: []
+      detalleInventario: [],
+      multipleSelection: []
     };
   },
   watch: {
@@ -213,6 +221,42 @@ export default {
     },
     exportarDatos() {
       console.log('Exportar datos')
+    },
+    handleSelectionChange(value) {
+      this.multipleSelection = value
+    },
+    imprimirEtiquetasSeleccionados() {
+
+      let detalleIDs = []
+      this.multipleSelection.forEach(objeto => {
+        detalleIDs.push(objeto.id)
+      });
+
+      this.loadingData = true
+      imprimirEtiquetas
+      .list({
+        ids: detalleIDs
+      })
+      .then((response) => {
+
+        const { state, message, url } = response
+        if (state === 'success') {
+          const link = document.createElement('a')
+          link.href = url
+          document.body.appendChild(link)
+          link.click()
+        } else {
+            ElNotification({title: 'Atención', message})
+        }
+        this.loadingData = false
+      })
+      .catch((err) => {
+        this.loadingData = false
+        console.log('Error', err)
+      })
+      .finally(() => {
+        this.loadingData = false
+      })
     }
   },
 };
