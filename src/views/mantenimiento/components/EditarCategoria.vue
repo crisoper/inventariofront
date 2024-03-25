@@ -1,25 +1,21 @@
 <template>
   <div v-loading="loading">
-    <el-form ref="nuevoAlmacenForm" :model="nuevoAlmacen" :rules="rules">
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="Código" prop="codigo">
-            <el-input v-model="nuevoAlmacen.codigo" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="Nombre" prop="nombre">
-            <el-input v-model="nuevoAlmacen.nombre" />
-          </el-form-item>
-        </el-col>
-      </el-row>
+    <el-form
+      ref="nuevaCategoriaForm"
+      :model="nuevaCategoria"
+      :rules="rules"
+      label-position="top"
+    >
+      <el-form-item label="Nombre" prop="nombre">
+        <el-input v-model="nuevaCategoria.nombre" />
+      </el-form-item>
       <el-form-item label="Descripción" prop="descripcion">
-        <el-input v-model="nuevoAlmacen.descripcion" />
+        <el-input v-model="nuevaCategoria.descripcion" />
       </el-form-item>
     </el-form>
     <el-row :gutter="10" type="flex" justify="end">
       <el-button type="primary" plain @click="close">Cancelar</el-button>
-      <el-button type="primary" @click="actulizarRegistro">Guardar</el-button>
+      <el-button type="primary" @click="actualizarRegistro">Guardar</el-button>
     </el-row>
   </div>
 </template>
@@ -27,10 +23,10 @@
 <script>
 import { ElMessage } from "element-plus";
 
-import AlmacenResource from "@/api/mantenimiento/almacen";
-const almacenResource = new AlmacenResource();
+import CategoriaResource from "@/api/mantenimiento/categoria"; // Assuming you have a file named categoria.js in the specified path
+const categoriaResource = new CategoriaResource(); // Adjust this according to your actual file structure
 export default {
-  name: "EditarAlmacen",
+  name: "EditarCategoria",
   props: {
     id: {
       type: Number,
@@ -39,7 +35,7 @@ export default {
   },
   watch: {
     id: function (newVal, oldVal) {
-      if (newVal != null && newVal != oldVal) {
+      if (newVal != null && newVal != oldVal && newVal > 0) {
         this.cargarInformacionRegistro();
       }
     },
@@ -49,8 +45,7 @@ export default {
   },
   data() {
     return {
-      tarea: {
-        codigo: "",
+      nuevaCategoria: {
         nombre: "",
         descripcion: "",
       },
@@ -76,26 +71,27 @@ export default {
   methods: {
     cargarInformacionRegistro() {
       this.loading = true;
-      almacenResource
+      categoriaResource
         .get(this.id)
         .then((response) => {
           const { data } = response;
-          this.tarea = data;
+          console.log(data);
+          this.nuevaCategoria = data;
           this.loading = false;
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrio un error",
+            message: "Ocurrió un error",
             type: "error",
           });
           console.log(error);
           this.loading = false;
         });
     },
-    actulizarRegistro() {
+    actualizarRegistro() {
       this.loading = true;
-      almacenResource
-        .update(this.id, this.tarea)
+      categoriaResource
+        .update(this.id, this.nuevaCategoria)
         .then((response) => {
           ElMessage({
             message: "Registro actualizado",
@@ -105,7 +101,7 @@ export default {
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrio un error",
+            message: "Ocurrió un error",
             type: "error",
           });
           console.log(error);

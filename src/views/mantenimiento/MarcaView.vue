@@ -48,7 +48,7 @@
 
 <script>
 // Componentes
-// import EditarMarca from "./components/EditarMarca.vue";
+import EditarMarca from "./components/EditarMarca.vue";
 import CrearMarca from "./components/CrearMarca.vue";
 // Resource
 import MarcaResource from "@/api/mantenimiento/marca";
@@ -57,7 +57,7 @@ const marcaResource = new MarcaResource();
 
 export default {
   name: "MarcaView",
-  components: { CrearMarca },
+  components: { CrearMarca, EditarMarca },
   data() {
     return {
       loading: false,

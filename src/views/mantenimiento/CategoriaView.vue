@@ -47,7 +47,7 @@
 
 <script>
 // Componentes
-// import EditarCategoria from "./components/EditarCategoria.vue";
+import EditarCategoria from "./components/EditarCategoria.vue";
 import CrearCategoria from "./components/CrearCategoria.vue";
 // Resource
 import CategoriaResource from "@/api/mantenimiento/categoria";
@@ -56,7 +56,7 @@ const categoriaResource = new CategoriaResource();
 
 export default {
   name: "CategoriaView",
-  components: { CrearCategoria },
+  components: { CrearCategoria, EditarCategoria },
   data() {
     return {
       loading: false,

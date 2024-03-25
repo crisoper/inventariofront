@@ -1,25 +1,25 @@
 <template>
   <div v-loading="loading">
     <el-form
-      ref="nuevaMarcaForm"
-      :model="nuevaMarca"
+      ref="nuevaAreaForm"
+      :model="nuevaArea"
       :rules="rules"
       label-position="top"
     >
       <el-row :gutter="10">
         <el-col :span="12">
           <el-form-item label="Código" prop="codigo">
-            <el-input v-model="nuevaMarca.codigo" />
+            <el-input v-model="nuevaArea.codigo" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="Nombre" prop="nombre">
-            <el-input v-model="nuevaMarca.nombre" />
+            <el-input v-model="nuevaArea.nombre" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="Descripción" prop="descripcion">
-        <el-input v-model="nuevaMarca.descripcion" />
+        <el-input v-model="nuevaArea.descripcion" />
       </el-form-item>
     </el-form>
     <el-row :gutter="10" type="flex" justify="end">
@@ -32,10 +32,10 @@
 <script>
 import { ElMessage } from "element-plus";
 
-import MarcaResource from "@/api/mantenimiento/marca"; // Assuming you have a file named marca.js in the specified path
-const marcaResource = new MarcaResource(); // Adjust this according to your actual file structure
+import AreaResource from "@/api/mantenimiento/area"; // Assuming you have a file named area.js in the specified path
+const areaResource = new AreaResource(); // Adjust this according to your actual file structure
 export default {
-  name: "EditarMarca",
+  name: "EditarArea",
   props: {
     id: {
       type: Number,
@@ -54,7 +54,7 @@ export default {
   },
   data() {
     return {
-      nuevaMarca: {
+      nuevaArea: {
         codigo: "",
         nombre: "",
         descripcion: "",
@@ -81,17 +81,17 @@ export default {
   methods: {
     cargarInformacionRegistro() {
       this.loading = true;
-      marcaResource
+      areaResource
         .get(this.id)
         .then((response) => {
           const { data } = response;
           console.log(data);
-          this.nuevaMarca = data;
+          this.nuevaArea = data;
           this.loading = false;
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrió un error",
+            message: "Ocurrio un error",
             type: "error",
           });
           console.log(error);
@@ -100,8 +100,8 @@ export default {
     },
     actualizarRegistro() {
       this.loading = true;
-      marcaResource
-        .update(this.id, this.nuevaMarca)
+      areaResource
+        .update(this.id, this.nuevaArea)
         .then((response) => {
           ElMessage({
             message: "Registro actualizado",
@@ -111,7 +111,7 @@ export default {
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrió un error",
+            message: "Ocurrio un error",
             type: "error",
           });
           console.log(error);

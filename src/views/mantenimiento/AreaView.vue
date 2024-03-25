@@ -57,19 +57,19 @@
 
 <script>
 // Componentes
-// import EditarArea from "./components/EditarArea.vue";
+import EditarArea from "./components/EditarArea.vue";
 import CrearArea from "./components/CrearArea.vue";
 // Resource
 import AreaResource from "@/api/mantenimiento/area";
 import { ElMessage } from "element-plus";
 const areaResource = new AreaResource();
 
-import Resource from '@/api/resource'
-const exportResource = new Resource('exportar/areas')
+import Resource from "@/api/resource";
+const exportResource = new Resource("exportar/areas");
 
 export default {
   name: "AreaView",
-  components: { CrearArea },
+  components: { CrearArea, EditarArea },
   data() {
     return {
       loading: false,
@@ -138,20 +138,20 @@ export default {
       this.fetchData();
     },
     async exportarDatos() {
-      this.loadingData = true
+      this.loadingData = true;
       await exportResource
         .list(this.query)
         .then((response) => {
-          this.loadingData = false
-          const link = document.createElement('a')
-          link.href = response
-          document.body.appendChild(link)
-          link.click()
+          this.loadingData = false;
+          const link = document.createElement("a");
+          link.href = response;
+          document.body.appendChild(link);
+          link.click();
         })
         .catch(() => {
-          this.$message('Se ha producido una excepción')
-          this.loadingData = false
-        })
+          this.$message("Se ha producido una excepción");
+          this.loadingData = false;
+        });
     },
   },
 };

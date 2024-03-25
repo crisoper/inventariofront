@@ -1,44 +1,64 @@
 <template>
   <div v-loading="loading">
-    <el-form ref="nuevoTipoBienForm" :model="nuevoTipoBien" :rules="rules">
-      <el-row>
-        <el-col :span="12">
-          <el-form-item label="Código" prop="codigo">
-            <el-input v-model="nuevoTipoBien.codigo" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="Nombre" prop="nombre">
-            <el-input v-model="nuevoTipoBien.nombre" />
-          </el-form-item>
-        </el-col>
-      </el-row>
+    <el-form
+      ref="nuevoTipoBienForm"
+      :model="nuevoTipoBien"
+      :rules="rules"
+      label-position="top"
+    >
+      <el-form-item label="Nombre" prop="nombre">
+        <el-input v-model="nuevoTipoBien.nombre" />
+      </el-form-item>
       <el-form-item label="Descripción" prop="descripcion">
         <el-input v-model="nuevoTipoBien.descripcion" />
       </el-form-item>
     </el-form>
-
     <el-row :gutter="10" type="flex" justify="end">
       <el-button type="primary" plain @click="close">Cancelar</el-button>
-      <el-button type="primary" @click="crearTipoBien">Guardar</el-button>
+      <el-button type="primary" @click="actualizarRegistro">Guardar</el-button>
     </el-row>
   </div>
 </template>
 
 <script>
 import { ElMessage } from "element-plus";
-import TipoBienResource from "@/api/mantenimiento/tipoBien";
-const tipoBienResource = new TipoBienResource();
+
+import TipoBienResource from "@/api/mantenimiento/tipoBien"; // Actualizado el recurso a tipoBien
+const tipoBienResource = new TipoBienResource(); // Actualizado el recurso a tipoBien
 
 export default {
-  name: "CrearTipoBien",
+  name: "EditarTipoBien", // Actualizado el nombre del componente
+  props: {
+    id: {
+      type: Number,
+      required: true,
+    },
+  },
+  watch: {
+    id: function (newVal, oldVal) {
+      if (newVal != null && newVal != oldVal && newVal > 0) {
+        this.cargarInformacionRegistro();
+      }
+    },
+  },
+  mounted() {
+    this.cargarInformacionRegistro();
+  },
   data() {
     return {
       nuevoTipoBien: {
         nombre: "",
+        descripcion: "",
       },
       rules: {
         nombre: [
+          {
+            required: true,
+            message: "Este campo es obligatorio",
+            trigger: "blur",
+          },
+        ],
+        codigo: [
           {
             required: true,
             message: "Este campo es obligatorio",
@@ -50,30 +70,45 @@ export default {
     };
   },
   methods: {
-    crearTipoBien() {
-      this.$refs["nuevoTipoBienForm"].validate((valid) => {
-        if (valid) {
-          this.loading = true;
-          tipoBienResource
-            .store(this.nuevoTipoBien)
-            .then((response) => {
-              this.close();
-              ElMessage({
-                message: "Agregado correctamente",
-                type: "success",
-              });
-              this.loading = false;
-            })
-            .catch((error) => {
-              ElMessage({
-                message: "Ocurrio un error",
-                type: "error",
-              });
-              console.log(error);
-              this.loading = false;
-            });
-        }
-      });
+    cargarInformacionRegistro() {
+      this.loading = true;
+      tipoBienResource
+        .get(this.id)
+        .then((response) => {
+          const { data } = response;
+          console.log(data);
+          this.nuevoTipoBien = data;
+          this.loading = false;
+        })
+        .catch((error) => {
+          ElMessage({
+            message: "Ocurrió un error",
+            type: "error",
+          });
+          console.log(error);
+          this.loading = false;
+        });
+    },
+    actualizarRegistro() {
+      // Actualizado el nombre del método
+      this.loading = true;
+      tipoBienResource // Actualizado el recurso a tipoBien
+        .update(this.id, this.nuevoTipoBien)
+        .then((response) => {
+          ElMessage({
+            message: "Registro actualizado",
+            type: "success",
+          });
+          this.close();
+        })
+        .catch((error) => {
+          ElMessage({
+            message: "Ocurrió un error",
+            type: "error",
+          });
+          console.log(error);
+          this.loading = false;
+        });
     },
     close() {
       this.$emit("close");
