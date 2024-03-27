@@ -21,8 +21,8 @@ const mantenimientoRoutes = {
       {
         path: '/areas',
         component: () => import('@/views/mantenimiento/AreaView.vue'),
-        name: 'Areas',
-        meta: { title: 'Areas', icon: 'bi-person-workspace' }
+        name: 'Áreas',
+        meta: { title: 'Áreas', icon: 'bi-person-workspace' }
       },
       {
         path: '/categorias',
@@ -53,6 +53,12 @@ const mantenimientoRoutes = {
         component: () => import('@/views/mantenimiento/ProductosView.vue'),
         name: 'MantenimientoProductos',
         meta: { title: 'Productos', icon: 'co-product-hunt' }
+      },
+      {
+        path: '/productoestados',
+        component: () => import('@/views/mantenimiento/ProductoEstadoView.vue'),
+        name: 'ProductoEstado',
+        meta: { title: 'ProductoEstado', icon: 'bi-person-workspace' }
       },
     ]
     

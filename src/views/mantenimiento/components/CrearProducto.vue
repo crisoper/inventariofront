@@ -310,12 +310,12 @@
 
 <script>
 // Componentes
-import { ElMessage } from 'element-plus';
+import { ElMessage } from "element-plus";
 // Resource
 import OpcionesResource from "@/api/opcionesresource";
 const opcionesresource = new OpcionesResource();
-import ProductoResource from '@/api/mantenimiento/producto';
-const productoResource =  new ProductoResource()
+import ProductoResource from "@/api/mantenimiento/producto";
+const productoResource = new ProductoResource();
 
 export default {
   name: "CrearProducto",
@@ -328,14 +328,14 @@ export default {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         categoria_id: [
           {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         // codigo: [
         //   {
@@ -349,7 +349,7 @@ export default {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         // descripcion: [
         //   {
@@ -363,49 +363,49 @@ export default {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         modelo: [
           {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         serie: [
           {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         tipo_bien_id: [
           {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         tipo_activo_id: [
           {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         proveedor_id: [
           {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         fecha_compra: [
           {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
       },
       rulesAsignacionProducto: {
@@ -421,28 +421,28 @@ export default {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         ubicacion_id: [
           {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         responsable_id: [
           {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         fecha: [
           {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
         // producto_id: [
         //   {
@@ -463,7 +463,7 @@ export default {
             required: true,
             message: "El campo es obligatorio.",
             trigger: "blur",
-          }
+          },
         ],
       },
       nuevoProducto: {
@@ -514,6 +514,8 @@ export default {
         opcionesresource.load("tipobien", null),
         opcionesresource.load("tipoactivo", null),
         opcionesresource.load("productoestado", null),
+        opcionesresource.load("productoestado", null),
+        opcionesresource.load("Area", null),
       ])
         .then((respuestas) => {
           this.opcionesAlmacen =
@@ -584,34 +586,38 @@ export default {
     },
 
     submitForm() {
-      this.$refs['FormProducto'].validate((valid1) => {
+      this.$refs["FormProducto"].validate((valid1) => {
         if (!valid1) {
-          ElMessage.error('Revisa los errores en el formulario 1.');
+          ElMessage.error("Revisa los errores en el formulario 1.");
           return false;
         }
-        this.$refs['FormAsignacion'].validate((valid2) => {
+        this.$refs["FormAsignacion"].validate((valid2) => {
           if (!valid2) {
-            ElMessage.error('Revisa los errores en el formulario 2.');
+            ElMessage.error("Revisa los errores en el formulario 2.");
             return false;
           }
           // Aquí manejas el caso de éxito cuando ambos formularios son válidos
-          this.loading = true
-          productoResource.store({nuevoProducto: this.nuevoProducto, asignacionProducto: this.asignacionProducto})
+          this.loading = true;
+          productoResource
+            .store({
+              nuevoProducto: this.nuevoProducto,
+              asignacionProducto: this.asignacionProducto,
+            })
             // eslint-disable-next-line no-unused-vars
             .then((respuesta) => {
-              this.close()
-              this.loading = false
+              this.close();
+              this.loading = false;
             })
             .catch((error) => {
-              console.log(error)
-              this.loading = false
-            })
+              console.log(error);
+              this.loading = false;
+            });
         });
       });
     },
     close() {
-      this.$emit('close')
-    }
+      this.$emit("close");
+    },
   },
 };
 </script>

@@ -8,8 +8,13 @@
       align="middle"
     >
       <el-col :span="13">
-        <el-input v-model="query.keyword" @keyup.enter="fetchData()" />
+        <el-input
+          v-model="query.keyword"
+          @keyup.enter="fetchData()"
+          placeholder="Buscar área"
+        />
       </el-col>
+
       <el-col :span="5">
         <el-button
           type="primary"

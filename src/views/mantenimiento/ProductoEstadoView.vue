@@ -11,7 +11,7 @@
         <el-input
           v-model="query.keyword"
           @keyup.enter="fetchData()"
-          placeholder="Buscar categoría"
+          placeholder="Buscar estado de producto"
         />
       </el-col>
 
@@ -19,7 +19,7 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearCategoriaDialog = true"
+          @click="crearEstadoProductoDialog = true"
         >
           Nuevo
         </el-button>
@@ -35,6 +35,7 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
+      <el-table-column prop="codigo" label="Código" />
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="Descripción" />
       <el-table-column label="Opciones">
@@ -48,32 +49,38 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- Nueva categoría -->
-    <el-dialog v-model="crearCategoriaDialog" title="Crear Categoría">
-      <CrearCategoria @close="cerrarDialogo" />
+    <!-- Nuevo estado de producto -->
+    <el-dialog
+      v-model="crearEstadoProductoDialog"
+      title="Nuevo Estado de Producto"
+    >
+      <CrearEstadoProducto @close="cerrarDialago" />
     </el-dialog>
-    <!-- Editar categoría -->
-    <el-dialog v-model="editarCategoriaDialog" title="Editar Categoría">
-      <EditarCategoria :id="idRegistroEditar" @close="cerrarDialogoEditar" />
+    <!-- Editar estado de producto -->
+    <el-dialog v-model="editarEstadoProductoDialog" title="Editar Datos">
+      <EditarEstadoProducto
+        :id="idRegistroEditar"
+        @close="cerrarDialagoEditar"
+      />
     </el-dialog>
   </div>
 </template>
 
 <script>
 // Componentes
-import EditarCategoria from "./components/EditarCategoria.vue";
-import CrearCategoria from "./components/CrearCategoria.vue";
+import EditarEstadoProducto from "./components/EditarEstadoProducto.vue";
+import CrearEstadoProducto from "./components/CrearEstadoProducto.vue";
 // Resource
-import CategoriaResource from "@/api/mantenimiento/categoria";
+import EstadoProductoResource from "@/api/mantenimiento/estadoProducto";
 import { ElMessage } from "element-plus";
-const categoriaResource = new CategoriaResource();
+const estadoProductoResource = new EstadoProductoResource();
 
 import Resource from "@/api/resource";
-const exportResource = new Resource("exportar/categoria");
+const exportResource = new Resource("exportar/estadoProducto");
 
 export default {
-  name: "CategoriaView",
-  components: { CrearCategoria, EditarCategoria },
+  name: "EstadoProductoView",
+  components: { CrearEstadoProducto, EditarEstadoProducto },
   data() {
     return {
       loading: false,
@@ -84,8 +91,8 @@ export default {
         page: 1,
       },
       listaItem: [],
-      crearCategoriaDialog: false,
-      editarCategoriaDialog: false,
+      crearEstadoProductoDialog: false,
+      editarEstadoProductoDialog: false,
       idRegistroEditar: null,
     };
   },
@@ -95,7 +102,7 @@ export default {
   methods: {
     async fetchData() {
       this.loading = true;
-      categoriaResource
+      estadoProductoResource
         .list(this.query)
         .then((response) => {
           const { data } = response;
@@ -107,39 +114,43 @@ export default {
           this.loading = false;
         });
     },
-    cerrarDialogo() {
-      this.crearCategoriaDialog = false;
+    cerrarDialago() {
+      this.crearEstadoProductoDialog = false;
       this.fetchData();
     },
     abrirDialogEditar(id_registro) {
       this.idRegistroEditar = id_registro;
       this.$nextTick(() => {
-        this.editarCategoriaDialog = true;
+        this.editarEstadoProductoDialog = true;
       });
     },
     eliminarRegistro(id_registro) {
       this.loading = true;
-      categoriaResource
-        .destroy(id_registro)
+      estadoProductoResource
+        .destroy(id_registro) // Corregir nombre de la variable aquí
         .then(() => {
           ElMessage({
-            message: "Categoría Eliminada",
+            message: "Estado de producto eliminado",
             type: "success",
           });
           this.fetchData();
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrió un error",
+            message: "Ocurrió un error al eliminar el estado de producto",
             type: "error",
           });
           console.log(error);
           this.loading = false;
         });
     },
-    cerrarDialogoEditar() {
-      this.editarCategoriaDialog = false;
+
+    cerrarDialagoEditar() {
+      this.editarEstadoProductoDialog = false;
       this.fetchData();
+      this.$nextTick(() => {
+        this.idRegistroEditar = -1;
+      });
     },
     async exportarDatos() {
       this.loadingData = true;

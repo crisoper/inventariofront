@@ -8,8 +8,13 @@
       align="middle"
     >
       <el-col :span="13">
-        <el-input v-model="query.keyword" @keyup.enter="fetchData()" />
+        <el-input
+          v-model="query.keyword"
+          @keyup.enter="fetchData()"
+          placeholder="Buscar producto"
+        />
       </el-col>
+
       <el-col :span="5">
         <el-button
           type="primary"
@@ -17,6 +22,15 @@
           @click="crearProductoDialog = true"
         >
           Nuevo
+        </el-button>
+      </el-col>
+      <el-col :span="5">
+        <el-button
+          type="primary"
+          style="width: 100% !important"
+          @click="exportarDatos()"
+        >
+          Exportar
         </el-button>
       </el-col>
     </el-row>
@@ -57,6 +71,9 @@ import CrearProducto from "./components/CrearProducto.vue";
 import ProductoResource from "@/api/mantenimiento/producto";
 import { ElMessage } from "element-plus";
 const productoResource = new ProductoResource();
+
+import Resource from "@/api/resource";
+const exportResource = new Resource("exportar/producto");
 export default {
   name: "TipoBienView",
   components: { CrearProducto, EditarProducto },
@@ -124,6 +141,22 @@ export default {
     cerrarDialagoEditar() {
       this.editarProductoDialog = false;
       this.fetchData();
+    },
+    async exportarDatos() {
+      this.loadingData = true;
+      await exportResource
+        .list(this.query)
+        .then((response) => {
+          this.loadingData = false;
+          const link = document.createElement("a");
+          link.href = response;
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch(() => {
+          this.$message("Se ha producido una excepción");
+          this.loadingData = false;
+        });
     },
   },
 };

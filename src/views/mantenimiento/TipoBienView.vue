@@ -8,8 +8,13 @@
       align="middle"
     >
       <el-col :span="13">
-        <el-input v-model="query.keyword" @keyup.enter="fetchData()" />
+        <el-input
+          v-model="query.keyword"
+          @keyup.enter="fetchData()"
+          placeholder="Buscra tipo de bien"
+        />
       </el-col>
+
       <el-col :span="5">
         <el-button
           type="primary"
@@ -17,6 +22,15 @@
           @click="crearTipoBienDialog = true"
         >
           Nuevo
+        </el-button>
+      </el-col>
+      <el-col :span="5">
+        <el-button
+          type="primary"
+          style="width: 100% !important"
+          @click="exportarDatos()"
+        >
+          Exportar
         </el-button>
       </el-col>
     </el-row>
@@ -53,6 +67,10 @@ import CrearTipoBien from "./components/CrearTipoBien.vue";
 import TipoBienResource from "@/api/mantenimiento/tipoBien";
 import { ElMessage } from "element-plus";
 const tipoBienResource = new TipoBienResource();
+
+import Resource from "@/api/resource";
+const exportResource = new Resource("exportar/tipobien");
+
 export default {
   name: "TipoBienView",
   components: { CrearTipoBien, EditarTipoBien },
@@ -122,6 +140,22 @@ export default {
     cerrarDialagoEditar() {
       this.editarTipoBienDialog = false;
       this.fetchData();
+    },
+    async exportarDatos() {
+      this.loadingData = true;
+      await exportResource
+        .list(this.query)
+        .then((response) => {
+          this.loadingData = false;
+          const link = document.createElement("a");
+          link.href = response;
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch(() => {
+          this.$message("Se ha producido una excepción");
+          this.loadingData = false;
+        });
     },
   },
 };
