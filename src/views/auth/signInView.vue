@@ -1,6 +1,6 @@
 <template>
   <div class="sign-in-container authenticate-bg">
-    <el-card>
+    <el-card class="sign-in-card">
       <div>
         <el-row type="flex" justify="center">
           <img id="form-image" src="@/assets/img/logo.png" alt="Main Image" />
@@ -8,16 +8,20 @@
         <el-row type="flex" justify="center" class="mt-4">
           <h3>Iniciar sesion</h3>
         </el-row>
-        <el-row type="flex" justify="center">
-          <el-form ref="signInFormRef" :model="authForm" :rules="rules" label-position="top">
-            <el-form-item label="Correo" prop="email">
-              <el-input v-model="authForm.email" />
-            </el-form-item>
-            <el-form-item label="Contraseña" prop="password">
-              <el-input v-model="authForm.password" type="password" @keyup.enter="signIn" />
-            </el-form-item>
-          </el-form>
-        </el-row>
+        <el-form ref="signInFormRef" :model="authForm" :rules="rules" label-position="top">
+          <el-row :gutter="12">
+            <el-col :xs="24" :sm="24" :md="24">
+              <el-form-item label="Correo" prop="email">
+                <el-input v-model="authForm.email" />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="24" :md="24">
+              <el-form-item label="Contraseña" prop="password">
+                <el-input v-model="authForm.password" type="password" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
         <el-row type="flex" justify="center">
           <el-button v-loading.fullscreen.lock="loading" type="primary" @click="signIn">Iniciar Sesion</el-button>
         </el-row>
@@ -96,6 +100,11 @@ export default {
 </script>
 
 <style>
+
+.sign-in-card {
+  width: 420px !important;
+}
+
 .sign-in-container {
   display: flex;
   width: 100vw;
@@ -105,12 +114,28 @@ export default {
 }
 
 #form-image {
-  width: 30vw;
+  max-width: 90%;
 }
+/* @media (max-width: 1024px) {
+} */
 
-@media (max-width: 1024px) {
+@media (max-width: 640px) {
+  .sign-in-card {
+    /* background-color: yellow; */
+    margin: 15px 5px auto 5px;
+  }
+
+  .sign-in-container {
+    display: flex;
+    width: 100vw;
+    height: 91vh;
+    justify-content: center;
+    align-items: start;
+  }
+
   #form-image {
-    width: 80vw;
+    width: 75vw;
+    border: 2p solid red;
   }
 }
 </style>

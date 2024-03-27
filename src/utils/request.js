@@ -116,6 +116,20 @@ service.interceptors.response.use(
       return Promise.reject(error)
     }
 
+    // Error 401
+    if (error.response.status === 401 && error.response.data.message) {
+      // console.log(error.response.data.message)
+      const msg = error.response.data.message
+      ElMessage({
+        dangerouslyUseHTMLString: true,
+        message: '<strong>Ups!</strong> <em>algo salió mal...</em><br><em>' + msg + '</em>',
+        type: 'info',
+        duration: 6.25 * 1000
+      })
+
+      return Promise.reject(error)
+    }
+
     if (error.response.data && error.response.data.errors) {
       mimsgerror = error.response.data.errors
       if (mimsgerror.message) {
