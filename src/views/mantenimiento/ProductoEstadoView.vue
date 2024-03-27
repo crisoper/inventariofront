@@ -11,7 +11,7 @@
         <el-input
           v-model="query.keyword"
           @keyup.enter="fetchData()"
-          placeholder="Buscar producto"
+          placeholder="Buscar estado de producto"
         />
       </el-col>
 
@@ -19,7 +19,7 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearProductoDialog = true"
+          @click="crearEstadoProductoDialog = true"
         >
           Nuevo
         </el-button>
@@ -35,9 +35,9 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
-      <el-table-column prop="codigo" label="Codigo" />
+      <el-table-column prop="codigo" label="Código" />
       <el-table-column prop="nombre" label="Nombre" />
-      <el-table-column prop="descripcion" label="descripcion" />
+      <el-table-column prop="descripcion" label="Descripción" />
       <el-table-column label="Opciones">
         <template #default="scope">
           <el-button @click="abrirDialogEditar(scope.row.id)">
@@ -49,14 +49,17 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- Nuevo producto -->
-    <el-dialog v-model="crearProductoDialog" title="Nuevo Producto" top="10px">
-      <CrearProducto @close="cerrarDialogCrear" />
+    <!-- Nuevo estado de producto -->
+    <el-dialog
+      v-model="crearEstadoProductoDialog"
+      title="Nuevo Estado de Producto"
+    >
+      <CrearEstadoProducto @close="cerrarDialago" />
     </el-dialog>
-    <!-- Editar producto -->
-    <el-dialog v-model="editarProductoDialog" title="Editar Producto">
-      <EditarProducto
-        :productoId="idRegistroEditar"
+    <!-- Editar estado de producto -->
+    <el-dialog v-model="editarEstadoProductoDialog" title="Editar Datos">
+      <EditarEstadoProducto
+        :id="idRegistroEditar"
         @close="cerrarDialagoEditar"
       />
     </el-dialog>
@@ -65,18 +68,19 @@
 
 <script>
 // Componentes
-import EditarProducto from "./components/EditarProducto.vue";
-import CrearProducto from "./components/CrearProducto.vue";
-// Recurso
-import ProductoResource from "@/api/mantenimiento/producto";
+import EditarEstadoProducto from "./components/EditarEstadoProducto.vue";
+import CrearEstadoProducto from "./components/CrearEstadoProducto.vue";
+// Resource
+import EstadoProductoResource from "@/api/mantenimiento/estadoProducto";
 import { ElMessage } from "element-plus";
-const productoResource = new ProductoResource();
+const estadoProductoResource = new EstadoProductoResource();
 
 import Resource from "@/api/resource";
-const exportResource = new Resource("exportar/producto");
+const exportResource = new Resource("exportar/estadoProducto");
+
 export default {
-  name: "TipoBienView",
-  components: { CrearProducto, EditarProducto },
+  name: "EstadoProductoView",
+  components: { CrearEstadoProducto, EditarEstadoProducto },
   data() {
     return {
       loading: false,
@@ -87,8 +91,8 @@ export default {
         page: 1,
       },
       listaItem: [],
-      crearProductoDialog: false,
-      editarProductoDialog: false,
+      crearEstadoProductoDialog: false,
+      editarEstadoProductoDialog: false,
       idRegistroEditar: null,
     };
   },
@@ -98,7 +102,7 @@ export default {
   methods: {
     async fetchData() {
       this.loading = true;
-      productoResource
+      estadoProductoResource
         .list(this.query)
         .then((response) => {
           const { data } = response;
@@ -110,37 +114,43 @@ export default {
           this.loading = false;
         });
     },
-    cerrarDialogCrear() {
-      this.crearProductoDialog = false;
+    cerrarDialago() {
+      this.crearEstadoProductoDialog = false;
       this.fetchData();
     },
     abrirDialogEditar(id_registro) {
       this.idRegistroEditar = id_registro;
-      this.editarProductoDialog = true;
+      this.$nextTick(() => {
+        this.editarEstadoProductoDialog = true;
+      });
     },
     eliminarRegistro(id_registro) {
       this.loading = true;
-      productoResource
-        .destroy(id_registro)
+      estadoProductoResource
+        .destroy(id_registro) // Corregir nombre de la variable aquí
         .then(() => {
           ElMessage({
-            message: "Producto eliminado",
+            message: "Estado de producto eliminado",
             type: "success",
           });
           this.fetchData();
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrió un error al eliminar el producto",
+            message: "Ocurrió un error al eliminar el estado de producto",
             type: "error",
           });
           console.log(error);
           this.loading = false;
         });
     },
+
     cerrarDialagoEditar() {
-      this.editarProductoDialog = false;
+      this.editarEstadoProductoDialog = false;
       this.fetchData();
+      this.$nextTick(() => {
+        this.idRegistroEditar = -1;
+      });
     },
     async exportarDatos() {
       this.loadingData = true;

@@ -54,6 +54,12 @@ const mantenimientoRoutes = {
         name: 'MantenimientoProductos',
         meta: { title: 'Productos', icon: 'co-product-hunt' }
       },
+      {
+        path: '/productoestados',
+        component: () => import('@/views/mantenimiento/ProductoEstadoView.vue'),
+        name: 'ProductoEstado',
+        meta: { title: 'ProductoEstado', icon: 'bi-person-workspace' }
+      },
     ]
     
   }
