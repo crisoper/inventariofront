@@ -1,3 +1,4 @@
+@ -0,0 +1,619 @@
 <template>
   <div v-loading="loading">
     <el-form
@@ -514,8 +515,6 @@ export default {
         opcionesresource.load("tipobien", null),
         opcionesresource.load("tipoactivo", null),
         opcionesresource.load("productoestado", null),
-        opcionesresource.load("productoestado", null),
-        opcionesresource.load("Area", null),
       ])
         .then((respuestas) => {
           this.opcionesAlmacen =
