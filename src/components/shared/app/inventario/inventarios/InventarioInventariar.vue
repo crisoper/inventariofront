@@ -18,6 +18,7 @@
                   v-model="modelForm.area_id"
                   placeholder="Seleccionar"
                   style="width: 100%"
+                  :filterable="true"
                   :clearable="true"
                 >
                   <el-option
@@ -66,7 +67,9 @@
                       :key="item.id"
                       :label="item.codigo + ' - ' + item.nombre"
                       :value="item.id"
-                      :disabled=" item.inventarios && item.inventarios.length > 0"
+                      :disabled="
+                        item.inventarios && item.inventarios.length > 0
+                      "
                     >
                       <div class="optionProducto">
                         <p>{{ item.codigo }} - {{ item.nombre }}</p>
@@ -123,9 +126,20 @@
               min-width="180"
             />
             <!-- Campos de formulario -->
-            <el-table-column label="UBICACIÓN" width="350">
+            <el-table-column label="UBICACIÓN" min-width="210">
               <template #default="scope">
-                <el-select v-model="scope.row.ubicacion_id" placeholder="">
+                <el-select
+                  v-model="scope.row.ubicacion_id"
+                  placeholder="Seleccionar"
+                  style="width: 100%"
+                  :filterable="true"
+                  remote
+                  reserve-keyword
+                  :remote-method="
+                    (query) =>
+                      handleBuscarOpciones(query, 'ubicacion', scope.$index)
+                  "
+                >
                   <el-option
                     v-for="item in scope.row.opcionesUbicacion"
                     :key="item.id"
@@ -135,36 +149,45 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column label="RESPONSABLE" width="350">
+            <el-table-column label="RESPONSABLE" min-width="200">
               <template #default="scope">
-                <el-select v-model="scope.row.responsable_id" filterable
-                remote
-                reserve-keyword
-                :remote-method="
-                  (query) => handleBuscarOpciones(query, 'persona',scope.$index)
-                "
-                style="width: 100% !important"
-              >
-                <el-option
-                  v-for="item in scope.row.opcionesResponsable"
-                  :key="item.id"
-                  :label="
-                    item.tipo == 'Natural'
-                      ? item.nombres +
-                        ' ' +
-                        item.apellido_paterno +
-                        ' ' +
-                        item.apellido_materno
-                      : item.nombres
+                <el-select
+                  v-model="scope.row.responsable_id"
+                  :filterable="true"
+                  remote
+                  reserve-keyword
+                  :remote-method="
+                    (query) =>
+                      handleBuscarOpciones(query, 'persona', scope.$index)
                   "
-                  :value="item.id"
-                ></el-option>
-              </el-select>
+                  style="width: 100% !important"
+                  placeholder="Seleccionar"
+                >
+                  <el-option
+                    v-for="item in scope.row.opcionesResponsable"
+                    :key="item.id"
+                    :label="
+                      item.tipo == 'Natural'
+                        ? item.nombres +
+                          ' ' +
+                          item.apellido_paterno +
+                          ' ' +
+                          item.apellido_materno
+                        : item.nombres
+                    "
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
               </template>
             </el-table-column>
-            <el-table-column label="ESTADO" width="200">
+            <el-table-column label="ESTADO" width="140">
               <template #default="scope">
-                <el-select v-model="scope.row.producto_estado_id">
+                <el-select
+                  v-model="scope.row.producto_estado_id"
+                  style="width: 100%"
+                  :filterable="true"
+                  placeholder="Seleccionar"
+                >
                   <el-option
                     v-for="item in opcionesProductosEstados"
                     :key="item.id"
@@ -174,17 +197,28 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column label="FECHA" width="250">
+            <el-table-column label="FECHA" width="150">
               <template #default="scope">
-                <el-date-picker v-model="scope.row.fecha" placeholder="Seleccionar" />
+                <el-date-picker
+                  v-model="scope.row.fecha"
+                  placeholder="Seleccionar"
+                  :clearable="false"
+                  format="DD/MM/YYYY"
+                  value-format="YYYY-MM-DD"
+                  style="width: 100%"
+                />
               </template>
             </el-table-column>
-            <el-table-column label="DESCRIPCIÓN"  width="250">
+            <el-table-column label="DESCRIPCIÓN" width="250">
               <template #default="scope">
-                <el-input v-model="scope.row.descripcion" type="textarea" autosize />
+                <el-input
+                  v-model="scope.row.descripcion"
+                  type="textarea"
+                  autosize
+                />
               </template>
             </el-table-column>
-            <el-table-column fixed="right" label="Acciones" width="180">
+            <el-table-column fixed="right" label="ACCIONES" width="180">
               <template #header>
                 <el-button
                   :disabled="!detalleInventario.length > 0"
@@ -451,7 +485,7 @@ export default {
       this.modelForm.producto_id = undefined;
     },
     changeSelectProducto() {
-      // this.addProductoDetalle()
+      this.addProductoDetalle();
     },
     addProductoDetalle() {
       this.$refs["formAdditem"].validate((valid) => {
@@ -480,8 +514,8 @@ export default {
       const foundProducto = this.listProductos.find(
         (producto) => producto.id === this.modelForm.producto_id
       );
-      console.log(this.modelForm.producto_id);
-      console.log(foundProducto);
+      // console.log(this.modelForm.producto_id);
+      // console.log(foundProducto);
       this.detalleInventario.push({
         area: foundArea,
         area_id: foundArea.id,
@@ -492,19 +526,24 @@ export default {
         archivo_url: "",
         archivo_existe: false,
         id: undefined,
-        ubicacion_id: foundProducto.ultimaasignacionresponsable.ubicacion_id,
-        responsable_id: foundProducto.ultimaasignacionresponsable.responsable_id,
-        producto_estado_id: foundProducto.ultimaasignacionresponsable.producto_estado_id,
+        ubicacion_id: foundProducto.ultimaasignacionresponsable?.ubicacion_id,
+        responsable_id:
+          foundProducto.ultimaasignacionresponsable?.responsable_id,
+        producto_estado_id:
+          foundProducto.ultimaasignacionresponsable?.producto_estado_id,
         descripcion: null,
         // opcionesArea: [foundProducto.ultimaasignacionresponsable.area],
-        opcionesUbicacion: [
-          foundProducto.ultimaasignacionresponsable.ubicacion,
-        ],
-        opcionesResponsable: [
-          foundProducto.ultimaasignacionresponsable.responsable,
-        ],
+        opcionesUbicacion:
+          foundProducto.ultimaasignacionresponsable != null
+            ? [foundProducto.ultimaasignacionresponsable?.ubicacion]
+            : [],
+        opcionesResponsable:
+          foundProducto.ultimaasignacionresponsable != null
+            ? [foundProducto.ultimaasignacionresponsable?.responsable]
+            : [],
       });
       this.modelForm.producto_id = undefined;
+      console.log(this.detalleInventario);
     },
     nuevoProducto() {
       // console.log('Nuevo producto')
@@ -531,32 +570,36 @@ export default {
       }
     },
     submitDetalleInventario() {
-      this.loadingData = true;
-      invdetalleResource
-        .store({
-          inventario_id: this.inventario_id,
-          detalle: this.detalleInventario,
-        })
-        .then((response) => {
-          this.loadingData = false;
-          // console.log(response)
-          const { data, state, message } = response;
-          if (state === "success") {
-            this.setAccionesPostGuardar(data);
-          }
-          this.mostrarNotificacion("Atención", message);
-        })
-        .catch((error) => {
-          this.loadingData = false;
-          console.log(error);
-        })
-        .finally(() => {
-          this.loadingData = false;
-        });
+      if (this.formDataValida()) {
+        this.loadingData = true;
+        invdetalleResource
+          .store({
+            inventario_id: this.inventario_id,
+            detalle: this.detalleInventario,
+          })
+          .then((response) => {
+            this.loadingData = false;
+            // console.log(response)
+            const { data, state, message } = response;
+            if (state === "success") {
+              this.setAccionesPostGuardar(data);
+            }
+            this.mostrarNotificacion("Atención", message);
+          })
+          .catch((error) => {
+            this.loadingData = false;
+            console.log(error);
+          })
+          .finally(() => {
+            this.loadingData = false;
+          });
+      } else {
+        this.mostrarNotificacion("Atención", 'Existen campos que son obligatorios');
+      }
     },
     setAccionesPostGuardar(data) {
       this.detalleInventario.forEach((objeto) => {
-        console.log("Detalole",objeto)
+        console.log("Detalole", objeto);
         objeto.id = data[objeto.producto_id]?.id;
         objeto.archivo_url = data[objeto.producto_id]?.archivo_url | null;
         objeto.archivo_existe = data[objeto.producto_id]?.archivo_existe | null;
@@ -572,8 +615,8 @@ export default {
       ElNotification({ title, message });
     },
 
-    // Buscar opciones de los campos con query 
-    handleBuscarOpciones(query, model,index) {
+    // Buscar opciones de los campos con query
+    handleBuscarOpciones(query, model, index) {
       // console.log(index);
       // return;
       if (query) {
@@ -587,13 +630,13 @@ export default {
           .then((respuesta) => {
             const { data } = respuesta;
             switch (model) {
-              case 'ubicacion':
-                this.detalleInventario[index].opcionesUbicacion = data
+              case "ubicacion":
+                this.detalleInventario[index].opcionesUbicacion = data;
                 break;
-              case 'persona':
-                this.detalleInventario[index].opcionesResponsable = data
+              case "persona":
+                this.detalleInventario[index].opcionesResponsable = data;
                 break;
-            
+
               default:
                 break;
             }
@@ -601,6 +644,20 @@ export default {
           .catch((error) => {
             console.log(error);
           });
+      }
+    },
+    formDataValida() {
+      const filasNoValidads = []
+      this.detalleInventario.forEach((objeto) => {
+        if (objeto.ubicacion_id === undefined || objeto.responsable_id === undefined || objeto.producto_estado_id === undefined) {
+          filasNoValidads.push(objeto)
+        }
+      })
+      if (filasNoValidads.length > 0) {
+        this.mostrarNotificacion("Atención", 'Existen campos que son obligatorios')
+        return false
+      } else {
+        return true
       }
     },
   },
