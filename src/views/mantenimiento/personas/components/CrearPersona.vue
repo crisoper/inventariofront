@@ -1,16 +1,227 @@
 <template>
-    <div>
-    Hola mundo
-    </div>
+  <div v-loading="loading">
+    <el-form
+      ref="nuevaPersonaForm"
+      :model="nuevaPersona"
+      :rules="rules"
+      label-position="top"
+    >
+      <el-row :gutter="10">
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Tipo de documento" prop="documento_tipo">
+            <el-select v-model="nuevaPersona.documento_tipo">
+              <el-option label="DNI" value="DNI"></el-option>
+              <el-option label="RUC" value="RUC"></el-option>
+              <el-option label="CE" value="CE"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Número de documento" prop="documento_numero">
+            <el-input v-model="nuevaPersona.documento_numero" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Nombres" prop="nombres">
+            <el-input v-model="nuevaPersona.nombres" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Apellido Paterno" prop="apellido_paterno">
+            <el-input v-model="nuevaPersona.apellido_paterno" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Apellido Materno" prop="apellido_materno">
+            <el-input v-model="nuevaPersona.apellido_materno" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Fecha de Nacimiento" prop="fecha_nacimiento">
+            <el-date-picker
+              v-model="nuevaPersona.fecha_nacimiento"
+              type="date"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Género" prop="genero">
+            <el-select v-model="nuevaPersona.genero">
+              <el-option label="Masculino" value="Masculino"></el-option>
+              <el-option label="Femenino" value="Femenino"></el-option>
+              <el-option label="Otro" value="Otro"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Celular" prop="celular">
+            <el-input v-model="nuevaPersona.celular" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Correo Electrónico" prop="email">
+            <el-input v-model="nuevaPersona.email" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Dirección" prop="direccion">
+            <el-input v-model="nuevaPersona.direccion" />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="Tipo" prop="tipo">
+            <el-select v-model="nuevaPersona.tipo">
+              <el-option label="Natural" value="Natural"></el-option>
+              <el-option label="Jurídica" value="Jurídica"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="10" type="flex" justify="end">
+        <el-button type="primary" plain @click="close">Cancelar</el-button>
+        <el-button type="primary" @click="crearPersona">Guardar</el-button>
+      </el-row>
+    </el-form>
+  </div>
 </template>
 
 <script>
-export default {
-    name: 'CrearPersona',
-    data() {
-        return {
+import { ElMessage } from "element-plus";
+import PersonaResource from "@/api/mantenimiento/persona";
+const personaResource = new PersonaResource();
 
+export default {
+  name: "CrearPersona",
+  data() {
+    return {
+      nuevaPersona: {
+        documento_tipo: "",
+        documento_numero: "",
+        nombres: "",
+        apellido_paterno: "",
+        apellido_materno: "",
+        fecha_nacimiento: "",
+        genero: "",
+        celular: "",
+        email: "",
+        direccion: "",
+        tipo: "",
+      },
+      rules: {
+        documento_tipo: [
+          {
+            required: true,
+            message: "Seleccione el tipo de documento",
+            trigger: "change",
+          },
+        ],
+        documento_numero: [
+          {
+            required: true,
+            message: "Ingrese el número de documento",
+            trigger: "blur",
+          },
+        ],
+        nombres: [
+          {
+            required: true,
+            message: "Ingrese el nombre",
+            trigger: "blur",
+          },
+        ],
+        apellido_paterno: [
+          {
+            required: true,
+            message: "Ingrese el apellido paterno",
+            trigger: "blur",
+          },
+        ],
+        apellido_materno: [
+          {
+            required: true,
+            message: "Ingrese el apellido materno",
+            trigger: "blur",
+          },
+        ],
+        fecha_nacimiento: [
+          {
+            required: true,
+            message: "Seleccione la fecha de nacimiento",
+            trigger: "change",
+          },
+        ],
+        genero: [
+          {
+            required: true,
+            message: "Seleccione el género",
+            trigger: "change",
+          },
+        ],
+        celular: [
+          {
+            required: true,
+            message: "Ingrese el número de celular",
+            trigger: "blur",
+          },
+        ],
+        email: [
+          {
+            type: "email",
+            message: "Ingrese un correo electrónico válido",
+            trigger: "blur",
+          },
+        ],
+        direccion: [
+          {
+            required: true,
+            message: "Ingrese la dirección",
+            trigger: "blur",
+          },
+        ],
+        tipo: [
+          {
+            required: true,
+            message: "Seleccione el tipo",
+            trigger: "change",
+          },
+        ],
+      },
+      loading: false,
+    };
+  },
+  methods: {
+    crearPersona() {
+      this.$refs["nuevaPersonaForm"].validate((valid) => {
+        if (valid) {
+          this.loading = true;
+          personaResource
+            .store(this.nuevaPersona)
+            .then((response) => {
+              console.log(response);
+              this.close();
+              ElMessage({
+                message: "Persona agregada correctamente",
+                type: "success",
+              });
+              this.loading = false;
+            })
+            .catch((error) => {
+              ElMessage({
+                message: "Ocurrió un error al agregar la persona",
+                type: "error",
+              });
+              console.error(error);
+              this.loading = false;
+            });
         }
-    }
-}
+      });
+    },
+    close() {
+      this.$emit("close");
+    },
+  },
+};
 </script>
+
+<style scoped></style>

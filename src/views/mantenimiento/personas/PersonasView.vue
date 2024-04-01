@@ -78,7 +78,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-divider/>
+    <el-divider />
     <el-row type="flex">
       <el-col :span="24">
         <el-pagination
@@ -100,16 +100,23 @@
       </el-col>
     </el-row>
     <!-- Nueva área -->
-    <el-dialog v-model="crearAreaDialog" title="Crear Persona">
-      <EditarPersona @close="cerrarDialago" />
-    </el-dialog>
-    <!-- Editar área -->
     <el-dialog v-model="editarAreaDialog" title="Editar Persona">
       <CrearPersona :id="idRegistroEditar" @close="cerrarDialagoEditar" />
     </el-dialog>
+    <!-- Editar área -->
+    <el-dialog v-model="crearAreaDialog" title="Crear Persona">
+      <EditarPersona @close="cerrarDialago" />
+    </el-dialog>
     <!-- Dialog Asignaciones Persona -->
-    <el-dialog v-model="asignacionesDialog" title="Equipos Asignadsos" fullscreen>
-      <AsignacionesEquipos :persona="registroAsignaciones" @close="cerrarDialagoAsignaciones" />
+    <el-dialog
+      v-model="asignacionesDialog"
+      title="Equipos Asignadsos"
+      fullscreen
+    >
+      <AsignacionesEquipos
+        :persona="registroAsignaciones"
+        @close="cerrarDialagoAsignaciones"
+      />
     </el-dialog>
   </el-card>
 </template>
@@ -167,7 +174,7 @@ export default {
         .then((response) => {
           const { data, meta } = response;
           this.listaItem = data;
-          this.total = meta.total
+          this.total = meta.total;
           this.loading = false;
         })
         .catch((error) => {
@@ -236,7 +243,7 @@ export default {
       this.$nextTick(() => {
         this.registroAsignaciones = null;
       });
-    }
+    },
   },
 };
 </script>
