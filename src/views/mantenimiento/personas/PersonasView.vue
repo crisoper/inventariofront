@@ -78,6 +78,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-divider/>
     <el-row type="flex">
       <el-col :span="24">
         <el-pagination
@@ -97,8 +98,8 @@
       <CrearPersona :id="idRegistroEditar" @close="cerrarDialagoEditar" />
     </el-dialog>
     <!-- Dialog Asignaciones Persona -->
-    <el-dialog v-model="editarAreaDialog" title="Equipos Asignadsos">
-      <!-- <CrearPersona :id="idRegistroEditar" @close="cerrarDialagoEditar" /> -->
+    <el-dialog v-model="asignacionesDialog" title="Equipos Asignadsos" fullscreen>
+      <AsignacionesEquipos :persona="registroAsignaciones" @close="cerrarDialagoAsignaciones" />
     </el-dialog>
   </div>
 </template>
@@ -107,8 +108,9 @@
 // Componentes
 import EditarPersona from "./components/EditarPersona.vue";
 import CrearPersona from "./components/CrearPersona.vue";
-// Resource
+import AsignacionesEquipos from "./components/AsignacionesEquipos.vue";
 import { Edit, List, Delete } from "@element-plus/icons-vue";
+// Resource
 import PersonasResource from "@/api/mantenimiento/persona";
 import { ElMessage } from "element-plus";
 const personasResource = new PersonasResource();
@@ -121,6 +123,7 @@ export default {
   components: {
     EditarPersona,
     CrearPersona,
+    AsignacionesEquipos,
     Edit,
     List,
     Delete,
@@ -216,6 +219,12 @@ export default {
         this.asignacionesDialog = true;
       });
     },
+    cerrarDialagoAsignaciones() {
+      this.asignacionesDialog = false;
+      this.$nextTick(() => {
+        this.registroAsignaciones = null;
+      });
+    }
   },
 };
 </script>
