@@ -1,8 +1,8 @@
-<tempalte>
+<template>
     <div>
     <p>Hola mundo</p>
     </div>
-</tempalte>
+</template>
 
 <script>
 export default {
