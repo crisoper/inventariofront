@@ -22,7 +22,7 @@
         this.$router.go(-1); // Vuelve a la ruta anterior
       },
       goToDashboard() {
-        this.$router.push('/dashboard'); // Vuelve a la ruta anterior
+        this.$router.push('/home'); // Vuelve a la ruta anterior
       },
     }
   }
