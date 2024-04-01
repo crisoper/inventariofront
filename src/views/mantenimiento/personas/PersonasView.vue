@@ -101,11 +101,11 @@
     </el-row>
     <!-- Nueva área -->
     <el-dialog v-model="editarAreaDialog" title="Editar Persona">
-      <CrearPersona :id="idRegistroEditar" @close="cerrarDialagoEditar" />
+      <EditarPersona :id="idRegistroEditar" @close="cerrarDialago" />
     </el-dialog>
     <!-- Editar área -->
     <el-dialog v-model="crearAreaDialog" title="Crear Persona">
-      <EditarPersona @close="cerrarDialago" />
+      <CrearPersona @close="cerrarDialagoEditar" />
     </el-dialog>
     <!-- Dialog Asignaciones Persona -->
     <el-dialog
