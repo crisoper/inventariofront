@@ -471,7 +471,7 @@ export default {
         const queryToSend = {
           keyword: query,
           inventario_id: this.inventario_id,
-          limit: 10,
+          limit: 7,
           page: 1,
         };
         this.listProductos = [];
@@ -626,7 +626,7 @@ export default {
     //   if (query) {
     //     const queryToSend = {
     //       keyword: query,
-    //       limit: 10,
+    //       limit: 7,
     //       page: 1,
     //     };
     //     opcionesResource

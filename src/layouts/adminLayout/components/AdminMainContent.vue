@@ -13,7 +13,7 @@
       <SidebarUser />
     </div>
     <el-scrollbar>
-      <div class="bg-content-admin p-4 pb-5" style="width: 100%; overflow-x: hidden;">
+      <div class="bg-content-admin p-4 pb-5" style="width: 100%; margin-bottom: 35px !important; overflow-x: hidden;">
         <router-view />
       </div>
     </el-scrollbar>

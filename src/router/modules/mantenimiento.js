@@ -40,13 +40,13 @@ const mantenimientoRoutes = {
         path: '/tipo_activos',
         component: () => import('@/views/mantenimiento/TipoActivoView.vue'),
         name: 'tipo_activos',
-        meta: { title: 'tipo_activos', icon: 'md-category-round' }
+        meta: { title: 'Tipo activos', icon: 'md-category-round' }
       },
       {
         path: '/tipo_bienes',
         component: () => import('@/views/mantenimiento/TipoBienView.vue'),
         name: 'tipo_bienes',
-        meta: { title: 'tipo_bienes', icon: 'md-category-round' }
+        meta: { title: 'Tipo bienes', icon: 'md-category-round' }
       },
       {
         path: '/productos',
@@ -58,7 +58,7 @@ const mantenimientoRoutes = {
         path: '/productoestados',
         component: () => import('@/views/mantenimiento/ProductoEstadoView.vue'),
         name: 'ProductoEstado',
-        meta: { title: 'ProductoEstado', icon: 'bi-person-workspace' }
+        meta: { title: 'Estados', icon: 'bi-person-workspace' }
       },
     ]
     

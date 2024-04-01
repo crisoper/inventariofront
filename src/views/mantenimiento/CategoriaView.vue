@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 px-3">
+  <el-card v-loading="loadingData" shadow="never">
     <el-row
       :gutter="10"
       class="mb-2"
@@ -19,7 +19,7 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearCategoriaDialog = true"
+          @click="addItem"
         >
           Nuevo
         </el-button>
@@ -48,15 +48,28 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-divider />
+    <el-row type="flex" justify="center">
+      <el-pagination
+        v-model:current-page="query.page"
+        v-model:page-size="query.limit"
+        :total="total"
+        :page-sizes="[7, 15, 25, 50]"
+        layout="total, sizes, prev, pager, next, jumper"
+        background
+        @size-change="fetchData"
+        @current-change="fetchData"
+      />
+    </el-row>
     <!-- Nueva categoría -->
-    <el-dialog v-model="crearCategoriaDialog" title="Crear Categoría">
-      <CrearCategoria @close="cerrarDialogo" />
+    <el-dialog top="5vh" v-model="crearCategoriaDialog" title="Crear Categoría">
+      <CrearCategoria ref="refCrearCategoria" @close="cerrarDialogo" />
     </el-dialog>
     <!-- Editar categoría -->
-    <el-dialog v-model="editarCategoriaDialog" title="Editar Categoría">
-      <EditarCategoria :id="idRegistroEditar" @close="cerrarDialogoEditar" />
+    <el-dialog top="5vh" v-model="editarCategoriaDialog" title="Editar Categoría">
+      <EditarCategoria ref="refEditarCategoria" :id="idRegistroEditar" @close="cerrarDialogoEditar" />
     </el-dialog>
-  </div>
+  </el-card>
 </template>
 
 <script>
@@ -79,10 +92,12 @@ export default {
       loading: false,
       query: {
         keyword: "",
-        limit: 10,
+        limit: 7,
         total: 0,
         page: 1,
       },
+      total: 0,
+      loadingData: false,
       listaItem: [],
       crearCategoriaDialog: false,
       editarCategoriaDialog: false,
@@ -98,14 +113,21 @@ export default {
       categoriaResource
         .list(this.query)
         .then((response) => {
-          const { data } = response;
+          const { data, meta } = response;
           this.listaItem = data;
+          this.total = meta.total
           this.loading = false;
         })
         .catch((error) => {
           console.log(error);
           this.loading = false;
         });
+    },
+    addItem() {
+      this.crearCategoriaDialog = true
+      this.$nextTick(() => {
+        this.$refs['refCrearCategoria'].resetModel()
+      })
     },
     cerrarDialogo() {
       this.crearCategoriaDialog = false;

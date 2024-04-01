@@ -46,6 +46,11 @@ export default {
     };
   },
   methods: {
+    resetModel() {
+      this.nuevoTipoActivo = {
+        nombre: "",
+      }
+    },
     crearTipoActivo() {
       this.$refs["nuevoTipoActivoForm"].validate((valid) => {
         if (valid) {
@@ -53,6 +58,7 @@ export default {
           tipoActivoResource
             .store(this.nuevoTipoActivo)
             .then((response) => {
+              console.log(response)
               this.close();
               ElMessage({
                 message: "Agregado correctamente",

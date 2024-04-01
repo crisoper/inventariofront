@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 px-3">
+  <el-card v-loading="loadingData" shadow="never">
     <el-row
       :gutter="10"
       class="mb-2"
@@ -19,7 +19,7 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearMarcaDialog = true"
+          @click="addItem"
         >
           Nuevo
         </el-button>
@@ -35,10 +35,10 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
-      <el-table-column prop="codigo" label="Código" />
+      <el-table-column prop="codigo" label="Código" width="110"/>
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="Descripción" />
-      <el-table-column label="Opciones">
+      <el-table-column label="Opciones" width="210">
         <template #default="scope">
           <el-button @click="abrirDialogEditar(scope.row.id)">
             Editar
@@ -49,15 +49,28 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-divider />
+    <el-row type="flex" justify="center">
+      <el-pagination
+        v-model:current-page="query.page"
+        v-model:page-size="query.limit"
+        :total="total"
+        :page-sizes="[7, 15, 25, 50]"
+        layout="total, sizes, prev, pager, next, jumper"
+        background
+        @size-change="fetchData"
+        @current-change="fetchData"
+      />
+    </el-row>
     <!-- Nueva marca -->
-    <el-dialog v-model="crearMarcaDialog" title="Crear Marca">
-      <CrearMarca @close="cerrarDialogo" />
+    <el-dialog top="7vh" v-model="crearMarcaDialog" title="Crear Marca">
+      <CrearMarca ref="refCrearMarca" @close="cerrarDialogo" />
     </el-dialog>
     <!-- Editar marca -->
-    <el-dialog v-model="editarMarcaDialog" title="Editar Marca">
-      <EditarMarca :id="idRegistroEditar" @close="cerrarDialogoEditar" />
+    <el-dialog top="7vh" v-model="editarMarcaDialog" title="Editar Marca">
+      <EditarMarca ref="refEditarMarca" :id="idRegistroEditar" @close="cerrarDialogoEditar" />
     </el-dialog>
-  </div>
+  </el-card>
 </template>
 
 <script>
@@ -80,10 +93,12 @@ export default {
       loading: false,
       query: {
         keyword: "",
-        limit: 10,
+        limit: 7,
         total: 0,
         page: 1,
       },
+      total: 0,
+      loadingData: false,
       listaItem: [],
       crearMarcaDialog: false,
       editarMarcaDialog: false,
@@ -99,14 +114,21 @@ export default {
       marcaResource
         .list(this.query)
         .then((response) => {
-          const { data } = response;
-          this.listaItem = data;
-          this.loading = false;
+          const { data, meta } = response
+          this.listaItem = data
+          this.total = meta.total
+          this.loading = false
         })
         .catch((error) => {
           console.log(error);
           this.loading = false;
         });
+    },
+    addItem() {
+      this.crearMarcaDialog = true
+      this.$nextTick(() => {
+        this.$refs['refCrearMarca'].resetModel()
+      })
     },
     cerrarDialogo() {
       this.crearMarcaDialog = false;

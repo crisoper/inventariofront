@@ -95,6 +95,7 @@ export default {
       tipoBienResource // Actualizado el recurso a tipoBien
         .update(this.id, this.nuevoTipoBien)
         .then((response) => {
+          console.log(response)
           ElMessage({
             message: "Registro actualizado",
             type: "success",

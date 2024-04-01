@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 px-3">
+  <el-card v-loading="loadingData" shadow="never">
     <el-row
       :gutter="10"
       class="mb-2"
@@ -15,7 +15,7 @@
         />
       </el-col>
 
-      <el-col :span="5">
+      <!-- <el-col :span="5">
         <el-button
           type="primary"
           style="width: 100% !important"
@@ -23,7 +23,7 @@
         >
           Nuevo
         </el-button>
-      </el-col>
+      </el-col> -->
       <el-col :span="5">
         <el-button
           type="primary"
@@ -35,10 +35,10 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
-      <el-table-column prop="codigo" label="Código" />
+      <el-table-column prop="codigo" label="Código" width="110" />
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="Descripción" />
-      <el-table-column label="Opciones">
+      <!-- <el-table-column label="Opciones" width="210" >
         <template #default="scope">
           <el-button @click="abrirDialogEditar(scope.row.id)">
             Editar
@@ -47,49 +47,66 @@
             Eliminar
           </el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
+    <el-divider />
+    <el-row type="flex" justify="center">
+      <el-pagination
+        v-model:current-page="query.page"
+        v-model:page-size="query.limit"
+        :total="total"
+        :page-sizes="[7, 15, 25, 50]"
+        layout="total, sizes, prev, pager, next, jumper"
+        background
+        @size-change="fetchData"
+        @current-change="fetchData"
+      />
+    </el-row>
     <!-- Nuevo estado de producto -->
     <el-dialog
+      top="7vh"
       v-model="crearEstadoProductoDialog"
       title="Nuevo Estado de Producto"
     >
       <CrearEstadoProducto @close="cerrarDialago" />
     </el-dialog>
     <!-- Editar estado de producto -->
-    <el-dialog v-model="editarEstadoProductoDialog" title="Editar Datos">
+    <el-dialog top="7vh" v-model="editarEstadoProductoDialog" title="Editar Datos">
       <EditarEstadoProducto
         :id="idRegistroEditar"
         @close="cerrarDialagoEditar"
       />
     </el-dialog>
-  </div>
+  </el-card>
 </template>
 
 <script>
 // Componentes
+import { ElMessage } from "element-plus";
 import EditarEstadoProducto from "./components/EditarEstadoProducto.vue";
 import CrearEstadoProducto from "./components/CrearEstadoProducto.vue";
 // Resource
-import EstadoProductoResource from "@/api/mantenimiento/estadoProducto";
-import { ElMessage } from "element-plus";
-const estadoProductoResource = new EstadoProductoResource();
-
 import Resource from "@/api/resource";
+const estadoProductoResource = new Resource('inventario/productoestados');
 const exportResource = new Resource("exportar/estadoProducto");
 
 export default {
   name: "EstadoProductoView",
-  components: { CrearEstadoProducto, EditarEstadoProducto },
+  components: {
+    CrearEstadoProducto,
+    EditarEstadoProducto
+  },
   data() {
     return {
       loading: false,
       query: {
         keyword: "",
-        limit: 10,
+        limit: 7,
         total: 0,
         page: 1,
       },
+      total: 0,
+      loadingData: false,
       listaItem: [],
       crearEstadoProductoDialog: false,
       editarEstadoProductoDialog: false,
@@ -105,8 +122,9 @@ export default {
       estadoProductoResource
         .list(this.query)
         .then((response) => {
-          const { data } = response;
+          const { data, meta } = response;
           this.listaItem = data;
+          this.total = meta.total;
           this.loading = false;
         })
         .catch((error) => {

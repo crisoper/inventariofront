@@ -5,9 +5,8 @@ import { useAuthStore } from '../stores/auth';
 import getPageTitle from '../utils/get-page-title';
 import { getToken } from '../utils/auth';
 import authRoutes from './modules/auth';
-// import pruebasRoutes from './modules/prueba';
 import inventarioRoutes from './modules/inventario';
-import almacenRoutes from './modules/mantenimiento'
+import mantenimientoRoutes from './modules/mantenimiento'
 
 export const routes =  [
   {
@@ -64,9 +63,8 @@ export const routes =  [
 ];
 export const asyncRoutes = [
   authRoutes,
-  // pruebasRoutes,
+  mantenimientoRoutes,
   inventarioRoutes,
-  almacenRoutes,
   {
     path: '/:pathMatch(.*)*',
     name: "NotFound",

@@ -61,7 +61,7 @@ export default {
       loading: false,
       query: {
         keyword: "",
-        limit: 10,
+        limit: 7,
         total: 0,
         page: 1,
       },

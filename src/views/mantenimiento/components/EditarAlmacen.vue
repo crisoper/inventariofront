@@ -7,12 +7,12 @@
       label-position="top"
     >
       <el-row :gutter="10">
-        <el-col :span="12">
+        <el-col :xs="24" :sm="24">
           <el-form-item label="Código" prop="codigo">
             <el-input v-model="nuevoAlmacen.codigo" readonly disabled />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :xs="24" :sm="24">
           <el-form-item label="Nombre" prop="nombre">
             <el-input v-model="nuevoAlmacen.nombre" />
           </el-form-item>
@@ -96,6 +96,7 @@ export default {
       almacenResource
         .update(this.id, this.nuevoAlmacen)
         .then((response) => {
+          console.log(response)
           ElMessage({
             message: "Registro actualizado",
             type: "success",

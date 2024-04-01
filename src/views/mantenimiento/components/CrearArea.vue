@@ -7,7 +7,7 @@
       label-position="top"
     >
       <el-row :gutter="10">
-        <el-col :span="12">
+        <el-col :xs="24">
           <el-form-item label="Código" prop="codigo">
             <el-input
               v-model="nuevaArea.codigo"
@@ -17,7 +17,7 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :xs="24">
           <el-form-item label="Nombre" prop="nombre">
             <el-input v-model="nuevaArea.nombre" />
           </el-form-item>
@@ -60,6 +60,9 @@ export default {
     };
   },
   methods: {
+    resetModel() {
+      this.nuevaArea = {}
+    },
     crearArea() {
       this.$refs["nuevaAreaForm"].validate((valid) => {
         if (valid) {
@@ -67,6 +70,7 @@ export default {
           areaResource
             .store(this.nuevaArea)
             .then((response) => {
+              console.log(response)
               this.close();
               ElMessage({
                 message: "Agregado correctamente",

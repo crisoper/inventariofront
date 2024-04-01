@@ -1,36 +1,50 @@
 <template>
   <div v-loading="loading">
     <el-form
-      ref="nuevaCategoriaForm"
-      :model="nuevaCategoria"
+      ref="nuevoEstadoProducto"
+      :model="nuevoEstado"
       :rules="rules"
       label-position="top"
     >
-      <el-form-item label="Nombre" prop="nombre">
-        <el-input v-model="nuevaCategoria.nombre" />
-      </el-form-item>
+      <el-row :gutter="10">
+        <el-col :xs="24" :sm="24">
+          <el-form-item label="Codigo" prop="codigo">
+            <el-input
+              v-model="nuevoEstado.codigo"
+              placeholder="El codigo es autogenerado"
+              readonly
+              disabled
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :xs="24" :sm="24">
+          <el-form-item label="Nombre" prop="nombre">
+            <el-input v-model="nuevoEstado.nombre" />
+          </el-form-item>
+        </el-col>
+      </el-row>
       <el-form-item label="Descripción" prop="descripcion">
-        <el-input v-model="nuevaCategoria.descripcion" />
+        <el-input v-model="nuevoEstado.descripcion" />
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" type="flex" justify="end">
       <el-button type="primary" plain @click="close">Cancelar</el-button>
-      <el-button type="primary" @click="crearCategoria">Guardar</el-button>
+      <el-button type="primary" @click="crearAlmacen">Guardar</el-button>
     </el-row>
   </div>
 </template>
 
 <script>
 import { ElMessage } from "element-plus";
-import CategoriaResource from "@/api/mantenimiento/categoria";
-const categoriaResource = new CategoriaResource();
+import AlmacenResource from "@/api/mantenimiento/almacen";
+const almacenResource = new AlmacenResource();
 
 export default {
-  name: "CrearCategoria",
+  name: "CrearAlmacen",
   data() {
     return {
-      nuevaCategoria: {
+      nuevoEstado: {
         nombre: "",
       },
       rules: {
@@ -45,16 +59,21 @@ export default {
       loading: false,
     };
   },
+  created() {
+    this.resetModel()
+  },
   methods: {
     resetModel() {
-      this.nuevaCategoria = {}
+      this.nuevoEstado = {
+        nombre: "",
+      }
     },
-    crearCategoria() {
-      this.$refs["nuevaCategoriaForm"].validate((valid) => {
+    crearAlmacen() {
+      this.$refs["nuevoEstadoForm"].validate((valid) => {
         if (valid) {
           this.loading = true;
-          categoriaResource
-            .store(this.nuevaCategoria)
+          almacenResource
+            .store(this.nuevoEstado)
             .then((response) => {
               console.log(response)
               this.close();
@@ -66,7 +85,7 @@ export default {
             })
             .catch((error) => {
               ElMessage({
-                message: "Ocurrió un error",
+                message: "Ocurrio un error",
                 type: "error",
               });
               console.log(error);

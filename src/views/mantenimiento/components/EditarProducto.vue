@@ -358,7 +358,7 @@ export default {
       if (query) {
         const queryToSend = {
           keyword: query,
-          limit: 10,
+          limit: 7,
           page: 1,
         };
         opcionesresource

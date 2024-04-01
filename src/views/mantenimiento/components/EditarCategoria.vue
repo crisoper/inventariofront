@@ -93,6 +93,7 @@ export default {
       categoriaResource
         .update(this.id, this.nuevaCategoria)
         .then((response) => {
+          console.log(response)
           ElMessage({
             message: "Registro actualizado",
             type: "success",

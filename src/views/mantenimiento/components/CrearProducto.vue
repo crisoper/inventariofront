@@ -507,6 +507,32 @@ export default {
     this.cargarOpciones();
   },
   methods: {
+    resetModel() {
+      this.nuevoProducto = {
+        almacen_id: null,
+        categoria_id: null,
+        codigo: null,
+        nombre: null,
+        descripcion: null,
+        marca_id: null,
+        modelo: null,
+        serie: null,
+        tipo_bien_id: null,
+        tipo_activo_id: null,
+        proveedor_id: null,
+        fecha_compra: null,
+      }
+      this.asignacionProducto = {
+        codigo: null, // se autogenera en el backend
+        area_id: null,
+        ubicacion_id: null,
+        responsable_id: null,
+        fecha: null,
+        producto_id: null, // se asignara en el backend poral crear el registro del producto
+        descripcion: null,
+        producto_estado_id: null,
+      }
+    },
     cargarOpciones() {
       this.loading = true;
       Promise.all([
@@ -550,7 +576,7 @@ export default {
       if (query) {
         const queryToSend = {
           keyword: query,
-          limit: 10,
+          limit: 7,
           page: 1,
         };
         opcionesresource

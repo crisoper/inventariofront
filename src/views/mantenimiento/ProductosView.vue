@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 px-3">
+  <el-card v-loading="loadingData" shadow="never">
     <el-row
       :gutter="10"
       class="mb-2"
@@ -19,7 +19,7 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearProductoDialog = true"
+          @click="addItem"
         >
           Nuevo
         </el-button>
@@ -35,10 +35,10 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
-      <el-table-column prop="codigo" label="Codigo" />
+      <el-table-column prop="codigo" label="Codigo" width="150"/>
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="descripcion" />
-      <el-table-column label="Opciones">
+      <el-table-column label="Opciones" width="210">
         <template #default="scope">
           <el-button @click="abrirDialogEditar(scope.row.id)">
             Editar
@@ -49,18 +49,32 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-divider />
+    <el-row type="flex" justify="center">
+      <el-pagination
+        v-model:current-page="query.page"
+        v-model:page-size="query.limit"
+        :total="total"
+        :page-sizes="[7, 15, 25, 50]"
+        layout="total, sizes, prev, pager, next, jumper"
+        background
+        @size-change="fetchData"
+        @current-change="fetchData"
+      />
+    </el-row>
     <!-- Nuevo producto -->
-    <el-dialog v-model="crearProductoDialog" title="Nuevo Producto" top="10px">
-      <CrearProducto @close="cerrarDialogCrear" />
+    <el-dialog v-model="crearProductoDialog" title="Nuevo Producto" top="5vh" width="80%">
+      <CrearProducto ref="refCrearProducto" @close="cerrarDialogCrear" />
     </el-dialog>
     <!-- Editar producto -->
-    <el-dialog v-model="editarProductoDialog" title="Editar Producto">
+    <el-dialog v-model="editarProductoDialog" title="Editar Producto" top="5vh" width="80%">
       <EditarProducto
+        ref="refEditarProducto" 
         :productoId="idRegistroEditar"
         @close="cerrarDialagoEditar"
       />
     </el-dialog>
-  </div>
+  </el-card>
 </template>
 
 <script>
@@ -82,10 +96,12 @@ export default {
       loading: false,
       query: {
         keyword: "",
-        limit: 10,
+        limit: 7,
         total: 0,
         page: 1,
       },
+      total: 0,
+      loadingData: false,
       listaItem: [],
       crearProductoDialog: false,
       editarProductoDialog: false,
@@ -101,14 +117,21 @@ export default {
       productoResource
         .list(this.query)
         .then((response) => {
-          const { data } = response;
+          const { data, meta } = response;
           this.listaItem = data;
+          this.total = meta.total;
           this.loading = false;
         })
         .catch((error) => {
           console.log(error);
           this.loading = false;
         });
+    },
+    addItem(){
+      this.crearProductoDialog = true
+      this.$nextTick(() => {
+        this.$refs['refCrearProducto'].resetModel()
+      })
     },
     cerrarDialogCrear() {
       this.crearProductoDialog = false;

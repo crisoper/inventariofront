@@ -140,6 +140,10 @@ const setSelectetMain = (ruta) => {
   /* background-color: ; */
 }
 
+.main-link svg {
+  color: #ffffff;
+}
+
 .childrenroute {
   color: #73767a;
 }

@@ -46,6 +46,11 @@ export default {
     };
   },
   methods: {
+    resetModel() {
+      this.nuevoTipoBien = {
+        nombre: "",
+      }
+    },
     crearTipoBien() {
       this.$refs["nuevoTipoBienForm"].validate((valid) => {
         if (valid) {
@@ -53,6 +58,7 @@ export default {
           tipoBienResource
             .store(this.nuevoTipoBien)
             .then((response) => {
+              console.log(response)
               this.close();
               ElMessage({
                 message: "Agregado correctamente",

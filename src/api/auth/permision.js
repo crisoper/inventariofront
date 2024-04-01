@@ -4,7 +4,7 @@ import Resource from '../resource'
 
 class PermissionRequest extends Resource {
   constructor() {
-    super('permisos')
+    super('auth/permisos')
   }
   all() {
     return request({

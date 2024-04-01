@@ -7,7 +7,7 @@
       label-position="top"
     >
       <el-row :gutter="10">
-        <el-col :span="12">
+        <el-col :xs="24">
           <el-form-item label="Código" prop="codigo">
             <el-input
               v-model="nuevaMarca.codigo"
@@ -16,7 +16,7 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :xs="24">
           <el-form-item label="Nombre" prop="nombre">
             <el-input v-model="nuevaMarca.nombre" />
           </el-form-item>
@@ -59,6 +59,11 @@ export default {
     };
   },
   methods: {
+    resetModel() {
+      this.nuevaMarca = {
+        nombre: "",
+      }
+    },
     crearMarca() {
       this.$refs["nuevaMarcaForm"].validate((valid) => {
         if (valid) {
@@ -66,6 +71,7 @@ export default {
           marcaResource
             .store(this.nuevaMarca)
             .then((response) => {
+              console.log(response)
               this.close();
               ElMessage({
                 message: "Agregado correctamente",

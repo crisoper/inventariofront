@@ -103,6 +103,7 @@ export default {
       marcaResource
         .update(this.id, this.nuevaMarca)
         .then((response) => {
+          console.log(response)
           ElMessage({
             message: "Registro actualizado",
             type: "success",

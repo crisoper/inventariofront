@@ -95,6 +95,7 @@ export default {
       tipoActivoResource // Actualizado el recurso a tipoActivo
         .update(this.id, this.nuevoTipoActivo)
         .then((response) => {
+          console.log(response)
           ElMessage({
             message: "Registro actualizado",
             type: "success",

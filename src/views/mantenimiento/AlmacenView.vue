@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 px-3">
+  <el-card v-loading="loadingData" shadow="never">
     <el-row
       :gutter="10"
       class="mb-2"
@@ -19,7 +19,7 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearAlmacenDialog = true"
+          @click="addItem"
         >
           Nuevo
         </el-button>
@@ -35,7 +35,7 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
-      <el-table-column prop="codigo" label="codigo" />
+      <el-table-column prop="codigo" label="codigo" width="90px" />
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="descripcion" />
       <el-table-column label="Opciones">
@@ -49,15 +49,28 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-divider />
+    <el-row type="flex" justify="center">
+      <el-pagination
+        v-model:current-page="query.page"
+        v-model:page-size="query.limit"
+        :total="total"
+        :page-sizes="[7, 15, 25, 50]"
+        layout="total, sizes, prev, pager, next, jumper"
+        background
+        @size-change="fetchData"
+        @current-change="fetchData"
+      />
+    </el-row>
     <!-- Nueva tarea -->
-    <el-dialog v-model="crearAlmacenDialog" title="Nuevo Almacen">
-      <CrearAlmacen @close="cerrarDialago" />
+    <el-dialog v-model="crearAlmacenDialog" title="Nuevo Almacen" top="7vh">
+      <CrearAlmacen ref="refCrearAlmacen" @close="cerrarDialago" />
     </el-dialog>
     <!-- Nueva tarea -->
     <el-dialog v-model="editarAlmacenDialog" title="Editar Datos">
       <EditarAlmacen :id="idRegistroEditar" @close="cerrarDialagoEditar" />
     </el-dialog>
-  </div>
+  </el-card>
 </template>
 
 <script>
@@ -80,10 +93,12 @@ export default {
       loading: false,
       query: {
         keyword: "",
-        limit: 10,
+        limit: 7,
         total: 0,
         page: 1,
       },
+      total: 0,
+      loadingData: false,
       listaItem: [],
       crearAlmacenDialog: false,
       editarAlmacenDialog: false,
@@ -99,14 +114,21 @@ export default {
       almacenResource
         .list(this.query)
         .then((response) => {
-          const { data } = response;
+          const { data, meta } = response;
           this.listaItem = data;
+          this.total = meta.total
           this.loading = false;
         })
         .catch((error) => {
           console.log(error);
           this.loading = false;
         });
+    },
+    addItem() {
+      this.crearAlmacenDialog = true
+      this.$nextTick(() => {
+        this.$refs['refCrearAlmacen'].resetModel()
+      })
     },
     cerrarDialago() {
       this.crearAlmacenDialog = false;
