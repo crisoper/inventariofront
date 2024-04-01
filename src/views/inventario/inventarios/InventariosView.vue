@@ -3,9 +3,10 @@
       <el-row :gutter="10" type="flex" justify="end" class="my-3">
         <el-col :xs="24" :sm="24" :md="24" class="actions-component">
           <el-input
-            v-model="query.keyword"
+            v-model="query.keyBuscar"
             placeholder="Buscar por nombre"
             @change="getList"
+            :clearable="true"
           >
             <template #append>
               <el-button @click="getList">
@@ -51,7 +52,7 @@
               <el-icon @click="editItem(scope.row)" color="#409EFC" size="18px" class="icon-btn pointer" title="Editar">
                 <Edit />
               </el-icon>
-              <el-icon @click="deleteItem(scope.row)" color="#f9616d" size="18px" class="icon-btn pointer" title="Eliminar">
+              <el-icon v-if="scope.row.eliminable" @click="deleteItem(scope.row)" color="#f9616d" size="18px" class="icon-btn pointer" title="Eliminar">
                 <Delete />
               </el-icon>
             </div>
@@ -80,8 +81,8 @@
         <template #header>
           <h2>{{ titleForm }}</h2>
         </template>
-        <FormProducto
-          ref="formFormProducto"
+        <FormInventario
+          ref="formFormInventario"
           :itemid="item_id"
           @closeChild="handleCloseCreate($event)"
         />
@@ -89,7 +90,7 @@
       <el-dialog
         v-model="dialogoDetalleInventario"
         :fullscreen="true"
-        :before-close="handleClose"
+        :before-close="handleCloseDetalle"
       >
         <template #header>
           <h2>{{ titleDialogoDetalleInventario }}</h2>
@@ -112,14 +113,14 @@
   import Resource from '@/api/resource'
   import { ElMessageBox, ElNotification } from 'element-plus'
   import { calcularAnchoDialog } from '@/utils/responsive'
-  import FormProducto from '@/components/shared/app/inventario/inventarios/InventarioForm.vue'
+  import FormInventario from '@/components/shared/app/inventario/inventarios/InventarioForm.vue'
   import InventarioLayoutDetalle from '@/components/shared/app/inventario/inventarios/InventarioLayoutDetalle.vue' 
   const userRequest = new Resource('inventario/inventarios')
   
   export default {
     name: 'UsersView',
     components: {
-      FormProducto,
+      FormInventario,
       InventarioLayoutDetalle,
       Edit,
       List,
@@ -135,7 +136,7 @@
         item_id: 'action',
         inventario_id: -17,
         query: {
-          keyword: '',
+          keyBuscar: '',
           limit: 7,
           page: 1
         },
@@ -177,11 +178,6 @@
         this.$nextTick(() => {
           this.item_id = 'action'
         })
-      },
-      handleCloseEdit(status) {
-        if (status == 'success') this.getList()
-        this.openDialogEdit = false
-        this.idItemToEdit = ''
       },
       addItem() {
         this.titleForm = 'Agregar registro'
@@ -228,6 +224,12 @@
         })
         done()
       },
+      handleCloseDetalle(done) {
+        this.$nextTick(() => {
+          this.inventario_id = 'action'
+        })
+        done()
+      },
       exportarDatos() {
         this.loading = true
         userRequest
@@ -251,9 +253,11 @@
           this.inventario_id = model.id
         })
       },
-      closeInventarioLayoutDetalle(done) {
+      closeInventarioLayoutDetalle() {
         this.dialogoDetalleInventario = false
-        done()
+        this.$nextTick(() => {
+          this.inventario_id = 'action'
+        })
       }
     }
   }

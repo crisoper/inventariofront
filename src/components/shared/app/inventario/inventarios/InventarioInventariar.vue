@@ -133,15 +133,15 @@
                   placeholder="Seleccionar"
                   style="width: 100%"
                   :filterable="true"
-                  remote
-                  reserve-keyword
-                  :remote-method="
-                    (query) =>
-                      handleBuscarOpciones(query, 'ubicacion', scope.$index)
-                  "
                 >
+                <!-- remote
+                reserve-keyword
+                :remote-method="
+                  (query) =>
+                    handleBuscarOpciones(query, 'ubicacion', scope.$index)
+                " -->
                   <el-option
-                    v-for="item in scope.row.opcionesUbicacion"
+                    v-for="item in lUbicaciones"
                     :key="item.id"
                     :label="item.nombre"
                     :value="item.id"
@@ -154,26 +154,22 @@
                 <el-select
                   v-model="scope.row.responsable_id"
                   :filterable="true"
-                  remote
-                  reserve-keyword
-                  :remote-method="
-                    (query) =>
-                      handleBuscarOpciones(query, 'persona', scope.$index)
-                  "
                   style="width: 100% !important"
                   placeholder="Seleccionar"
                 >
+                <!-- remote
+                reserve-keyword
+                :remote-method="
+                  (query) =>
+                    handleBuscarOpciones(query, 'persona', scope.$index)
+                " -->
                   <el-option
-                    v-for="item in scope.row.opcionesResponsable"
+                    v-for="item in lResponsables"
                     :key="item.id"
                     :label="
-                      item.tipo == 'Natural'
-                        ? item.nombres +
-                          ' ' +
-                          item.apellido_paterno +
-                          ' ' +
-                          item.apellido_materno
-                        : item.nombres
+                        item.tipo == 'Natural'
+                        ? item.documento_numero + ' ' + item.nombres + ' ' + item.apellido_paterno + ' ' + item.apellido_materno
+                        : item.documento_numero + ' ' + item.nombres
                     "
                     :value="item.id"
                   ></el-option>
@@ -221,12 +217,19 @@
             <el-table-column fixed="right" label="ACCIONES" width="180">
               <template #header>
                 <el-button
+                  v-if="!showPrintBtn"
                   :disabled="!detalleInventario.length > 0"
                   type="primary"
                   @click="submitDetalleInventario"
                 >
                   {{ modelForm.id === undefined ? "Guardar" : "Actualizar" }}
                 </el-button>
+                <el-button
+                  v-if="showPrintBtn && detalleInventario.length > 0"
+                  type="primary"
+                  :icon="Printer"
+                  @click="imprimirEtiquetasSeleccionados()"
+                />
                 <el-button
                   ref="btnAddProduct"
                   type="danger"
@@ -288,14 +291,17 @@
 <script>
 // import { h } from 'vue'
 import { format } from "@formkit/tempo";
-import { ElNotification } from "element-plus";
-import { Plus, Remove, Close, ScaleToOriginal } from "@element-plus/icons-vue";
+import { ElNotification, ElMessageBox } from "element-plus";
+import { Plus, Remove, Close, ScaleToOriginal, Printer } from "@element-plus/icons-vue";
 import Resource from "@/api/resource";
 import OpcionesResource from "@/api/opcionesresource";
 const opcionesResource = new OpcionesResource();
 const areasResource = new Resource("inventario/all/areas");
+const ubicacionesResource = new Resource("inventario/all/ubicaciones");
+const responsablesResource = new Resource("inventario/all/responsables");
 // const productosResource = new Resource("inventario/all/productos")
 const invdetalleResource = new Resource("inventario/inventariodetalle");
+const imprimirEtiquetas = new Resource("inventario/imprimiretiquetasmasivo")
 export default {
   name: "InventarioInventariarView",
   components: {
@@ -323,11 +329,14 @@ export default {
       Plus,
       Remove,
       Close,
+      Printer,
       inventario_id: -19,
       loadingData: false,
       createUserForm: "",
       tiposDocIdentidad: [],
       lAreas: [],
+      lUbicaciones: [],
+      lResponsables: [],
       lProductos: [],
       loadingProducto: false,
       listProductos: [],
@@ -336,6 +345,7 @@ export default {
         area_id: undefined,
         producto_id: undefined,
       },
+      showPrintBtn: false,
       reglasValidacionForm: {
         area_id: [
           { required: true, message: "Campo requerido", trigger: "blur" },
@@ -355,8 +365,7 @@ export default {
   computed: {},
   created() {},
   mounted() {
-    this.cargarProductosEstados();
-    this.getAllAreas();
+    this.cargarOpcionesIniciales()
     setTimeout(function () {
       if (this.inventario_id <= 0) {
         console.log("Invetario inválido");
@@ -365,26 +374,26 @@ export default {
     }, 500);
   },
   methods: {
-    cargarProductosEstados() {
-      opcionesResource
-        .load("productoestado", null)
-        .then((response) => {
-          const { data } = response;
-          this.opcionesProductosEstados = data;
+    cargarOpcionesIniciales() {
+      this.loadingData = true
+      Promise.all([
+        areasResource.list({}),
+        ubicacionesResource.list({}),
+        responsablesResource.list({}),
+        opcionesResource.load("productoestado", null)
+      ])
+        .then((respuestas) => {
+          this.lAreas = respuestas[0].data && Array.isArray(respuestas[0].data) ? respuestas[0].data : []
+          this.lUbicaciones = respuestas[1].data && Array.isArray(respuestas[1].data) ? respuestas[1].data : []
+          this.lResponsables = respuestas[2].data && Array.isArray(respuestas[2].data) ? respuestas[2].data : []
+          this.opcionesProductosEstados = respuestas[3].data && Array.isArray(respuestas[3].data) ? respuestas[3].data : []
         })
         .catch((error) => {
-          console.log(error);
-        });
-    },
-    async getAllAreas() {
-      await areasResource
-        .list({})
-        .then((response) => {
-          this.lAreas = response.data;
+          console.log(error)
+          this.loadingData = false
         })
-        .catch((error) => {
-          console.log(error);
-          close("canceled");
+        .finally(() => {
+          this.loadingData = false
         });
     },
     setCrearOUpdate() {
@@ -411,6 +420,7 @@ export default {
       };
       this.listProductos = [];
       this.detalleInventario = [];
+      this.showPrintBtn = false
     },
     handleCreate() {
       console.log("Open form create, set focus");
@@ -491,7 +501,6 @@ export default {
       this.$refs["formAdditem"].validate((valid) => {
         if (valid) {
           const productoExistente = this.detalleInventario.some((objeto) => {
-            // console.log('Producto: ' + objeto.producto_id)
             return objeto.producto_id === this.modelForm.producto_id;
           });
           if (productoExistente) {
@@ -510,12 +519,10 @@ export default {
     processAddItem() {
       const foundArea = this.lAreas.find(
         (area) => area.id === this.modelForm.area_id
-      );
+      )
       const foundProducto = this.listProductos.find(
         (producto) => producto.id === this.modelForm.producto_id
-      );
-      // console.log(this.modelForm.producto_id);
-      // console.log(foundProducto);
+      )
       this.detalleInventario.push({
         area: foundArea,
         area_id: foundArea.id,
@@ -527,20 +534,11 @@ export default {
         archivo_existe: false,
         id: undefined,
         ubicacion_id: foundProducto.ultimaasignacionresponsable?.ubicacion_id,
-        responsable_id:
-          foundProducto.ultimaasignacionresponsable?.responsable_id,
-        producto_estado_id:
-          foundProducto.ultimaasignacionresponsable?.producto_estado_id,
+        responsable_id: foundProducto.ultimaasignacionresponsable?.responsable_id,
+        producto_estado_id: foundProducto.ultimaasignacionresponsable?.producto_estado_id,
         descripcion: null,
-        // opcionesArea: [foundProducto.ultimaasignacionresponsable.area],
-        opcionesUbicacion:
-          foundProducto.ultimaasignacionresponsable != null
-            ? [foundProducto.ultimaasignacionresponsable?.ubicacion]
-            : [],
-        opcionesResponsable:
-          foundProducto.ultimaasignacionresponsable != null
-            ? [foundProducto.ultimaasignacionresponsable?.responsable]
-            : [],
+        opcionesUbicacion: foundProducto.ultimaasignacionresponsable != null ? [foundProducto.ultimaasignacionresponsable?.ubicacion] : [],
+        opcionesResponsable: foundProducto.ultimaasignacionresponsable != null ? [foundProducto.ultimaasignacionresponsable?.responsable] : [],
       });
       this.modelForm.producto_id = undefined;
       console.log(this.detalleInventario);
@@ -551,9 +549,10 @@ export default {
       this.dialogBuscarProducto = true;
     },
     cancelar() {
-      this.$emit("close", {
-        action: "cancelar",
-      });
+      this.resetData()
+      // this.$emit("close", {
+      //   action: "cancelar",
+      // });
     },
     quitarProducto(producto) {
       const indice = this.detalleInventario.findIndex(
@@ -582,9 +581,12 @@ export default {
             // console.log(response)
             const { data, state, message } = response;
             if (state === "success") {
+              this.showPrintBtn = true
               this.setAccionesPostGuardar(data);
+              this.deseaImprimirEtiquetas()
+            } else {
+              this.mostrarNotificacion("Atención", message);
             }
-            this.mostrarNotificacion("Atención", message);
           })
           .catch((error) => {
             this.loadingData = false;
@@ -598,14 +600,19 @@ export default {
       }
     },
     setAccionesPostGuardar(data) {
+      // console.log(this.detalleInventario)
       this.detalleInventario.forEach((objeto) => {
-        console.log("Detalole", objeto);
-        objeto.id = data[objeto.producto_id]?.id;
-        objeto.archivo_url = data[objeto.producto_id]?.archivo_url | null;
-        objeto.archivo_existe = data[objeto.producto_id]?.archivo_existe | null;
-      });
+        if (objeto.producto_id === data[objeto.producto_id]?.producto_id) {
+          // console.log(objeto)
+          // console.log(data[objeto.producto_id])
+          objeto.id = data[objeto.producto_id].id
+          objeto.archivo_url = data[objeto.producto_id].archivo_url
+          objeto.archivo_existe = data[objeto.producto_id].archivo_existe
+        }
+      })
     },
     imprimirItem(url) {
+      console.log(url)
       const link = document.createElement("a");
       link.href = url;
       document.body.appendChild(link);
@@ -614,37 +621,85 @@ export default {
     mostrarNotificacion(title, message) {
       ElNotification({ title, message });
     },
-
     // Buscar opciones de los campos con query
-    handleBuscarOpciones(query, model, index) {
-      // console.log(index);
-      // return;
-      if (query) {
-        const queryToSend = {
-          keyword: query,
-          limit: 10,
-          page: 1,
-        };
-        opcionesResource
-          .load(model, queryToSend)
-          .then((respuesta) => {
-            const { data } = respuesta;
-            switch (model) {
-              case "ubicacion":
-                this.detalleInventario[index].opcionesUbicacion = data;
-                break;
-              case "persona":
-                this.detalleInventario[index].opcionesResponsable = data;
-                break;
+    // handleBuscarOpciones(query, model, index) {
+    //   if (query) {
+    //     const queryToSend = {
+    //       keyword: query,
+    //       limit: 10,
+    //       page: 1,
+    //     };
+    //     opcionesResource
+    //       .load(model, queryToSend)
+    //       .then((respuesta) => {
+    //         const { data } = respuesta;
+    //         switch (model) {
+    //           case "ubicacion":
+    //             this.detalleInventario[index].opcionesUbicacion = data;
+    //             break;
+    //           case "persona":
+    //             this.detalleInventario[index].opcionesResponsable = data;
+    //             break;
 
-              default:
-                break;
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
+    //           default:
+    //             break;
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       });
+    //   }
+    // },
+    deseaImprimirEtiquetas() {
+      ElMessageBox.confirm(
+        'Los productos fueron agregados al inventario. <br /><br /><b>¿Desea imprimir todas las etiquetas?</b>',
+        'Atención',
+        {
+          confirmButtonText: 'Si, imprimir',
+          cancelButtonText: 'No',
+          dangerouslyUseHTMLString: true,
+          type: 'info',
+        }
+      )
+        .then(() => {
+          this.imprimirEtiquetasSeleccionados()
+        })
+    },
+    imprimirEtiquetasSeleccionados() {
+      let detalleIDs = []
+      this.detalleInventario.forEach(objeto => {
+        if (objeto.archivo_existe) {
+          detalleIDs.push(objeto.id)
+        }
+      });
+
+      console.log(detalleIDs)
+
+      this.loadingData = true
+      imprimirEtiquetas
+      .list({
+        ids: detalleIDs
+      })
+      .then((response) => {
+
+        const { state, message, url } = response
+        if (state === 'success') {
+          const link = document.createElement('a')
+          link.href = url
+          document.body.appendChild(link)
+          link.click()
+        } else {
+            ElNotification({title: 'Atención', message})
+        }
+        this.loadingData = false
+      })
+      .catch((err) => {
+        this.loadingData = false
+        console.log('Error', err)
+      })
+      .finally(() => {
+        this.loadingData = false
+      })
     },
     formDataValida() {
       const filasNoValidads = []
@@ -653,12 +708,7 @@ export default {
           filasNoValidads.push(objeto)
         }
       })
-      if (filasNoValidads.length > 0) {
-        this.mostrarNotificacion("Atención", 'Existen campos que son obligatorios')
-        return false
-      } else {
-        return true
-      }
+      return !(filasNoValidads.length > 0)
     },
   },
 };

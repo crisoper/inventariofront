@@ -37,9 +37,47 @@
       style="width: 100% !important"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" />
-      <el-table-column prop="codigo_barras" label="CÓDIGO" width="110" />
+      <el-table-column type="expand">
+        <template #default="props">
+          <div class="p-1">
+            <table class="table-custom-striped">
+              <tbody>
+                <tr>
+                  <td class="font-weight-600">Código producto</td>
+                  <td>{{ props.row.producto_codigo }}</td>
+                </tr>
+                <tr>
+                  <td class="font-weight-600">Nombre producto</td>
+                  <td>{{ props.row.producto_nombre }}</td>
+                </tr>
+                <tr>
+                  <td class="font-weight-600">Área</td>
+                  <td>{{ props.row.area_nombre }}</td>
+                </tr>
+                <tr>
+                  <td class="font-weight-600">Ubicación</td>
+                  <td>{{ props.row.ubicacion_nombre }}</td>
+                </tr>
+                <tr>
+                  <td class="font-weight-600">Estado</td>
+                  <td>{{ props.row.producto_estado_nombre }}</td>
+                </tr>
+                <tr>
+                  <td class="font-weight-600">Fecha</td>
+                  <td>{{ props.row.fecha_es }}</td>
+                </tr>
+                <tr>
+                  <td class="font-weight-600">Inventariador</td>
+                  <td>{{ props.row.inventariador_nombre }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column type="selection" width="47" />
       <el-table-column prop="area_nombre" label="ÁREA" min-width="180" />
+      <el-table-column prop="producto_codigo" label="CÓDIGO" width="110" />
       <el-table-column prop="producto_nombre" label="PRODUCTO" min-width="180" />
       <el-table-column label="Acciones" width="90">
         <template #header>
@@ -53,6 +91,7 @@
         <template #default="scope">
           <div class="text-center">
             <el-icon
+              v-if="scope.row.eliminable"
               @click="editarItem(scope.row)"
               color="#e94560"
               size="18px"
@@ -123,14 +162,6 @@ export default {
     },
   },
   data() {
-    
-    // const validatePasswordUpdate = (rule, value, callback) => {
-    //   if (this.modelForm.id == undefined) {
-    //     callback(new Error("El campo es requerido"));
-    //   } else {
-    //     callback();
-    //   }
-    // };
     return {
       Close,
       Refresh,
@@ -190,13 +221,14 @@ export default {
         .then((response) => {
           const { data, meta } = response
           this.detalleInventario = data
-          this.detalleInventarios.forEach((element, index) => {
+          this.detalleInventario.forEach((element, index) => {
             element['index'] = (page - 1) * limit + index + 1
           })
           this.total = meta.total
           this.loadingData = false
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error)
           this.loadingData = false
           console.log('No se ha obtenido el detalle')
         })

@@ -85,55 +85,27 @@
         </el-row>
       </el-card>
     </div>
-    <el-dialog
-      v-model="dialogBuscarPersona"
-      title="Buscar persona"
-      width="85%"
-      top="7vh"
-    >
-      <div>
-        <form-buscar-persona
-          ref="modalBuscarPropietario"
-          @childEmitPersona="parentProcessEmitPersona($event)"
-        />
-      </div>
-    </el-dialog>
   </el-form>
 </template>
 
 <script>
-import { ElNotification } from "element-plus";
-import RoleRequest from "@/api/auth/role";
-import formBuscarPersona from "@/components/shared/app/personas/listabuscarnatural.vue";
-import Resource from "@/api/resource";
-const roleRequest = new RoleRequest();
-const userRequest = new Resource('inventario/inventarios');
+import Resource from "@/api/resource"
+const inventarioRequest = new Resource('inventario/inventarios')
 export default {
   name: "FormUser",
-  components: {
-    formBuscarPersona,
-  },
+  components: {},
   props: {
     itemid: {
       type: String,
       default: () => {
-        return "-2000000";
+        return "-2000000"
       },
     },
   },
   data() {
-    // const validatePasswordUpdate = (rule, value, callback) => {
-    //   if (this.modelForm.id == undefined) {
-    //     callback(new Error("El campo es requerido"));
-    //   } else {
-    //     callback();
-    //   }
-    // };
     return {
       loadingData: false,
       createUserForm: "",
-      tiposDocIdentidad: [],
-      roles: [],
       dialogBuscarPersona: false,
       modelForm: {
         id: undefined,
@@ -156,126 +128,108 @@ export default {
           { required: true, message: "Campo requerido", trigger: "blur" },
         ],
       },
-    };
+    }
   },
   watch: {
     itemid: function () {
-      this.setCrearOUpdate();
+      this.setCrearOUpdate()
     },
   },
   computed: {},
-  created() {
-    this.fetchRoles();
-  },
+  created() {},
   methods: {
-    async fetchRoles() {
-      await roleRequest
-        .all()
-        .then((response) => {
-          console.log(response);
-          this.roles = response.data;
-        })
-        .catch((error) => {
-          console.log(error);
-          ElNotification({
-            type: "error",
-            title: "Error al precargar data del formulario",
-            duration: 2000,
-          });
-          close("canceled");
-        });
-    },
     setCrearOUpdate() {
-      console.log("Create User" + this.itemid);
+      console.log("Create User" + this.itemid)
       this.$nextTick(() => {
         if (this.itemid !== "action" && this.itemid !== "create") {
-          this.item_id = this.itemid;
-          this.getDataUpdate();
+          this.item_id = this.itemid
+          this.getDataUpdate()
         } else {
-          this.item_id = undefined;
-          this.handleCreate();
+          this.item_id = undefined
+          this.handleCreate()
         }
-        this.resetForm("formRefUser");
-        this.resetModel();
-      });
+        this.resetForm("formRefUser")
+        this.resetModel()
+      })
     },
     handleCreate() {
-      console.log("Open form create, set focus");
+      console.log("Open form create, set focus")
       // this.$refs['inputFocusCreate'].focus()
     },
     getDataUpdate() {
       // this.$refs['inputFocusCreate'].focus()
-      this.resetModel();
-      this.loadingData = true;
-      userRequest
+      this.resetModel()
+      this.loadingData = true
+      inventarioRequest
         .get(this.item_id)
         .then((response) => {
-          const { data } = response;
-          this.modelForm = { ...data };
-          this.loadingData = false;
+          const { data } = response
+          this.modelForm = { ...data }
+          this.loadingData = false
+          console.log(this.modelForm)
         })
         .catch(() => {
-          this.loadingData = false;
-        });
+          this.loadingData = false
+        })
     },
     submitForm() {
       this.$refs["formRefUser"].validate((valid) => {
         if (valid) {
           if (this.modelForm.id === undefined) {
-            this.saveCreateNewForm();
+            this.saveCreateNewForm()
           } else {
-            this.saveEditForm();
+            this.saveEditForm()
           }
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     saveCreateNewForm() {
-      this.loadingData = true;
-      userRequest
+      this.loadingData = true
+      inventarioRequest
         .store(this.modelForm)
         .then((response) => {
-          const { state, message } = response;
+          const { state, message } = response
           this.$message({
             type: state,
             message,
-          });
-          this.loadingData = false;
-          this.close("success");
+          })
+          this.loadingData = false
+          this.close("success")
         })
         .catch(() => {
-          this.loadingData = false;
-        });
+          this.loadingData = false
+        })
     },
     saveEditForm() {
-      this.loadingData = true;
-      userRequest
+      this.loadingData = true
+      inventarioRequest
         .update(this.item_id, this.modelForm)
         .then((response) => {
-          const { state, message } = response;
+          const { state, message } = response
           this.$message({
             type: state,
             message,
-          });
-          this.loadingData = false;
-          this.close("success");
+          })
+          this.loadingData = false
+          this.close("success")
         })
         .catch(() => {
-          this.loadingData = false;
-        });
+          this.loadingData = false
+        })
     },
     close(status) {
       if (this.createUserForm) {
-        this.createUserForm.resetFields();
+        this.createUserForm.resetFields()
       }
-      this.$emit("closeChild", status);
+      this.$emit("closeChild", status)
     },
     searchAsociacion() {
-      this.dialogBuscarPersona = true;
+      this.dialogBuscarPersona = true
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields()
     },
     resetModel() {
       this.modelForm = {
@@ -287,19 +241,8 @@ export default {
         fecha_inicio: undefined,
         fecha_fin: undefined,
         cerrado: false,
-      };
-    },
-    parentProcessEmitPersona(data) {
-      console.log(data);
-      this.modelForm.id_persona = data.id;
-      this.modelForm.persona_nro_doc_identidad = data.nro_doc_identidad;
-      this.modelForm.persona_nombre_completo = data.nombre_completo;
-      this.modelForm.persona_email = data.email;
-      this.modelForm.email = data.email;
-      this.modelForm.password = data.nro_doc_identidad;
-      this.dialogBuscarPersona = false;
-      this.$refs["emailField"].focus();
+      }
     },
   },
-};
+}
 </script>
