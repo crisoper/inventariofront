@@ -35,7 +35,7 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
-      <el-table-column prop="codigo" label="Código" width="110" />
+      <el-table-column prop="codigo" label="CÓDIGO" width="120" />
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="Descripción" />
       <!-- <el-table-column label="Opciones" width="210" >

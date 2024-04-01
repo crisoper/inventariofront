@@ -1,32 +1,26 @@
 <template>
   <div v-if="query.inventario_id > 0" v-loading="loadingData" class="box-card mt-3" shadow="never">
     <el-row :gutter="12" class="mb-3">
-      <el-col :xs="24" :sm="24">
+      <el-col :xs="24" :sm="18" :md="20" class="mb-2">
         <el-input
           v-model="query.keyBuscar"
           style="max-width: 600px"
           placeholder="Buscar"
           class="input-with-select"
         >
-          <template #prepend>
-            <el-select
-              v-model="query.area_id"
-              placeholder="Área"
-              style="width: 140px"
-              :clearable="true"
-            >
-              <el-option
-                v-for="area in lAreas"
-                :key="area.id"
-                :label="area.nombre"
-                :value="area.id"
-              />
-            </el-select>
-          </template>
           <template #append>
             <el-button type="primary" :icon="Search" @click="loadData" />
           </template>
         </el-input>
+      </el-col>
+      <el-col :xs="12" :sm="6" :md="4">
+        <el-button
+          type="primary"
+          style="width: 100% !important"
+          @click="exportarDatos()"
+        >
+          Exportar
+        </el-button>
       </el-col>
     </el-row>
     <el-table
@@ -44,11 +38,11 @@
               <tbody>
                 <tr>
                   <td class="font-weight-600">Código producto</td>
-                  <td>{{ props.row.producto_codigo }}</td>
+                  <td>{{ props.row.codigo }}</td>
                 </tr>
                 <tr>
                   <td class="font-weight-600">Nombre producto</td>
-                  <td>{{ props.row.producto_nombre }}</td>
+                  <td>{{ props.row.nombre }}</td>
                 </tr>
                 <tr>
                   <td class="font-weight-600">Área</td>
@@ -75,20 +69,19 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column type="selection" width="47" />
-      <el-table-column prop="area_nombre" label="ÁREA" min-width="180" />
-      <el-table-column prop="producto_codigo" label="CÓDIGO" width="110" />
-      <el-table-column prop="producto_nombre" label="PRODUCTO" min-width="180" />
-      <el-table-column label="Acciones" width="90">
-        <template #header>
+      <el-table-column prop="codigo" label="CÓDIGO" width="120" />
+      <el-table-column prop="nombre" label="PRODUCTO" min-width="180" />
+      <el-table-column prop="fecha_compra_es" label="FECHA COMPRA" width="150" />
+      <!-- <el-table-column label="Acciones" width="90"> -->
+        <!-- <template #header>
           <el-button
             :disabled="!multipleSelection.length > 0"
             type="primary"
             :icon="Printer"
             @click="imprimirEtiquetasSeleccionados()"
           />
-        </template>
-        <template #default="scope">
+        </template> -->
+        <!-- <template #default="scope">
           <div class="text-center">
             <el-icon
               v-if="scope.row.eliminable"
@@ -111,8 +104,8 @@
               <ScaleToOriginal />
             </el-icon>
           </div>
-        </template>
-      </el-table-column>
+        </template> -->
+      <!-- </el-table-column> -->
     </el-table>
     <el-row type="flex" class="mt-4" justify="end">
       <el-pagination
@@ -138,18 +131,24 @@
 </template>
 
 <script>
-import { ElNotification } from 'element-plus'
-import { Delete, Close, Refresh, Search, ScaleToOriginal, Printer } from "@element-plus/icons-vue"
+// import { ElNotification } from 'element-plus'
+import {
+  // Delete, 
+  Close,
+  Refresh,
+  Search,
+  // ScaleToOriginal,
+  Printer } from "@element-plus/icons-vue"
 import Resource from "@/api/resource"
-const areasResource = new Resource("inventario/all/areas")
-const invdetalleResource = new Resource("inventario/inventariodetalle")
-const imprimirEtiquetas = new Resource("inventario/imprimiretiquetasmasivo")
+const faltantesResource = new Resource("inventario/productosfaltantes")
+const exportResource = new Resource("exportar/productosfaltantes/inventario");
+// const imprimirEtiquetas = new Resource("inventario/imprimiretiquetasmasivo")
 
 export default {
   name: "FormUser",
   components: {
-    Delete,
-    ScaleToOriginal
+    // Delete,
+    // ScaleToOriginal
     // formBuscarPersona,
   },
   props: {
@@ -187,9 +186,7 @@ export default {
     },
   },
   computed: {},
-  created() {
-    this.getAllAreas()
-  },
+  created() {},
   methods: {
     setCrearOUpdate() {
       console.log("Inventario productos: " + this.inventarioid);
@@ -202,21 +199,10 @@ export default {
         }
       });
     },
-    async getAllAreas() {
-      await areasResource
-        .list({})
-        .then((response) => {
-          this.lAreas = response.data
-        })
-        .catch((error) => {
-          console.log(error)
-          close("canceled")
-        })
-    },
     loadData() {
       const { limit, page } = this.query
       this.loadingData = true
-      invdetalleResource
+      faltantesResource
         .list(this.query)
         .then((response) => {
           const { data, meta } = response
@@ -251,45 +237,25 @@ export default {
       document.body.appendChild(link)
       link.click()
     },
-    exportarDatos() {
-      console.log('Exportar datos')
+    async exportarDatos() {
+      this.loadingData = true;
+      await exportResource
+        .list(this.query)
+        .then((response) => {
+          this.loadingData = false;
+          const link = document.createElement("a");
+          link.href = response;
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch(() => {
+          this.$message("Se ha producido una excepción");
+          this.loadingData = false;
+        });
     },
     handleSelectionChange(value) {
       this.multipleSelection = value
     },
-    imprimirEtiquetasSeleccionados() {
-
-      let detalleIDs = []
-      this.multipleSelection.forEach(objeto => {
-        detalleIDs.push(objeto.id)
-      });
-
-      this.loadingData = true
-      imprimirEtiquetas
-      .list({
-        ids: detalleIDs
-      })
-      .then((response) => {
-
-        const { state, message, url } = response
-        if (state === 'success') {
-          const link = document.createElement('a')
-          link.href = url
-          document.body.appendChild(link)
-          link.click()
-        } else {
-            ElNotification({title: 'Atención', message})
-        }
-        this.loadingData = false
-      })
-      .catch((err) => {
-        this.loadingData = false
-        console.log('Error', err)
-      })
-      .finally(() => {
-        this.loadingData = false
-      })
-    }
   },
 };
 </script>

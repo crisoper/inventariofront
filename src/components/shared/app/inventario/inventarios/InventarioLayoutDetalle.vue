@@ -14,6 +14,12 @@
           @close="inventariarClose($event)"
         />
       </el-tab-pane>
+      <el-tab-pane label="Productos sin inventariar" name="third">
+        <ProductosNoInventariados
+          :inventarioid="inventario_id"
+          @close="faltantesClose($event)"
+        />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -21,6 +27,7 @@
 <script>
 import InventarioInventariar from "@/components/shared/app/inventario/inventarios/InventarioInventariar.vue";
 import InventarioProductos from "@/components/shared/app/inventario/inventarios/InventarioProductos.vue";
+import ProductosNoInventariados from "@/components/shared/app/inventario/inventarios/InventarioProductosFaltantes.vue";
 import Resource from "@/api/resource"
 const inventarioResource = new Resource("inventario/inventarios")
 
@@ -28,7 +35,8 @@ export default {
   name: "FormUser",
   components: {
     InventarioInventariar,
-    InventarioProductos
+    InventarioProductos,
+    ProductosNoInventariados,
   },
   props: {
     inventarioid: {
@@ -99,6 +107,9 @@ export default {
       console.log(data)
     },
     inventariarClose(data) {
+      console.log(data)
+    },
+    faltantesClose(data) {
       console.log(data)
     }
   },

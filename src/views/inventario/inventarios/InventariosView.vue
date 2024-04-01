@@ -96,7 +96,7 @@
           <h2>{{ titleDialogoDetalleInventario }}</h2>
         </template>
         <InventarioLayoutDetalle
-          ref="inventarioLayoutDetalle"
+          ref="refInventarioLayoutDetalle"
           :inventarioid="inventario_id"
           @closeChild="closeInventarioLayoutDetalle($event)"
         />
@@ -251,6 +251,7 @@
         this.dialogoDetalleInventario = true
         this.$nextTick(() => {
           this.inventario_id = model.id
+          this.$refs['refInventarioLayoutDetalle'].activeName = 'first'
         })
       },
       closeInventarioLayoutDetalle() {
