@@ -103,7 +103,7 @@
           </el-form-item>
         </el-col> -->
         <el-col :xs="24" :md="12">
-          <el-form-item label="EstadoProducto" prop="producto_estado_id">
+          <el-form-item label="Estado producto" prop="producto_estado_id">
             <el-select
               v-model="asignacion.producto_estado_id"
               placeholder="Selecionar"

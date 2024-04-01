@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 px-3">
+  <el-card shadow="never">
     <el-row
       :gutter="10"
       class="mb-2"
@@ -82,11 +82,21 @@
     <el-row type="flex">
       <el-col :span="24">
         <el-pagination
+          v-model:current-page="query.page"
+          v-model:page-size="query.limit"
+          :total="total"
+          :page-sizes="[7, 15, 25, 50]"
+          layout="total, sizes, prev, pager, next, jumper"
+          background
+          @size-change="fetchData"
+          @current-change="fetchData"
+        />
+        <!-- <el-pagination
           :total="query.total"
           :current-page="query.page"
           :page-size="query.limit"
           @current-change="fetchData"
-        ></el-pagination>
+        ></el-pagination> -->
       </el-col>
     </el-row>
     <!-- Nueva área -->
@@ -101,7 +111,7 @@
     <el-dialog v-model="asignacionesDialog" title="Equipos Asignadsos" fullscreen>
       <AsignacionesEquipos :persona="registroAsignaciones" @close="cerrarDialagoAsignaciones" />
     </el-dialog>
-  </div>
+  </el-card>
 </template>
 
 <script>
@@ -133,10 +143,11 @@ export default {
       loading: false,
       query: {
         keyword: "",
-        limit: 10,
+        limit: 7,
         total: 0,
         page: 1,
       },
+      total: 0,
       listaItem: [],
       crearAreaDialog: false,
       editarAreaDialog: false,
@@ -154,8 +165,9 @@ export default {
       personasResource
         .list(this.query)
         .then((response) => {
-          const { data } = response;
+          const { data, meta } = response;
           this.listaItem = data;
+          this.total = meta.total
           this.loading = false;
         })
         .catch((error) => {
