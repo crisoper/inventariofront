@@ -17,12 +17,6 @@ const pruebasRoutes = {
       name: "InventarioInventario",
       meta: { title: "Inventario", icon: "md-inventory-outlined" },
     },
-    {
-      path: "/inventario",
-      component: () => import("@/views/inventario/inventarios/InventariosView.vue"),
-      name: "InventarioInventario",
-      meta: { title: "Inventario", icon: "md-inventory-outlined" },
-    },
   ],
 };
 
