@@ -49,6 +49,12 @@ const mantenimientoRoutes = {
         meta: { title: 'Tipo bienes', icon: 'md-category-round' }
       },
       {
+        path: '/personas',
+        component: () => import('@/views/mantenimiento/personas/PersonasView.vue'),
+        name: 'Personas',
+        meta: { title: 'Personas', icon: 'bi-people-fill' }
+      },
+      {
         path: '/productos',
         component: () => import('@/views/mantenimiento/ProductosView.vue'),
         name: 'MantenimientoProductos',

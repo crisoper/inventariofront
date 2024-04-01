@@ -14,7 +14,7 @@ export default defineConfig({
     }
   },
   // base: '/admin',
-  base: '/adminpanel',
+  base: '/',
   build: {
     chunkSizeWarningLimit: 400, // El límite está en KB
     minify: 'terser',
