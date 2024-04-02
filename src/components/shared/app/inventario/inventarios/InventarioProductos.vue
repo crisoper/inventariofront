@@ -254,7 +254,7 @@ export default {
       console.log(detalle)
     },
     imprimirItem(url) {
-      this.loadData = true
+      this.loadingData = true
       this.srcFilePdf = url
       // const link = document.createElement('a')
       // link.href = url
@@ -301,38 +301,8 @@ export default {
     print() {
       this.$refs['pdf'].print()
       this.loadingData = false
-      this.listenToPrintClose()
     },
-    listenToPrintClose() {
-      // Usar 'beforeprint' y 'afterprint' si es posible
-      window.addEventListener('beforeprint', this.beforePrint);
-      window.addEventListener('afterprint', this.afterPrint);
-
-      // Alternativa basada en el cambio de foco para otros navegadores
-      if (window.matchMedia) {
-        const mediaQueryList = window.matchMedia('print');
-        mediaQueryList.addListener((mql) => {
-          if (mql.matches) {
-            this.beforePrint();
-          } else {
-            this.afterPrint();
-          }
-        });
-      }
-
-      // Escuchar cuando la ventana vuelve a enfocarse
-      window.onfocus = this.afterPrint;
-    },
-    beforePrint() {
-      console.log('Se va a abrir el cuadro de diálogo de impresión.');
-    },
-    afterPrint() {
-      console.log('El cuadro de diálogo de impresión se ha cerrado.');
-      // Limpiar los event listeners para evitar llamadas múltiples
-      window.removeEventListener('beforeprint', this.beforePrint);
-      window.removeEventListener('afterprint', this.afterPrint);
-      window.onfocus = null;
-    }
+    
   }
 };
 </script>
