@@ -25,6 +25,12 @@ const mantenimientoRoutes = {
         meta: { title: 'Áreas', icon: 'bi-person-workspace' }
       },
       {
+        path: '/Ubicaciones',
+        component: () => import('@/views/mantenimiento/UbicacionView.vue'),
+        name: 'Ubicaciones',
+        meta: { title: 'Ubicaciones', icon: 'md-category-round' }
+      },
+      {
         path: '/categorias',
         component: () => import('@/views/mantenimiento/CategoriaView.vue'),
         name: 'Categorias',
