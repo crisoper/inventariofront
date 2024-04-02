@@ -135,6 +135,10 @@
       Por favor, inténtelo nuevamente.
     </p>
   </div>
+  <div>This</div>
+  <div style="display: none;">
+      <VuePdfEmbed v-if="srcFilePdf" ref="pdf" :source="srcFilePdf" @loaded="print"/>
+    </div>
 </template>
 
 <script>
@@ -144,12 +148,15 @@ import Resource from "@/api/resource"
 const areasResource = new Resource("inventario/all/areas")
 const invdetalleResource = new Resource("inventario/inventariodetalle")
 const imprimirEtiquetas = new Resource("inventario/imprimiretiquetasmasivo")
+// PDF PREVIEW
+import VuePdfEmbed from 'vue-pdf-embed'
 
 export default {
   name: "FormUser",
   components: {
     Delete,
-    ScaleToOriginal
+    ScaleToOriginal,
+    VuePdfEmbed,
     // formBuscarPersona,
   },
   props: {
@@ -178,7 +185,8 @@ export default {
       },
       total: 0,
       detalleInventario: [],
-      multipleSelection: []
+      multipleSelection: [],
+      srcFilePdf: null,
     };
   },
   watch: {
@@ -246,10 +254,12 @@ export default {
       console.log(detalle)
     },
     imprimirItem(url) {
-      const link = document.createElement('a')
-      link.href = url
-      document.body.appendChild(link)
-      link.click()
+      this.loadData = true
+      this.srcFilePdf = url
+      // const link = document.createElement('a')
+      // link.href = url
+      // document.body.appendChild(link)
+      // link.click()
     },
     exportarDatos() {
       console.log('Exportar datos')
@@ -273,23 +283,56 @@ export default {
 
         const { state, message, url } = response
         if (state === 'success') {
-          const link = document.createElement('a')
-          link.href = url
-          document.body.appendChild(link)
-          link.click()
+          this.srcFilePdf = url
+          // const link = document.createElement('a')
+          // link.href = url
+          // document.body.appendChild(link)
+          // link.click()
         } else {
             ElNotification({title: 'Atención', message})
+            this.loadingData = false
         }
-        this.loadingData = false
       })
       .catch((err) => {
         this.loadingData = false
         console.log('Error', err)
       })
-      .finally(() => {
-        this.loadingData = false
-      })
+    },
+    print() {
+      this.$refs['pdf'].print()
+      this.loadingData = false
+      this.listenToPrintClose()
+    },
+    listenToPrintClose() {
+      // Usar 'beforeprint' y 'afterprint' si es posible
+      window.addEventListener('beforeprint', this.beforePrint);
+      window.addEventListener('afterprint', this.afterPrint);
+
+      // Alternativa basada en el cambio de foco para otros navegadores
+      if (window.matchMedia) {
+        const mediaQueryList = window.matchMedia('print');
+        mediaQueryList.addListener((mql) => {
+          if (mql.matches) {
+            this.beforePrint();
+          } else {
+            this.afterPrint();
+          }
+        });
+      }
+
+      // Escuchar cuando la ventana vuelve a enfocarse
+      window.onfocus = this.afterPrint;
+    },
+    beforePrint() {
+      console.log('Se va a abrir el cuadro de diálogo de impresión.');
+    },
+    afterPrint() {
+      console.log('El cuadro de diálogo de impresión se ha cerrado.');
+      // Limpiar los event listeners para evitar llamadas múltiples
+      window.removeEventListener('beforeprint', this.beforePrint);
+      window.removeEventListener('afterprint', this.afterPrint);
+      window.onfocus = null;
     }
-  },
+  }
 };
 </script>

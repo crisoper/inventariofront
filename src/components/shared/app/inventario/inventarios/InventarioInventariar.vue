@@ -286,6 +286,10 @@
     <p>Los datos no fueron cargados correctamente.</p>
     <p>Por favor, inténtelo nuevamente.</p>
   </div>
+  
+  <div style="display: none;">
+      <VuePdfEmbed v-if="srcFilePdf" ref="pdf" :source="pdfSource" />
+    </div>
 </template>
 
 <script>
@@ -302,11 +306,17 @@ const responsablesResource = new Resource("inventario/all/responsables");
 // const productosResource = new Resource("inventario/all/productos")
 const invdetalleResource = new Resource("inventario/inventariodetalle");
 const imprimirEtiquetas = new Resource("inventario/imprimiretiquetasmasivo")
+
+
+// PDF PREVIEW
+import VuePdfEmbed from 'vue-pdf-embed'
+
 export default {
   name: "InventarioInventariarView",
   components: {
     Remove,
     ScaleToOriginal,
+    VuePdfEmbed,
   },
   props: {
     inventarioid: {
@@ -355,6 +365,7 @@ export default {
       detalleInventario: [],
       dialogBuscarProducto: false,
       opcionesProductosEstados: [],
+      srcFilePdf: null,
     };
   },
   watch: {
@@ -612,11 +623,13 @@ export default {
       })
     },
     imprimirItem(url) {
-      console.log(url)
-      const link = document.createElement("a");
-      link.href = url;
-      document.body.appendChild(link);
-      link.click();
+      this.loadingData = true
+      this.srcFilePdf = url
+      // console.log(url)
+      // const link = document.createElement("a");
+      // link.href = url;
+      // document.body.appendChild(link);
+      // link.click();
     },
     mostrarNotificacion(title, message) {
       ElNotification({ title, message });
@@ -684,21 +697,22 @@ export default {
 
         const { state, message, url } = response
         if (state === 'success') {
-          const link = document.createElement('a')
-          link.href = url
-          document.body.appendChild(link)
-          link.click()
+          this.srcFilePdf = url
+          // this.$nextTick(() => {
+          //   this.print()
+          // })
+          // const link = document.createElement('a')
+          // link.href = url
+          // document.body.appendChild(link)
+          // link.click()
         } else {
             ElNotification({title: 'Atención', message})
+            this.loadingData = false
         }
-        this.loadingData = false
       })
       .catch((err) => {
         this.loadingData = false
         console.log('Error', err)
-      })
-      .finally(() => {
-        this.loadingData = false
       })
     },
     formDataValida() {
@@ -710,6 +724,10 @@ export default {
       })
       return !(filasNoValidads.length > 0)
     },
+    print() {
+      this.$refs['pdf'].print()
+      this.loadingData = false
+    }
   },
 };
 </script>
