@@ -309,7 +309,7 @@ export default {
       });
     },
     async exportarInventario(id) {
-      console.log(id);
+      // console.log(id);
       this.loadingData = true;
       await exportResource
         .list({ id })
