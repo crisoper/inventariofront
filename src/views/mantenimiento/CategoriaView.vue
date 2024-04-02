@@ -37,14 +37,26 @@
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="Descripción" />
-      <el-table-column label="Opciones">
+      <el-table-column label="Opciones" width="200px">
         <template #default="scope">
-          <el-button @click="abrirDialogEditar(scope.row.id)">
-            Editar
-          </el-button>
-          <el-button type="danger" @click="eliminarRegistro(scope.row.id)">
-            Eliminar
-          </el-button>
+          <el-icon
+            @click="abrirDialogEditar(scope.row.id)"
+            color="#409EFC"
+            size="18px"
+            class="icon-btn pointer"
+            title="Editar"
+          >
+            <Edit />
+          </el-icon>
+          <el-icon
+            @click="eliminarRegistro(scope.row.id)"
+            color="#f9616d"
+            size="18px"
+            class="icon-btn pointer"
+            title="Eliminar"
+          >
+            <Delete />
+          </el-icon>
         </template>
       </el-table-column>
     </el-table>
@@ -66,8 +78,16 @@
       <CrearCategoria ref="refCrearCategoria" @close="cerrarDialogo" />
     </el-dialog>
     <!-- Editar categoría -->
-    <el-dialog top="5vh" v-model="editarCategoriaDialog" title="Editar Categoría">
-      <EditarCategoria ref="refEditarCategoria" :id="idRegistroEditar" @close="cerrarDialogoEditar" />
+    <el-dialog
+      top="5vh"
+      v-model="editarCategoriaDialog"
+      title="Editar Categoría"
+    >
+      <EditarCategoria
+        ref="refEditarCategoria"
+        :id="idRegistroEditar"
+        @close="cerrarDialogoEditar"
+      />
     </el-dialog>
   </el-card>
 </template>
@@ -76,6 +96,8 @@
 // Componentes
 import EditarCategoria from "./components/EditarCategoria.vue";
 import CrearCategoria from "./components/CrearCategoria.vue";
+import { Edit, List, Delete } from "@element-plus/icons-vue";
+
 // Resource
 import CategoriaResource from "@/api/mantenimiento/categoria";
 import { ElMessage } from "element-plus";
@@ -86,7 +108,7 @@ const exportResource = new Resource("exportar/categoria");
 
 export default {
   name: "CategoriaView",
-  components: { CrearCategoria, EditarCategoria },
+  components: { CrearCategoria, EditarCategoria, Edit, List, Delete },
   data() {
     return {
       loading: false,
@@ -115,7 +137,7 @@ export default {
         .then((response) => {
           const { data, meta } = response;
           this.listaItem = data;
-          this.total = meta.total
+          this.total = meta.total;
           this.loading = false;
         })
         .catch((error) => {
@@ -124,10 +146,10 @@ export default {
         });
     },
     addItem() {
-      this.crearCategoriaDialog = true
+      this.crearCategoriaDialog = true;
       this.$nextTick(() => {
-        this.$refs['refCrearCategoria'].resetModel()
-      })
+        this.$refs["refCrearCategoria"].resetModel();
+      });
     },
     cerrarDialogo() {
       this.crearCategoriaDialog = false;

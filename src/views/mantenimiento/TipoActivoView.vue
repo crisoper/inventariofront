@@ -37,14 +37,26 @@
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="descripcion" />
-      <el-table-column label="Opciones">
+      <el-table-column label="Opciones" width="200px">
         <template #default="scope">
-          <el-button @click="abrirDialogEditar(scope.row.id)">
-            Editar
-          </el-button>
-          <el-button type="danger" @click="eliminarRegistro(scope.row.id)">
-            Eliminar
-          </el-button>
+          <el-icon
+            @click="abrirDialogEditar(scope.row.id)"
+            color="#409EFC"
+            size="18px"
+            class="icon-btn pointer"
+            title="Editar"
+          >
+            <Edit />
+          </el-icon>
+          <el-icon
+            @click="eliminarRegistro(scope.row.id)"
+            color="#f9616d"
+            size="18px"
+            class="icon-btn pointer"
+            title="Eliminar"
+          >
+            <Delete />
+          </el-icon>
         </template>
       </el-table-column>
     </el-table>
@@ -62,12 +74,20 @@
       />
     </el-row>
     <!-- Nuevo tipo de activo -->
-    <el-dialog top="7vh" v-model="crearTipoActivoDialog" title="Nuevo Tipo de Activo">
+    <el-dialog
+      top="7vh"
+      v-model="crearTipoActivoDialog"
+      title="Nuevo Tipo de Activo"
+    >
       <CrearTipoActivo ref="refCrearTipoActivo" @close="cerrarDialago" />
     </el-dialog>
     <!-- Editar tipo de activo -->
     <el-dialog top="7vh" v-model="editarTipoActivoDialog" title="Editar Datos">
-      <EditarTipoActivo ref="refEditarTipoActivo" :id="idRegistroEditar" @close="cerrarDialagoEditar" />
+      <EditarTipoActivo
+        ref="refEditarTipoActivo"
+        :id="idRegistroEditar"
+        @close="cerrarDialagoEditar"
+      />
     </el-dialog>
   </el-card>
 </template>
@@ -76,6 +96,8 @@
 // Componentes
 import EditarTipoActivo from "./components/EditarTipoActivo.vue";
 import CrearTipoActivo from "./components/CrearTipoActivo.vue";
+import { Edit, List, Delete } from "@element-plus/icons-vue";
+
 // Recurso
 import TipoActivoResource from "@/api/mantenimiento/tipoActivo";
 import { ElMessage } from "element-plus";
@@ -86,7 +108,7 @@ const exportResource = new Resource("exportar/tipoactivo");
 
 export default {
   name: "TipoActivoView",
-  components: { CrearTipoActivo, EditarTipoActivo },
+  components: { CrearTipoActivo, EditarTipoActivo, Edit, List, Delete },
   data() {
     return {
       loading: false,
@@ -124,10 +146,10 @@ export default {
         });
     },
     addItem() {
-      this.crearTipoActivoDialog = true
+      this.crearTipoActivoDialog = true;
       this.$nextTick(() => {
-        this.$refs['refCrearTipoActivo'].resetModel()
-      })
+        this.$refs["refCrearTipoActivo"].resetModel();
+      });
     },
     cerrarDialago() {
       this.crearTipoActivoDialog = false;

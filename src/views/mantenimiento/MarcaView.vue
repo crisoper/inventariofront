@@ -35,17 +35,29 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
-      <el-table-column prop="codigo" label="Código" width="110"/>
+      <el-table-column prop="codigo" label="Código" width="110" />
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="Descripción" />
       <el-table-column label="Opciones" width="210">
         <template #default="scope">
-          <el-button @click="abrirDialogEditar(scope.row.id)">
-            Editar
-          </el-button>
-          <el-button type="danger" @click="eliminarRegistro(scope.row.id)">
-            Eliminar
-          </el-button>
+          <el-icon
+            @click="abrirDialogEditar(scope.row.id)"
+            color="#409EFC"
+            size="18px"
+            class="icon-btn pointer"
+            title="Editar"
+          >
+            <Edit />
+          </el-icon>
+          <el-icon
+            @click="eliminarRegistro(scope.row.id)"
+            color="#f9616d"
+            size="18px"
+            class="icon-btn pointer"
+            title="Eliminar"
+          >
+            <Delete />
+          </el-icon>
         </template>
       </el-table-column>
     </el-table>
@@ -68,7 +80,11 @@
     </el-dialog>
     <!-- Editar marca -->
     <el-dialog top="7vh" v-model="editarMarcaDialog" title="Editar Marca">
-      <EditarMarca ref="refEditarMarca" :id="idRegistroEditar" @close="cerrarDialogoEditar" />
+      <EditarMarca
+        ref="refEditarMarca"
+        :id="idRegistroEditar"
+        @close="cerrarDialogoEditar"
+      />
     </el-dialog>
   </el-card>
 </template>
@@ -77,6 +93,8 @@
 // Componentes
 import EditarMarca from "./components/EditarMarca.vue";
 import CrearMarca from "./components/CrearMarca.vue";
+import { Edit, List, Delete } from "@element-plus/icons-vue";
+
 // Resource
 import MarcaResource from "@/api/mantenimiento/marca";
 import { ElMessage } from "element-plus";
@@ -87,7 +105,7 @@ const exportResource = new Resource("exportar/marca");
 
 export default {
   name: "MarcaView",
-  components: { CrearMarca, EditarMarca },
+  components: { CrearMarca, EditarMarca, Edit, List, Delete },
   data() {
     return {
       loading: false,
@@ -114,10 +132,10 @@ export default {
       marcaResource
         .list(this.query)
         .then((response) => {
-          const { data, meta } = response
-          this.listaItem = data
-          this.total = meta.total
-          this.loading = false
+          const { data, meta } = response;
+          this.listaItem = data;
+          this.total = meta.total;
+          this.loading = false;
         })
         .catch((error) => {
           console.log(error);
@@ -125,10 +143,10 @@ export default {
         });
     },
     addItem() {
-      this.crearMarcaDialog = true
+      this.crearMarcaDialog = true;
       this.$nextTick(() => {
-        this.$refs['refCrearMarca'].resetModel()
-      })
+        this.$refs["refCrearMarca"].resetModel();
+      });
     },
     cerrarDialogo() {
       this.crearMarcaDialog = false;

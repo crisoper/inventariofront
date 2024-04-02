@@ -6,11 +6,9 @@
       :rules="rulesasignacion"
       label-position="top"
     >
-    <el-row>
-      <h4>
-        Asignar equipo a: {{ persona.nombre_completo }}
-      </h4>
-    </el-row>
+      <el-row>
+        <h4>Asignar equipo a: {{ persona.nombre_completo }}</h4>
+      </el-row>
       <el-row :gutter="20">
         <el-col :xs="24">
           <el-form-item label="Producto" prop="producto_id">
@@ -20,7 +18,10 @@
               filterable
               remote
               reserve-keyword
-              :remote-method="(query) => handleBuscarOpciones(query, 'productosparainventario')"
+              :remote-method="
+                (query) =>
+                  handleBuscarOpciones(query, 'productosparainventario')
+              "
               style="width: 100% !important"
             >
               <el-option
@@ -160,7 +161,7 @@ const asignacionesEquipoResource = new Resource(
 export default {
   name: "CrearAsignacion",
   props: {
-    persona:{}
+    persona: {},
   },
   data() {
     return {
@@ -214,19 +215,17 @@ export default {
       opcionesArea: [],
       opcionesUbicacion: [],
       opcionesEstadoProducto: [],
-      opcionesProducto:[]
+      opcionesProducto: [],
     };
   },
   mounted() {
-    this.cargarOpciones()
-    this.asignacion.responsable_id = this.persona?.id || -1
+    this.cargarOpciones();
+    this.asignacion.responsable_id = this.persona?.id || -1;
   },
   methods: {
     cargarOpciones() {
       this.loading = true;
-      Promise.all([
-        opcionesresource.load("productoestado", null),
-      ])
+      Promise.all([opcionesresource.load("productoestado", null)])
         .then((respuestas) => {
           this.opcionesEstadoProducto =
             respuestas[0].data && Array.isArray(respuestas[0].data)
@@ -260,8 +259,7 @@ export default {
                   data && Array.isArray(data) ? data : [];
                 break;
               case "productosparainventario":
-                this.opcionesProducto =
-                  data && Array.isArray(data) ? data : [];
+                this.opcionesProducto = data && Array.isArray(data) ? data : [];
                 break;
             }
           })
@@ -277,16 +275,17 @@ export default {
           return false;
         }
         this.loading = true;
-        asignacionesEquipoResource.store(this.asignacion)
-        // eslint-disable-next-line no-unused-vars
-        .then((respuesta) => {
-                this.close();
-                this.loading = false;
-              })
-              .catch((error) => {
-                console.log(error);
-                this.loading = false;
-              });
+        asignacionesEquipoResource
+          .store(this.asignacion)
+          // eslint-disable-next-line no-unused-vars
+          .then((respuesta) => {
+            this.close();
+            this.loading = false;
+          })
+          .catch((error) => {
+            console.log(error);
+            this.loading = false;
+          });
       });
     },
     close() {

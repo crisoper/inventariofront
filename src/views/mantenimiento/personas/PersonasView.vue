@@ -37,8 +37,8 @@
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column type="index" label="#" width="50px" />
       <el-table-column
-        prop="nro_doc_identidad"
-        label="Nro. Doc. Identidad"
+        prop="documento_numero"
+        label="Nro. Doc. Identidadd"
         width="200px"
       />
       <el-table-column
@@ -101,11 +101,11 @@
     </el-row>
     <!-- Nueva área -->
     <el-dialog v-model="editarAreaDialog" title="Editar Persona">
-      <EditarPersona :id="idRegistroEditar" @close="cerrarDialago" />
+      <EditarPersona :id="idRegistroEditar" @close="cerrarDialagoEditar" />
     </el-dialog>
     <!-- Editar área -->
     <el-dialog v-model="crearAreaDialog" title="Crear Persona">
-      <CrearPersona @close="cerrarDialagoEditar" />
+      <CrearPersona @close="cerrarDialago" />
     </el-dialog>
     <!-- Dialog Asignaciones Persona -->
     <el-dialog

@@ -7,7 +7,7 @@
       label-position="top"
     >
       <el-row :gutter="10">
-        <el-col :xs="24" :sm="24">
+        <el-col :span="12">
           <el-form-item label="Codigo" prop="codigo">
             <el-input
               v-model="nuevoAlmacen.codigo"
@@ -17,7 +17,7 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :xs="24" :sm="24">
+        <el-col :span="12">
           <el-form-item label="Nombre" prop="nombre">
             <el-input v-model="nuevoAlmacen.nombre" />
           </el-form-item>
@@ -60,13 +60,13 @@ export default {
     };
   },
   created() {
-    this.resetModel()
+    this.resetModel();
   },
   methods: {
     resetModel() {
       this.nuevoAlmacen = {
         nombre: "",
-      }
+      };
     },
     crearAlmacen() {
       this.$refs["nuevoAlmacenForm"].validate((valid) => {
@@ -75,7 +75,7 @@ export default {
           almacenResource
             .store(this.nuevoAlmacen)
             .then((response) => {
-              console.log(response)
+              console.log(response);
               this.close();
               ElMessage({
                 message: "Agregado correctamente",

@@ -35,17 +35,29 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
-      <el-table-column prop="codigo" label="Codigo" width="150"/>
+      <el-table-column prop="codigo" label="Codigo" width="150" />
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="descripcion" />
-      <el-table-column label="Opciones" width="210">
+      <el-table-column label="Opciones" width="100">
         <template #default="scope">
-          <el-button @click="abrirDialogEditar(scope.row.id)">
-            Editar
-          </el-button>
-          <el-button type="danger" @click="eliminarRegistro(scope.row.id)">
-            Eliminar
-          </el-button>
+          <el-icon
+            @click="abrirDialogEditar(scope.row.id)"
+            color="#409EFC"
+            size="18px"
+            class="icon-btn pointer"
+            title="Editar"
+          >
+            <Edit />
+          </el-icon>
+          <el-icon
+            @click="eliminarRegistro(scope.row.id)"
+            color="#f9616d"
+            size="18px"
+            class="icon-btn pointer"
+            title="Eliminar"
+          >
+            <Delete />
+          </el-icon>
         </template>
       </el-table-column>
     </el-table>
@@ -63,13 +75,23 @@
       />
     </el-row>
     <!-- Nuevo producto -->
-    <el-dialog v-model="crearProductoDialog" title="Nuevo Producto" top="5vh" width="80%">
+    <el-dialog
+      v-model="crearProductoDialog"
+      title="Nuevo Producto"
+      top="5vh"
+      width="80%"
+    >
       <CrearProducto ref="refCrearProducto" @close="cerrarDialogCrear" />
     </el-dialog>
     <!-- Editar producto -->
-    <el-dialog v-model="editarProductoDialog" title="Editar Producto" top="5vh" width="80%">
+    <el-dialog
+      v-model="editarProductoDialog"
+      title="Editar Producto"
+      top="5vh"
+      width="80%"
+    >
       <EditarProducto
-        ref="refEditarProducto" 
+        ref="refEditarProducto"
         :productoId="idRegistroEditar"
         @close="cerrarDialagoEditar"
       />
@@ -81,6 +103,8 @@
 // Componentes
 import EditarProducto from "./components/EditarProducto.vue";
 import CrearProducto from "./components/CrearProducto.vue";
+import { Edit, List, Delete } from "@element-plus/icons-vue";
+
 // Recurso
 import ProductoResource from "@/api/mantenimiento/producto";
 import { ElMessage } from "element-plus";
@@ -90,7 +114,7 @@ import Resource from "@/api/resource";
 const exportResource = new Resource("exportar/producto");
 export default {
   name: "TipoBienView",
-  components: { CrearProducto, EditarProducto },
+  components: { CrearProducto, EditarProducto, Edit, List, Delete },
   data() {
     return {
       loading: false,
@@ -127,11 +151,11 @@ export default {
           this.loading = false;
         });
     },
-    addItem(){
-      this.crearProductoDialog = true
+    addItem() {
+      this.crearProductoDialog = true;
       this.$nextTick(() => {
-        this.$refs['refCrearProducto'].resetModel()
-      })
+        this.$refs["refCrearProducto"].resetModel();
+      });
     },
     cerrarDialogCrear() {
       this.crearProductoDialog = false;

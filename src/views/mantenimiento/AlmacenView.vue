@@ -38,14 +38,26 @@
       <el-table-column prop="codigo" label="codigo" width="90px" />
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="descripcion" />
-      <el-table-column label="Opciones">
+      <el-table-column label="Opciones" width="200px">
         <template #default="scope">
-          <el-button @click="abrirDialogEditar(scope.row.id)">
-            Editar
-          </el-button>
-          <el-button type="danger" @click="eliminarRegistro(scope.row.id)">
-            Eliminar
-          </el-button>
+          <el-icon
+            @click="abrirDialogEditar(scope.row.id)"
+            color="#409EFC"
+            size="18px"
+            class="icon-btn pointer"
+            title="Editar"
+          >
+            <Edit />
+          </el-icon>
+          <el-icon
+            @click="eliminarRegistro(scope.row.id)"
+            color="#f9616d"
+            size="18px"
+            class="icon-btn pointer"
+            title="Eliminar"
+          >
+            <Delete />
+          </el-icon>
         </template>
       </el-table-column>
     </el-table>
@@ -77,6 +89,8 @@
 // Componentes
 import EditarAlmacen from "./components/EditarAlmacen.vue";
 import CrearAlmacen from "./components/CrearAlmacen.vue";
+import { Edit, List, Delete } from "@element-plus/icons-vue";
+
 // Resource
 import AlmacenResource from "@/api/mantenimiento/almacen";
 import { ElMessage } from "element-plus";
@@ -87,7 +101,7 @@ const exportResource = new Resource("exportar/almacen");
 
 export default {
   name: "AlmacenView",
-  components: { CrearAlmacen, EditarAlmacen },
+  components: { CrearAlmacen, EditarAlmacen, Edit, Delete },
   data() {
     return {
       loading: false,
@@ -116,7 +130,7 @@ export default {
         .then((response) => {
           const { data, meta } = response;
           this.listaItem = data;
-          this.total = meta.total
+          this.total = meta.total;
           this.loading = false;
         })
         .catch((error) => {
@@ -125,10 +139,10 @@ export default {
         });
     },
     addItem() {
-      this.crearAlmacenDialog = true
+      this.crearAlmacenDialog = true;
       this.$nextTick(() => {
-        this.$refs['refCrearAlmacen'].resetModel()
-      })
+        this.$refs["refCrearAlmacen"].resetModel();
+      });
     },
     cerrarDialago() {
       this.crearAlmacenDialog = false;

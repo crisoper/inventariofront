@@ -7,7 +7,7 @@
       label-position="top"
     >
       <el-row :gutter="10">
-        <el-col :xs="24" :sm="24">
+        <el-col :span="12">
           <el-form-item label="Codigo" prop="codigo">
             <el-input
               v-model="nuevoEstado.codigo"
@@ -17,7 +17,7 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :xs="24" :sm="24">
+        <el-col :span="12">
           <el-form-item label="Nombre" prop="nombre">
             <el-input v-model="nuevoEstado.nombre" />
           </el-form-item>
@@ -37,15 +37,17 @@
 
 <script>
 import { ElMessage } from "element-plus";
-import AlmacenResource from "@/api/mantenimiento/almacen";
-const almacenResource = new AlmacenResource();
+import EstadoProductoResource from "@/api/mantenimiento/estadoProducto";
+const estadoProductoResource = new EstadoProductoResource();
 
 export default {
-  name: "CrearAlmacen",
+  name: "CrearEstadoProducto",
   data() {
     return {
-      nuevoEstado: {
+      nuevoEstadoProducto: {
+        // Change object name from nuevoEstado to nuevoEstadoProducto
         nombre: "",
+        EstadoProducto: "", // Change field name from estado to EstadoProducto
       },
       rules: {
         nombre: [
@@ -60,22 +62,24 @@ export default {
     };
   },
   created() {
-    this.resetModel()
+    this.resetModel();
   },
   methods: {
     resetModel() {
-      this.nuevoEstado = {
+      this.nuevoEstadoProducto = {
+        // Change object name from nuevoEstado to nuevoEstadoProducto
         nombre: "",
-      }
+        EstadoProducto: "", // Change field name from estado to EstadoProducto
+      };
     },
     crearAlmacen() {
-      this.$refs["nuevoEstadoForm"].validate((valid) => {
+      this.$refs["nuevoEstadoProducto"].validate((valid) => {
         if (valid) {
           this.loading = true;
-          almacenResource
-            .store(this.nuevoEstado)
+          estadoProductoResource
+            .store(this.nuevoEstadoProducto) // Pass nuevoEstadoProducto instead of nuevoEstado
             .then((response) => {
-              console.log(response)
+              console.log(response);
               this.close();
               ElMessage({
                 message: "Agregado correctamente",

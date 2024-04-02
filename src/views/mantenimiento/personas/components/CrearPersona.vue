@@ -95,19 +95,7 @@ export default {
   name: "CrearPersona",
   data() {
     return {
-      nuevaPersona: {
-        documento_tipo: "",
-        documento_numero: "",
-        nombres: "",
-        apellido_paterno: "",
-        apellido_materno: "",
-        fecha_nacimiento: "",
-        genero: "",
-        celular: "",
-        email: "",
-        direccion: "",
-        tipo: "",
-      },
+      nuevaPersona: {},
       rules: {
         documento_tipo: [
           {
@@ -144,13 +132,13 @@ export default {
             trigger: "blur",
           },
         ],
-        fecha_nacimiento: [
-          {
-            required: true,
-            message: "Seleccione la fecha de nacimiento",
-            trigger: "change",
-          },
-        ],
+        // fecha_nacimiento: [
+        //   {
+        //     required: true,
+        //     message: "Seleccione la fecha de nacimiento",
+        //     trigger: "change",
+        //   },
+        // ],
         genero: [
           {
             required: true,
@@ -194,6 +182,13 @@ export default {
     crearPersona() {
       this.$refs["nuevaPersonaForm"].validate((valid) => {
         if (valid) {
+          const fechaNacimiento = this.nuevaPersona.fecha_nacimiento;
+          const fechaFormateada = `${fechaNacimiento.getFullYear()}-${(
+            "0" +
+            (fechaNacimiento.getMonth() + 1)
+          ).slice(-2)}-${("0" + fechaNacimiento.getDate()).slice(-2)}`;
+
+          this.nuevaPersona.fecha_nacimiento = fechaFormateada;
           this.loading = true;
           personaResource
             .store(this.nuevaPersona)
@@ -204,7 +199,6 @@ export default {
                 message: "Persona agregada correctamente",
                 type: "success",
               });
-              this.loading = false;
             })
             .catch((error) => {
               ElMessage({
@@ -212,11 +206,14 @@ export default {
                 type: "error",
               });
               console.error(error);
+            })
+            .finally(() => {
               this.loading = false;
             });
         }
       });
     },
+
     close() {
       this.$emit("close");
     },

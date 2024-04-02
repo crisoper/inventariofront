@@ -96,7 +96,7 @@ export default {
       areaResource
         .update(this.id, this.nuevaArea)
         .then((response) => {
-          console.log(response)
+          console.log(response);
           ElMessage({
             message: "Registro actualizado",
             type: "success",

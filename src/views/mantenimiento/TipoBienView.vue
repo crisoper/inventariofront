@@ -37,14 +37,26 @@
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="descripcion" />
-      <el-table-column label="Opciones">
+      <el-table-column label="Opciones" width="200px">
         <template #default="scope">
-          <el-button @click="abrirDialogEditar(scope.row.id)">
-            Editar
-          </el-button>
-          <el-button type="danger" @click="eliminarRegistro(scope.row.id)">
-            Eliminar
-          </el-button>
+          <el-icon
+            @click="abrirDialogEditar(scope.row.id)"
+            color="#409EFC"
+            size="18px"
+            class="icon-btn pointer"
+            title="Editar"
+          >
+            <Edit />
+          </el-icon>
+          <el-icon
+            @click="eliminarRegistro(scope.row.id)"
+            color="#f9616d"
+            size="18px"
+            class="icon-btn pointer"
+            title="Eliminar"
+          >
+            <Delete />
+          </el-icon>
         </template>
       </el-table-column>
     </el-table>
@@ -62,12 +74,20 @@
       />
     </el-row>
     <!-- Nuevo tipo de bien -->
-    <el-dialog top="7vh" v-model="crearTipoBienDialog" title="Nuevo Tipo de Bien">
+    <el-dialog
+      top="7vh"
+      v-model="crearTipoBienDialog"
+      title="Nuevo Tipo de Bien"
+    >
       <CrearTipoBien ref="refCrearTipoBien" @close="cerrarDialago" />
     </el-dialog>
     <!-- Editar tipo de bien -->
     <el-dialog top="7vh" v-model="editarTipoBienDialog" title="Editar Datos">
-      <EditarTipoBien ref="refEditarTipoBien" :id="idRegistroEditar" @close="cerrarDialagoEditar" />
+      <EditarTipoBien
+        ref="refEditarTipoBien"
+        :id="idRegistroEditar"
+        @close="cerrarDialagoEditar"
+      />
     </el-dialog>
   </el-card>
 </template>
@@ -76,6 +96,8 @@
 // Componentes
 import EditarTipoBien from "./components/EditarTipoBien.vue";
 import CrearTipoBien from "./components/CrearTipoBien.vue";
+import { Edit, List, Delete } from "@element-plus/icons-vue";
+
 // Recurso
 import TipoBienResource from "@/api/mantenimiento/tipoBien";
 import { ElMessage } from "element-plus";
@@ -86,7 +108,7 @@ const exportResource = new Resource("exportar/tipobien");
 
 export default {
   name: "TipoBienView",
-  components: { CrearTipoBien, EditarTipoBien },
+  components: { CrearTipoBien, EditarTipoBien, Edit, List, Delete },
   data() {
     return {
       loading: false,
@@ -124,10 +146,10 @@ export default {
         });
     },
     addItem() {
-      this.crearTipoBienDialog = true
+      this.crearTipoBienDialog = true;
       this.$nextTick(() => {
-        this.$refs['refCrearTipoBien'].resetModel()
-      })
+        this.$refs["refCrearTipoBien"].resetModel();
+      });
     },
     cerrarDialago() {
       this.crearTipoBienDialog = false;

@@ -40,12 +40,24 @@
       <el-table-column prop="descripcion" label="descripcion" />
       <el-table-column label="Opciones" width="210">
         <template #default="scope">
-          <el-button @click="abrirDialogEditar(scope.row.id)">
-            Editar
-          </el-button>
-          <el-button type="danger" @click="eliminarRegistro(scope.row.id)">
-            Eliminar
-          </el-button>
+          <el-icon
+            @click="abrirDialogEditar(scope.row.id)"
+            color="#409EFC"
+            size="18px"
+            class="icon-btn pointer"
+            title="Editar"
+          >
+            <Edit />
+          </el-icon>
+          <el-icon
+            @click="eliminarRegistro(scope.row.id)"
+            color="#f9616d"
+            size="18px"
+            class="icon-btn pointer"
+            title="Eliminar"
+          >
+            <Delete />
+          </el-icon>
         </template>
       </el-table-column>
     </el-table>
@@ -68,7 +80,11 @@
     </el-dialog>
     <!-- Editar área -->
     <el-dialog top="5vh" v-model="editarAreaDialog" title="Editar Área">
-      <EditarArea ref="refEditarArea" :id="idRegistroEditar" @close="cerrarDialagoEditar" />
+      <EditarArea
+        ref="refEditarArea"
+        :id="idRegistroEditar"
+        @close="cerrarDialagoEditar"
+      />
     </el-dialog>
   </el-card>
 </template>
@@ -77,6 +93,8 @@
 // Componentes
 import EditarArea from "./components/EditarArea.vue";
 import CrearArea from "./components/CrearArea.vue";
+import { Edit, List, Delete } from "@element-plus/icons-vue";
+
 // Resource
 import AreaResource from "@/api/mantenimiento/area";
 import { ElMessage } from "element-plus";
@@ -87,7 +105,7 @@ const exportResource = new Resource("exportar/areas");
 
 export default {
   name: "AreaView",
-  components: { CrearArea, EditarArea },
+  components: { CrearArea, EditarArea, Edit, List, Delete },
   data() {
     return {
       loading: false,
@@ -116,7 +134,7 @@ export default {
         .then((response) => {
           const { data, meta } = response;
           this.listaItem = data;
-          this.total = meta.total
+          this.total = meta.total;
           this.loading = false;
         })
         .catch((error) => {
@@ -125,10 +143,10 @@ export default {
         });
     },
     addItem() {
-      this.crearAreaDialog = true
+      this.crearAreaDialog = true;
       this.$nextTick(() => {
-        this.$refs['refCrearArea'].resetModel()
-      })
+        this.$refs["refCrearArea"].resetModel();
+      });
     },
     cerrarDialago() {
       this.crearAreaDialog = false;

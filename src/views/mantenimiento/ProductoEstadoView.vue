@@ -15,7 +15,7 @@
         />
       </el-col>
 
-      <!-- <el-col :span="5">
+      <el-col :span="5">
         <el-button
           type="primary"
           style="width: 100% !important"
@@ -23,7 +23,7 @@
         >
           Nuevo
         </el-button>
-      </el-col> -->
+      </el-col>
       <el-col :span="5">
         <el-button
           type="primary"
@@ -38,16 +38,28 @@
       <el-table-column prop="codigo" label="CÓDIGO" width="120" />
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="Descripción" />
-      <!-- <el-table-column label="Opciones" width="210" >
+      <el-table-column label="Opciones" width="210">
         <template #default="scope">
-          <el-button @click="abrirDialogEditar(scope.row.id)">
-            Editar
-          </el-button>
-          <el-button type="danger" @click="eliminarRegistro(scope.row.id)">
-            Eliminar
-          </el-button>
+          <el-icon
+            @click="abrirDialogEditar(scope.row.id)"
+            color="#409EFC"
+            size="18px"
+            class="icon-btn pointer"
+            title="Editar"
+          >
+            <Edit />
+          </el-icon>
+          <el-icon
+            @click="eliminarRegistro(scope.row.id)"
+            color="#f9616d"
+            size="18px"
+            class="icon-btn pointer"
+            title="Eliminar"
+          >
+            <Delete />
+          </el-icon>
         </template>
-      </el-table-column> -->
+      </el-table-column>
     </el-table>
     <el-divider />
     <el-row type="flex" justify="center">
@@ -71,7 +83,11 @@
       <CrearEstadoProducto @close="cerrarDialago" />
     </el-dialog>
     <!-- Editar estado de producto -->
-    <el-dialog top="7vh" v-model="editarEstadoProductoDialog" title="Editar Datos">
+    <el-dialog
+      top="7vh"
+      v-model="editarEstadoProductoDialog"
+      title="Editar Datos"
+    >
       <EditarEstadoProducto
         :id="idRegistroEditar"
         @close="cerrarDialagoEditar"
@@ -84,17 +100,22 @@
 // Componentes
 import { ElMessage } from "element-plus";
 import EditarEstadoProducto from "./components/EditarEstadoProducto.vue";
-import CrearEstadoProducto from "./components/CrearEstadoProducto.vue";
+// import CrearEstadoProducto from "./components/CrearEstadoProducto.vue";
+import { Edit, List, Delete } from "@element-plus/icons-vue";
+
 // Resource
 import Resource from "@/api/resource";
-const estadoProductoResource = new Resource('inventario/productoestados');
+const estadoProductoResource = new Resource("inventario/productoestados");
 const exportResource = new Resource("exportar/estadoProducto");
 
 export default {
   name: "EstadoProductoView",
   components: {
-    CrearEstadoProducto,
-    EditarEstadoProducto
+    // CrearEstadoProducto,
+    EditarEstadoProducto,
+    Edit,
+    List,
+    Delete,
   },
   data() {
     return {
