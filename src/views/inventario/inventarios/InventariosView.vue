@@ -158,7 +158,7 @@ import FormInventario from "@/components/shared/app/inventario/inventarios/Inven
 import InventarioLayoutDetalle from "@/components/shared/app/inventario/inventarios/InventarioLayoutDetalle.vue";
 const userRequest = new Resource("inventario/inventarios");
 
-const exportResource = new Resource("exportar/inventario");
+const exportResource = new Resource("exportar/inventarios");
 
 // export default exportResource;
 export default {
