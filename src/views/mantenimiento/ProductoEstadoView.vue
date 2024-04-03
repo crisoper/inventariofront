@@ -11,7 +11,7 @@
         <el-input
           v-model="query.keyword"
           @keyup.enter="fetchData()"
-          placeholder="Buscar estado de producto"
+          placeholder="Buscar productoEstado"
         />
       </el-col>
 
@@ -19,7 +19,7 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearEstadoProductoDialog = true"
+          @click="crearProductoEstadoDialog = true"
         >
           Nuevo
         </el-button>
@@ -74,21 +74,21 @@
         @current-change="fetchData"
       />
     </el-row>
-    <!-- Nuevo estado de producto -->
+    <!-- Nuevo productoEstado -->
     <el-dialog
       top="7vh"
-      v-model="crearEstadoProductoDialog"
-      title="Nuevo Estado de Producto"
+      v-model="crearProductoEstadoDialog"
+      title="Nuevo Producto Estado"
     >
-      <CrearEstadoProducto @close="cerrarDialago" />
+      <CrearProductoEstado @close="cerrarDialago" />
     </el-dialog>
-    <!-- Editar estado de producto -->
+    <!-- Editar productoEstado -->
     <el-dialog
       top="7vh"
-      v-model="editarEstadoProductoDialog"
+      v-model="editarProductoEstadoDialog"
       title="Editar Datos"
     >
-      <EditarEstadoProducto
+      <EditarProductoEstado
         :id="idRegistroEditar"
         @close="cerrarDialagoEditar"
       />
@@ -99,20 +99,20 @@
 <script>
 // Componentes
 import { ElMessage } from "element-plus";
-import EditarEstadoProducto from "./components/EditarEstadoProducto.vue";
-// import CrearEstadoProducto from "./components/CrearEstadoProducto.vue";
+import EditarProductoEstado from "./components/EditarProductoEstado.vue";
+import CrearProductoEstado from "./components/CrearProductoEstado.vue";
 import { Edit, List, Delete } from "@element-plus/icons-vue";
 
 // Resource
 import Resource from "@/api/resource";
-const estadoProductoResource = new Resource("inventario/productoestados");
-const exportResource = new Resource("exportar/estadoProducto");
+const productoEstadoResource = new Resource("inventario/productoestados");
+const exportResource = new Resource("exportar/productoEstado");
 
 export default {
-  name: "EstadoProductoView",
+  name: "ProductoEstadoView",
   components: {
-    // CrearEstadoProducto,
-    EditarEstadoProducto,
+    CrearProductoEstado,
+    EditarProductoEstado,
     Edit,
     List,
     Delete,
@@ -129,8 +129,8 @@ export default {
       total: 0,
       loadingData: false,
       listaItem: [],
-      crearEstadoProductoDialog: false,
-      editarEstadoProductoDialog: false,
+      crearProductoEstadoDialog: false,
+      editarProductoEstadoDialog: false,
       idRegistroEditar: null,
     };
   },
@@ -140,7 +140,7 @@ export default {
   methods: {
     async fetchData() {
       this.loading = true;
-      estadoProductoResource
+      productoEstadoResource
         .list(this.query)
         .then((response) => {
           const { data, meta } = response;
@@ -154,29 +154,29 @@ export default {
         });
     },
     cerrarDialago() {
-      this.crearEstadoProductoDialog = false;
+      this.crearProductoEstadoDialog = false;
       this.fetchData();
     },
     abrirDialogEditar(id_registro) {
       this.idRegistroEditar = id_registro;
       this.$nextTick(() => {
-        this.editarEstadoProductoDialog = true;
+        this.editarProductoEstadoDialog = true;
       });
     },
     eliminarRegistro(id_registro) {
       this.loading = true;
-      estadoProductoResource
-        .destroy(id_registro) // Corregir nombre de la variable aquí
+      productoEstadoResource
+        .destroy(id_registro)
         .then(() => {
           ElMessage({
-            message: "Estado de producto eliminado",
+            message: "Producto Estado eliminado",
             type: "success",
           });
           this.fetchData();
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrió un error al eliminar el estado de producto",
+            message: "Ocurrió un error al eliminar el Producto Estado",
             type: "error",
           });
           console.log(error);
@@ -185,7 +185,7 @@ export default {
     },
 
     cerrarDialagoEditar() {
-      this.editarEstadoProductoDialog = false;
+      this.editarProductoEstadoDialog = false;
       this.fetchData();
       this.$nextTick(() => {
         this.idRegistroEditar = -1;

@@ -1,17 +1,17 @@
 <template>
   <div v-loading="loading">
     <el-form
-      ref="nuevoEstadoProducto"
-      :model="nuevoEstado"
+      ref="nuevoProductoEstado"
+      :model="nuevoProductoEstado"
       :rules="rules"
       label-position="top"
     >
       <el-row :gutter="10">
         <el-col :span="12">
-          <el-form-item label="Codigo" prop="codigo">
+          <el-form-item label="Código" prop="codigo">
             <el-input
-              v-model="nuevoEstado.codigo"
-              placeholder="El codigo es autogenerado"
+              v-model="nuevoProductoEstado.codigo"
+              placeholder="El código es autogenerado"
               readonly
               disabled
             />
@@ -19,35 +19,34 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="Nombre" prop="nombre">
-            <el-input v-model="nuevoEstado.nombre" />
+            <el-input v-model="nuevoProductoEstado.nombre" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="Descripción" prop="descripcion">
-        <el-input v-model="nuevoEstado.descripcion" />
+        <el-input v-model="nuevoProductoEstado.descripcion" />
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" type="flex" justify="end">
       <el-button type="primary" plain @click="close">Cancelar</el-button>
-      <el-button type="primary" @click="crearAlmacen">Guardar</el-button>
+      <el-button type="primary" @click="crearProductoEstado">Guardar</el-button>
     </el-row>
   </div>
 </template>
 
 <script>
 import { ElMessage } from "element-plus";
-import EstadoProductoResource from "@/api/mantenimiento/estadoProducto";
-const estadoProductoResource = new EstadoProductoResource();
+import ProductoEstadoResource from "@/api/mantenimiento/productoEstado";
+const productoEstadoResource = new ProductoEstadoResource();
 
 export default {
-  name: "CrearEstadoProducto",
+  name: "CrearProductoEstado",
   data() {
     return {
-      nuevoEstadoProducto: {
-        // Change object name from nuevoEstado to nuevoEstadoProducto
+      nuevoProductoEstado: {
         nombre: "",
-        EstadoProducto: "", // Change field name from estado to EstadoProducto
+        productoEstado: "",
       },
       rules: {
         nombre: [
@@ -66,18 +65,17 @@ export default {
   },
   methods: {
     resetModel() {
-      this.nuevoEstadoProducto = {
-        // Change object name from nuevoEstado to nuevoEstadoProducto
+      this.nuevoProductoEstado = {
         nombre: "",
-        EstadoProducto: "", // Change field name from estado to EstadoProducto
+        productoEstado: "",
       };
     },
-    crearAlmacen() {
-      this.$refs["nuevoEstadoProducto"].validate((valid) => {
+    crearProductoEstado() {
+      this.$refs["nuevoProductoEstado"].validate((valid) => {
         if (valid) {
           this.loading = true;
-          estadoProductoResource
-            .store(this.nuevoEstadoProducto) // Pass nuevoEstadoProducto instead of nuevoEstado
+          productoEstadoResource
+            .store(this.nuevoProductoEstado)
             .then((response) => {
               console.log(response);
               this.close();
@@ -89,7 +87,7 @@ export default {
             })
             .catch((error) => {
               ElMessage({
-                message: "Ocurrio un error",
+                message: "Ocurrió un error",
                 type: "error",
               });
               console.log(error);

@@ -43,6 +43,12 @@ const mantenimientoRoutes = {
         meta: { title: 'Marcas', icon: 'md-category-round' }
       },
       {
+        path: '/productoestados',
+        component: () => import('@/views/mantenimiento/ProductoEstadoView.vue'),
+        name: 'ProductoEstado',
+        meta: { title: 'Estados', icon: 'md-category-round' }
+      },
+      {
         path: '/tipo_activos',
         component: () => import('@/views/mantenimiento/TipoActivoView.vue'),
         name: 'tipo_activos',
@@ -66,12 +72,7 @@ const mantenimientoRoutes = {
         name: 'MantenimientoProductos',
         meta: { title: 'Productos', icon: 'co-product-hunt' }
       },
-      {
-        path: '/productoestados',
-        component: () => import('@/views/mantenimiento/ProductoEstadoView.vue'),
-        name: 'ProductoEstado',
-        meta: { title: 'Estados', icon: 'bi-person-workspace' }
-      },
+      
     ]
     
   }

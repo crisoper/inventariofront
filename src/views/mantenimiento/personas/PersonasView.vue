@@ -11,7 +11,7 @@
         <el-input
           v-model="query.keyword"
           @keyup.enter="fetchData()"
-          placeholder="Buscar área"
+          placeholder="Buscar persona"
         />
       </el-col>
 
@@ -36,6 +36,7 @@
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column type="index" label="#" width="50px" />
+      <el-table-column prop="documento_tipo" label="Tipo Doc." width="200px" />
       <el-table-column
         prop="documento_numero"
         label="Nro. Doc. Identidadd"
@@ -46,6 +47,7 @@
         label="Nombre"
         min-width="350px"
       />
+      <el-table-column prop="tipo" label="Tipo" min-width="200px" />
       <el-table-column label="Opciones" width="200px">
         <template #default="scope">
           <el-icon
