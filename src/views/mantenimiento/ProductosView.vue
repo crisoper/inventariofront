@@ -33,7 +33,7 @@
           Exportar
         </el-button>
       </el-col>
-      <el-col :span="5">
+      <!-- <el-col :span="5">
         <el-button
           type="primary"
           style="width: 100% !important"
@@ -41,7 +41,7 @@
         >
           Import
         </el-button>
-      </el-col>
+      </el-col> -->
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column prop="codigo" label="Codigo" width="150" />

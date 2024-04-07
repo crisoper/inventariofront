@@ -8,6 +8,12 @@
           @change="getList"
           :clearable="true"
         >
+          <template #prepend>
+            <el-select v-model="query.buscarpor" placeholder="Buscar por" style="width: 115px">
+              <el-option label="Producto" value="producto" />
+              <el-option label="Responsable" value="responsable" />
+            </el-select>
+          </template>
           <template #append>
             <el-button @click="getList">
               <template #icon>
@@ -19,24 +25,65 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" border :data="tableData" style="width: 100%">
-      <el-table-column
-        type="index"
-        label="#"
-        width="80"
-        align="center"
-        header-align="center"
-      />
-      <el-table-column label="CÓDIGO" prop="codigo" width="100" />
-      <el-table-column label="NOMBRE" min-width="140">
-        <template #default="scope">
-          {{ scope.row.nombre }}
-          <br />
-          <span class="small text-muted">{{ scope.row.descripcion }}</span>
+      <el-table-column type="expand">
+        <template #default="props">
+          <div m="py-0">
+            <table class="table-custom-striped">
+              <tr>
+                <td>CÓDIGO</td>
+                <td>{{ props.row.codigo }}</td>
+              </tr>
+              <tr>
+                <td>CONDICION</td>
+                <td>{{ props.row.condicion }}</td>
+              </tr>
+              <tr>
+                <td>FECHA</td>
+                <td>{{ props.row.fecha_es }}</td>
+              </tr>
+              <tr>
+                <td>PRODUCTO</td>
+                <td>
+                  <strong>Código:</strong> {{ props.row.producto_codigo }}<br>
+                  <strong>Código anterior:</strong> {{ props.row.producto_codigo_anterior }}<br>
+                  <strong>Serie:</strong> {{ props.row.producto_serie }}<br>
+                  {{ props.row.producto_nombre }}
+                </td>
+              </tr>
+              <tr>
+                <td>ESTADO</td>
+                <td>
+                  {{ props.row.productoestado_nombre }}
+                </td>
+              </tr>
+              <tr>
+                <td>RESPONSABLE</td>
+                <td>
+                  {{ props.row.responsable_documento_numero }} - {{ props.row.responsable_full_name }}
+                </td>
+              </tr>
+              <tr>
+                <td>AREA</td>
+                <td>
+                  {{ props.row.area_codigo }} - {{ props.row.area_nombre }}
+                </td>
+              </tr>
+              <tr>
+                <td>UBICACION</td>
+                <td>
+                  {{ props.row.ubicacion_codigo }} - {{ props.row.ubicacion_nombre }}
+                </td>
+              </tr>
+            </table>
+          </div>
         </template>
       </el-table-column>
-      <el-table-column label="INICIO" prop="fecha_inicio_es" width="110" />
-      <el-table-column label="FIN" prop="fecha_fin_es" width="110" />
-      <el-table-column label="ESTADO" prop="estado" width="100" />
+      <el-table-column label="#" width="80" align="center" header-align="center" prop="index" />
+      <el-table-column label="CÓDIGO" prop="producto_codigo" width="100" />
+      <el-table-column label="PRODUCTO" min-width="160" prop="producto_nombre" />
+      <el-table-column label="RESPONSABLE" min-width="140" prop="responsable_full_name" />
+      <el-table-column label="FECHA" prop="fecha_es" width="110" />
+      <el-table-column label="ESTADO" prop="productoestado_nombre" width="100" />
       <el-table-column fixed="right" align="center" width="140">
         <template #header>
           <el-button
@@ -53,14 +100,15 @@
             type="primary"
             plain
             @click="exportarDatos()"
-            v-permission="['inventario.inventarios.exportar']"
+            v-permission="['inventario.inventarios.crear']"
+            :disabled="!tableData.length > 0"
           >
             <template #icon>
               <v-icon name="la-database-solid" />
             </template>
           </el-button>
         </template>
-        <template #default="scope">
+        <!-- <template #default="scope">
           <div>
             <el-icon
               @click="verDetalle(scope.row)"
@@ -100,7 +148,7 @@
               <List />
             </el-icon>
           </div>
-        </template>
+        </template> -->
       </el-table-column>
     </el-table>
     <el-divider />
@@ -150,25 +198,24 @@
 
 <script>
 // import axios from "axios";
-import { Edit, List, Delete } from "@element-plus/icons-vue";
+// import { Edit, List, Delete } from "@element-plus/icons-vue";
 import Resource from "@/api/resource";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { calcularAnchoDialog } from "@/utils/responsive";
 import FormInventario from "@/components/shared/app/inventario/inventarios/InventarioForm.vue";
 import InventarioLayoutDetalle from "@/components/shared/app/inventario/inventarios/InventarioLayoutDetalle.vue";
-const userRequest = new Resource("inventario/inventarios");
-
-const exportResource = new Resource("exportar/inventarios");
+const asignacionesRequest = new Resource("inventario/asignaciones");
+const exportResource = new Resource("exportar/asignaciones");
 
 // export default exportResource;
 export default {
-  name: "InventariosView",
+  name: "AsignacionesView",
   components: {
     FormInventario,
     InventarioLayoutDetalle,
-    Edit,
-    List,
-    Delete,
+    // Edit,
+    // List,
+    // Delete,
   },
   data() {
     return {
@@ -183,6 +230,7 @@ export default {
         keyBuscar: "",
         limit: 7,
         page: 1,
+        buscarpor: 'producto'
       },
       dialogoDetalleInventario: false,
       idItemToEdit: "",
@@ -198,13 +246,19 @@ export default {
   created() {},
   methods: {
     getList() {
+      const { limit, page } = this.query
       this.loading = true;
-      this.query.page = 1;
-      userRequest
+      asignacionesRequest
         .list(this.query)
         .then((response) => {
           const { data, meta } = response;
           this.tableData = data;
+          this.$nextTick(() => {
+            this.tableData.forEach((element, index) => {
+              element['index'] = (page - 1) * limit + index + 1
+              console.log((page - 1) * limit + index + 1)
+            })
+          })
           this.total = meta.total;
           this.loading = false;
         })
@@ -249,7 +303,7 @@ export default {
         }
       )
         .then(() => {
-          userRequest
+          asignacionesRequest
             .destroy(item)
             .then((response) => {
               ElNotification({
@@ -280,8 +334,8 @@ export default {
     },
     exportarDatos() {
       this.loading = true;
-      userRequest
-        .exportar()
+      exportResource
+        .list(this.query)
         .then((response) => {
           this.loading = false;
           const link = document.createElement("a");
@@ -307,23 +361,6 @@ export default {
       this.$nextTick(() => {
         this.inventario_id = "action";
       });
-    },
-    async exportarInventario(id) {
-      // console.log(id);
-      this.loadingData = true;
-      await exportResource
-        .list({ id })
-        .then((response) => {
-          this.loadingData = false;
-          const link = document.createElement("a");
-          link.href = response;
-          document.body.appendChild(link);
-          link.click();
-        })
-        .catch(() => {
-          this.$message("Se ha producido una excepción");
-          this.loadingData = false;
-        });
     },
   },
 };
