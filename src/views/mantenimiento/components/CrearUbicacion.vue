@@ -1,16 +1,16 @@
 <template>
   <div v-loading="loading">
     <el-form
-      ref="nuevoEstadoProducto"
-      :model="nuevoEstado"
+      ref="nuevaAreaForm"
+      :model="nuevaArea"
       :rules="rules"
       label-position="top"
     >
       <el-row :gutter="10">
         <el-col :span="12">
-          <el-form-item label="Codigo" prop="codigo">
+          <el-form-item label="Códigoo" prop="codigo">
             <el-input
-              v-model="nuevoEstado.codigo"
+              v-model="nuevaArea.codigo"
               placeholder="El codigo es autogenerado"
               readonly
               disabled
@@ -19,35 +19,33 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="Nombre" prop="nombre">
-            <el-input v-model="nuevoEstado.nombre" />
+            <el-input v-model="nuevaArea.nombre" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="Descripción" prop="descripcion">
-        <el-input v-model="nuevoEstado.descripcion" />
+        <el-input v-model="nuevaArea.descripcion" />
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" type="flex" justify="end">
       <el-button type="primary" plain @click="close">Cancelar</el-button>
-      <el-button type="primary" @click="crearAlmacen">Guardar</el-button>
+      <el-button type="primary" @click="crearArea">Guardar</el-button>
     </el-row>
   </div>
 </template>
 
 <script>
 import { ElMessage } from "element-plus";
-import EstadoProductoResource from "@/api/mantenimiento/estadoProducto";
-const estadoProductoResource = new EstadoProductoResource();
+import AreaResource from "@/api/mantenimiento/ubicacion";
+const areaResource = new AreaResource();
 
 export default {
-  name: "CrearEstadoProducto",
+  name: "CrearArea",
   data() {
     return {
-      nuevoEstadoProducto: {
-        // Change object name from nuevoEstado to nuevoEstadoProducto
+      nuevaArea: {
         nombre: "",
-        EstadoProducto: "", // Change field name from estado to EstadoProducto
       },
       rules: {
         nombre: [
@@ -61,23 +59,16 @@ export default {
       loading: false,
     };
   },
-  created() {
-    this.resetModel();
-  },
   methods: {
     resetModel() {
-      this.nuevoEstadoProducto = {
-        // Change object name from nuevoEstado to nuevoEstadoProducto
-        nombre: "",
-        EstadoProducto: "", // Change field name from estado to EstadoProducto
-      };
+      this.nuevaArea = {};
     },
-    crearAlmacen() {
-      this.$refs["nuevoEstadoProducto"].validate((valid) => {
+    crearArea() {
+      this.$refs["nuevaAreaForm"].validate((valid) => {
         if (valid) {
           this.loading = true;
-          estadoProductoResource
-            .store(this.nuevoEstadoProducto) // Pass nuevoEstadoProducto instead of nuevoEstado
+          areaResource
+            .store(this.nuevaArea)
             .then((response) => {
               console.log(response);
               this.close();

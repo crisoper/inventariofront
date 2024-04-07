@@ -11,7 +11,7 @@
         <el-input
           v-model="query.keyword"
           @keyup.enter="fetchData()"
-          placeholder="Buscar productoEstado"
+          placeholder="Buscar Ubicación"
         />
       </el-col>
 
@@ -19,7 +19,7 @@
         <el-button
           type="primary"
           style="width: 100% !important"
-          @click="crearProductoEstadoDialog = true"
+          @click="addItem"
         >
           Nuevo
         </el-button>
@@ -35,9 +35,9 @@
       </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
-      <el-table-column prop="codigo" label="CÓDIGO" width="120" />
+      <el-table-column prop="codigo" label="codigo" width="120" />
       <el-table-column prop="nombre" label="Nombre" />
-      <el-table-column prop="descripcion" label="Descripción" />
+      <el-table-column prop="descripcion" label="descripcion" />
       <el-table-column label="Opciones" width="210">
         <template #default="scope">
           <el-icon
@@ -74,23 +74,16 @@
         @current-change="fetchData"
       />
     </el-row>
-    <!-- Nuevo productoEstado -->
-    <el-dialog
-      top="7vh"
-      v-model="crearProductoEstadoDialog"
-      title="Nuevo Producto Estado"
-    >
-      <CrearProductoEstado @close="cerrarDialago" />
+    <!-- Nueva área -->
+    <el-dialog top="5vh" v-model="crearAreaDialog" title="Crear Ubicación">
+      <CrearUbicacion ref="refCrearUbicacion" @close="cerrarDialogo" />
     </el-dialog>
-    <!-- Editar productoEstado -->
-    <el-dialog
-      top="7vh"
-      v-model="editarProductoEstadoDialog"
-      title="Editar Datos"
-    >
-      <EditarProductoEstado
+    <!-- Editar área -->
+    <el-dialog top="5vh" v-model="editarAreaDialog" title="Editar Ubicación">
+      <EditarArea
+        ref="refEditarArea"
         :id="idRegistroEditar"
-        @close="cerrarDialagoEditar"
+        @close="cerrarDialogoEditar"
       />
     </el-dialog>
   </el-card>
@@ -98,25 +91,21 @@
 
 <script>
 // Componentes
-import { ElMessage } from "element-plus";
-import EditarProductoEstado from "./components/EditarProductoEstado.vue";
-import CrearProductoEstado from "./components/CrearProductoEstado.vue";
+import EditarArea from "./components/EditarArea.vue";
+import CrearUbicacion from "./components/CrearUbicacion.vue"; // Cambiado aquí
 import { Edit, List, Delete } from "@element-plus/icons-vue";
 
-// Resource
+// Recursos
+import UbicacionResource from "@/api/mantenimiento/ubicacion";
+import { ElMessage } from "element-plus";
+const ubicacionResource = new UbicacionResource();
+
 import Resource from "@/api/resource";
-const productoEstadoResource = new Resource("inventario/productoestados");
-const exportResource = new Resource("exportar/productoEstado");
+const exportResource = new Resource("exportar/areas");
 
 export default {
-  name: "ProductoEstadoView",
-  components: {
-    CrearProductoEstado,
-    EditarProductoEstado,
-    Edit,
-    List,
-    Delete,
-  },
+  name: "UbicacionView",
+  components: { CrearUbicacion, EditarArea, Edit, List, Delete }, // Cambiado aquí
   data() {
     return {
       loading: false,
@@ -129,8 +118,8 @@ export default {
       total: 0,
       loadingData: false,
       listaItem: [],
-      crearProductoEstadoDialog: false,
-      editarProductoEstadoDialog: false,
+      crearAreaDialog: false,
+      editarAreaDialog: false,
       idRegistroEditar: null,
     };
   },
@@ -140,7 +129,7 @@ export default {
   methods: {
     async fetchData() {
       this.loading = true;
-      productoEstadoResource
+      ubicacionResource
         .list(this.query)
         .then((response) => {
           const { data, meta } = response;
@@ -153,43 +142,45 @@ export default {
           this.loading = false;
         });
     },
-    cerrarDialago() {
-      this.crearProductoEstadoDialog = false;
+    addItem() {
+      this.crearAreaDialog = true;
+      this.$nextTick(() => {
+        this.$refs["refCrearUbicacion"].resetModel(); // Cambiado aquí
+      });
+    },
+    cerrarDialogo() {
+      this.crearAreaDialog = false;
       this.fetchData();
     },
     abrirDialogEditar(id_registro) {
       this.idRegistroEditar = id_registro;
       this.$nextTick(() => {
-        this.editarProductoEstadoDialog = true;
+        this.editarAreaDialog = true;
       });
     },
     eliminarRegistro(id_registro) {
       this.loading = true;
-      productoEstadoResource
+      ubicacionResource
         .destroy(id_registro)
         .then(() => {
           ElMessage({
-            message: "Producto Estado eliminado",
+            message: "Ubicación eliminada",
             type: "success",
           });
           this.fetchData();
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrió un error al eliminar el Producto Estado",
+            message: "Ocurrió un error al eliminar el área",
             type: "error",
           });
           console.log(error);
           this.loading = false;
         });
     },
-
-    cerrarDialagoEditar() {
-      this.editarProductoEstadoDialog = false;
+    cerrarDialogoEditar() {
+      this.editarAreaDialog = false;
       this.fetchData();
-      this.$nextTick(() => {
-        this.idRegistroEditar = -1;
-      });
     },
     async exportarDatos() {
       this.loadingData = true;
@@ -203,7 +194,10 @@ export default {
           link.click();
         })
         .catch(() => {
-          this.$message("Se ha producido una excepción");
+          ElMessage({
+            message: "Se ha producido una excepción al exportar datos",
+            type: "error",
+          });
           this.loadingData = false;
         });
     },

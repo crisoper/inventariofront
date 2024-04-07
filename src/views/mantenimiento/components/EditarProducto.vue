@@ -224,20 +224,6 @@ export default {
             trigger: "blur",
           },
         ],
-        marca_id: [
-          {
-            required: true,
-            message: "El campo es obligatorio.",
-            trigger: "blur",
-          },
-        ],
-        modelo: [
-          {
-            required: true,
-            message: "El campo es obligatorio.",
-            trigger: "blur",
-          },
-        ],
         serie: [
           {
             required: true,
@@ -266,28 +252,21 @@ export default {
             trigger: "blur",
           },
         ],
-        fecha_compra: [
-          {
-            required: true,
-            message: "El campo es obligatorio.",
-            trigger: "blur",
-          },
-        ],
       },
       producto: {
-        id: null,
-        almacen_id: null,
-        categoria_id: null,
-        codigo: null,
-        nombre: null,
-        descripcion: null,
-        marca_id: null,
-        modelo: null,
-        serie: null,
-        tipo_bien_id: null,
-        tipo_activo_id: null,
-        proveedor_id: null,
-        fecha_compra: null,
+        id: "",
+        almacen_id: "",
+        categoria_id: "",
+        codigo: "",
+        nombre: "",
+        descripcion: "",
+        marca_id: "",
+        modelo: "",
+        serie: "",
+        tipo_bien_id: "",
+        tipo_activo_id: "",
+        proveedor_id: "",
+        fecha_compra: "",
       },
       opcionesAlmacen: [],
       opcionesCategoria: [],
@@ -387,7 +366,7 @@ export default {
         if (valid) {
           this.loading = true;
           productoResource
-            .update(this.producto)
+            .update(this.productoId, this.producto)
             .then(() => {
               ElMessage.success("Producto actualizado correctamente.");
               this.closeForm();
@@ -405,6 +384,7 @@ export default {
         }
       });
     },
+
     closeForm() {
       // Cierra el formulario de edición
       this.$emit("close");

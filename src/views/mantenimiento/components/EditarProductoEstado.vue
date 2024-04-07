@@ -1,25 +1,25 @@
 <template>
   <div v-loading="loading">
     <el-form
-      ref="nuevaAreaForm"
-      :model="nuevaArea"
+      ref="nuevoProductoEstadoForm"
+      :model="nuevoProductoEstado"
       :rules="rules"
       label-position="top"
     >
       <el-row :gutter="10">
         <el-col :span="12">
           <el-form-item label="Código" prop="codigo">
-            <el-input v-model="nuevaArea.codigo" readonly disabled />
+            <el-input v-model="nuevoProductoEstado.codigo" readonly disabled />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="Nombre" prop="nombre">
-            <el-input v-model="nuevaArea.nombre" />
+            <el-input v-model="nuevoProductoEstado.nombre" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="Descripción" prop="descripcion">
-        <el-input v-model="nuevaArea.descripcion" />
+        <el-input v-model="nuevoProductoEstado.descripcion" />
       </el-form-item>
     </el-form>
     <el-row :gutter="10" type="flex" justify="end">
@@ -32,10 +32,10 @@
 <script>
 import { ElMessage } from "element-plus";
 
-import AreaResource from "@/api/mantenimiento/area"; // Assuming you have a file named area.js in the specified path
-const areaResource = new AreaResource(); // Adjust this according to your actual file structure
+import ProductoEstadoResource from "@/api/mantenimiento/productoEstado"; // Ajusta según tu estructura de archivos real
+const productoEstadoResource = new ProductoEstadoResource(); // Ajusta según tu estructura de archivos real
 export default {
-  name: "EditarArea",
+  name: "EditarProductoEstado",
   props: {
     id: {
       type: Number,
@@ -54,7 +54,7 @@ export default {
   },
   data() {
     return {
-      nuevaArea: {
+      nuevoProductoEstado: {
         codigo: "",
         nombre: "",
         descripcion: "",
@@ -74,17 +74,17 @@ export default {
   methods: {
     cargarInformacionRegistro() {
       this.loading = true;
-      areaResource
+      productoEstadoResource
         .get(this.id)
         .then((response) => {
           const { data } = response;
           console.log(data);
-          this.nuevaArea = data;
+          this.nuevoProductoEstado = data;
           this.loading = false;
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrio un error",
+            message: "Ocurrió un error",
             type: "error",
           });
           console.log(error);
@@ -93,10 +93,10 @@ export default {
     },
     actualizarRegistro() {
       this.loading = true;
-      areaResource
-        .update(this.id, this.nuevaArea)
+      productoEstadoResource
+        .update(this.id, this.nuevoProductoEstado)
         .then((response) => {
-          console.log(response)
+          console.log(response);
           ElMessage({
             message: "Registro actualizado",
             type: "success",
@@ -105,7 +105,7 @@ export default {
         })
         .catch((error) => {
           ElMessage({
-            message: "Ocurrio un error",
+            message: "Ocurrió un error",
             type: "error",
           });
           console.log(error);

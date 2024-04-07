@@ -25,6 +25,12 @@ const mantenimientoRoutes = {
         meta: { title: 'Áreas', icon: 'bi-person-workspace' }
       },
       {
+        path: '/Ubicaciones',
+        component: () => import('@/views/mantenimiento/UbicacionView.vue'),
+        name: 'Ubicaciones',
+        meta: { title: 'Ubicaciones', icon: 'md-category-round' }
+      },
+      {
         path: '/categorias',
         component: () => import('@/views/mantenimiento/CategoriaView.vue'),
         name: 'Categorias',
@@ -35,6 +41,12 @@ const mantenimientoRoutes = {
         component: () => import('@/views/mantenimiento/MarcaView.vue'),
         name: 'Marcas',
         meta: { title: 'Marcas', icon: 'md-category-round' }
+      },
+      {
+        path: '/productoestados',
+        component: () => import('@/views/mantenimiento/ProductoEstadoView.vue'),
+        name: 'ProductoEstado',
+        meta: { title: 'Estados', icon: 'md-category-round' }
       },
       {
         path: '/tipo_activos',
@@ -60,12 +72,7 @@ const mantenimientoRoutes = {
         name: 'MantenimientoProductos',
         meta: { title: 'Productos', icon: 'co-product-hunt' }
       },
-      {
-        path: '/productoestados',
-        component: () => import('@/views/mantenimiento/ProductoEstadoView.vue'),
-        name: 'ProductoEstado',
-        meta: { title: 'Estados', icon: 'bi-person-workspace' }
-      },
+      
     ]
     
   }
