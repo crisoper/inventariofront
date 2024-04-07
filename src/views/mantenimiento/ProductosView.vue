@@ -33,6 +33,15 @@
           Exportar
         </el-button>
       </el-col>
+      <el-col :span="5">
+        <el-button
+          type="primary"
+          style="width: 100% !important"
+          @click="importarDatos()"
+        >
+          Import
+        </el-button>
+      </el-col>
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column prop="codigo" label="Codigo" width="150" />
@@ -103,7 +112,7 @@
 // Componentes
 import EditarProducto from "./components/EditarProducto.vue";
 import CrearProducto from "./components/CrearProducto.vue";
-import { Edit, List, Delete } from "@element-plus/icons-vue";
+import { Edit, Delete } from "@element-plus/icons-vue";
 
 // Recurso
 import ProductoResource from "@/api/mantenimiento/producto";
@@ -112,9 +121,11 @@ const productoResource = new ProductoResource();
 
 import Resource from "@/api/resource";
 const exportResource = new Resource("exportar/producto");
+const importarResource = new Resource("importarproductos");
+
 export default {
   name: "TipoBienView",
-  components: { CrearProducto, EditarProducto, Edit, List, Delete },
+  components: { CrearProducto, EditarProducto, Edit, Delete },
   data() {
     return {
       loading: false,
@@ -203,6 +214,16 @@ export default {
         .catch(() => {
           this.$message("Se ha producido una excepción");
           this.loadingData = false;
+        });
+    },
+    async importarDatos() {
+      await importarResource
+        .list(this.query)
+        .then((response) => {
+          console.log(response)
+        })
+        .catch(() => {
+          this.$message("Se ha producido una excepción");
         });
     },
   },
