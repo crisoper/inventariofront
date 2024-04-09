@@ -207,15 +207,7 @@
                 <el-option
                   v-for="item in opcionesProveedor"
                   :key="item.id"
-                  :label="
-                    item.tipo == 'Natural'
-                      ? item.nombres +
-                        ' ' +
-                        item.apellido_paterno +
-                        ' ' +
-                        item.apellido_materno
-                      : item.nombres
-                  "
+                  :label="item.documento_numero + ' - ' + item.full_name"
                   :value="item.id"
                 ></el-option>
               </el-select>
@@ -321,15 +313,7 @@
                 <el-option
                   v-for="item in opcionesResponsable"
                   :key="item.id"
-                  :label="
-                    item.tipo == 'Natural'
-                      ? item.nombres +
-                        ' ' +
-                        item.apellido_paterno +
-                        ' ' +
-                        item.apellido_materno
-                      : item.nombres
-                  "
+                  :label="item.documento_numero + ' - ' + item.full_name"
                   :value="item.id"
                 ></el-option>
               </el-select>

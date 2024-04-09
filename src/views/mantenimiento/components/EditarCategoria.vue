@@ -6,6 +6,9 @@
       :rules="rules"
       label-position="top"
     >
+      <el-form-item label="Nomenclatura" prop="nomenclatura">
+        <el-input v-model="nuevaCategoria.nomenclatura" />
+      </el-form-item>
       <el-form-item label="Nombre" prop="nombre">
         <el-input v-model="nuevaCategoria.nombre" />
       </el-form-item>
@@ -47,6 +50,7 @@ export default {
     return {
       nuevaCategoria: {
         nombre: "",
+        nomenclatura: "",
         descripcion: "",
       },
       rules: {
@@ -57,7 +61,7 @@ export default {
             trigger: "blur",
           },
         ],
-        codigo: [
+        nomenclatura: [
           {
             required: true,
             message: "Este campo es obligatorio",

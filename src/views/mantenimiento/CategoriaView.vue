@@ -36,6 +36,7 @@
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column prop="nombre" label="Nombre" />
+      <el-table-column prop="nomenclatura" label="Nomenclatura" />
       <el-table-column prop="descripcion" label="Descripción" />
       <el-table-column label="Opciones" width="200px">
         <template #default="scope">
@@ -96,7 +97,7 @@
 // Componentes
 import EditarCategoria from "./components/EditarCategoria.vue";
 import CrearCategoria from "./components/CrearCategoria.vue";
-import { Edit, List, Delete } from "@element-plus/icons-vue";
+import { Edit, Delete } from "@element-plus/icons-vue";
 
 // Resource
 import CategoriaResource from "@/api/mantenimiento/categoria";
@@ -108,7 +109,7 @@ const exportResource = new Resource("exportar/categoria");
 
 export default {
   name: "CategoriaView",
-  components: { CrearCategoria, EditarCategoria, Edit, List, Delete },
+  components: { CrearCategoria, EditarCategoria, Edit, Delete },
   data() {
     return {
       loading: false,
