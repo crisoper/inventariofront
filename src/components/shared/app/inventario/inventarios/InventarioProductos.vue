@@ -137,8 +137,8 @@
   </div>
   <div>This</div>
   <div style="display: none;">
-      <VuePdfEmbed v-if="srcFilePdf" ref="pdf" :source="srcFilePdf" @loaded="print"/>
-    </div>
+    <VuePdfEmbed v-if="srcFilePdf" ref="pdf" :source="srcFilePdf" @loaded="print"/>
+  </div>
 </template>
 
 <script>

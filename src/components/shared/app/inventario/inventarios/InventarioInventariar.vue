@@ -112,7 +112,7 @@
             :border="true"
             :stripe="true"
             :data="detalleInventario"
-            style="width: 100% !important"
+            style="width: 100% !important; font-size: 95%;"
           >
             <el-table-column prop="area.nombre" label="ÁREA" min-width="180" />
             <el-table-column
@@ -166,17 +166,13 @@
                   <el-option
                     v-for="item in lResponsables"
                     :key="item.id"
-                    :label="
-                        item.tipo == 'Natural'
-                        ? item.documento_numero + ' ' + item.nombres + ' ' + item.apellido_paterno + ' ' + item.apellido_materno
-                        : item.documento_numero + ' ' + item.nombres
-                    "
+                    :label="item.documento_numero + ' - ' + item.full_name"
                     :value="item.id"
                   ></el-option>
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column label="ESTADO" width="140">
+            <el-table-column label="ESTADO" width="126">
               <template #default="scope">
                 <el-select
                   v-model="scope.row.producto_estado_id"
@@ -288,8 +284,9 @@
   </div>
   
   <div style="display: none;">
-      <VuePdfEmbed v-if="srcFilePdf" ref="pdf" :source="pdfSource" />
-    </div>
+      <!-- <VuePdfEmbed v-if="srcFilePdf" ref="pdf" :source="pdfSource" /> -->
+    <VuePdfEmbed v-if="srcFilePdf" ref="pdf" :source="srcFilePdf" @loaded="print"/>
+  </div>
 </template>
 
 <script>

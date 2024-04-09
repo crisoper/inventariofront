@@ -61,6 +61,18 @@ const mantenimientoRoutes = {
         meta: { title: 'Tipo bienes', icon: 'md-category-round' }
       },
       {
+        path: '/tipo_ingresos',
+        component: () => import('@/views/mantenimiento/TipoDeIngresosView.vue'),
+        name: 'tipo_ingresos',
+        meta: { title: 'Tipo de Ingresos', icon: 'md-category-round' }
+      },
+      {
+        path: '/fuente_financiamiento',
+        component: () => import('@/views/mantenimiento/FuenteFinanciamientoView.vue'),
+        name: 'fuente_financiamiento',
+        meta: { title: 'Fuente financiamiento', icon: 'md-category-round' }
+      },
+      {
         path: '/personas',
         component: () => import('@/views/mantenimiento/personas/PersonasView.vue'),
         name: 'Personas',

@@ -81,7 +81,7 @@
             </el-form-item>
           </el-col>
           <el-col :xs="24" :md="12" :lg="8">
-            <el-form-item label="Serie" prop="serie">
+            <el-form-item label="Serie - Placa vehicular" prop="serie">
               <el-input v-model="nuevoProducto.serie" placeholder="" />
             </el-form-item>
           </el-col>
@@ -94,6 +94,38 @@
               >
                 <el-option
                   v-for="item in opcionesCategoria"
+                  :key="item.id"
+                  :label="item.nombre"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :md="12" :lg="8">
+            <el-form-item label="Tipo de ingreso" prop="tipo_ingreso_id">
+              <el-select
+                v-model="nuevoProducto.tipo_ingreso_id"
+                placeholder="Selecionar"
+                style="width: 100% !important"
+              >
+                <el-option
+                  v-for="item in opcionesTipoIngresos"
+                  :key="item.id"
+                  :label="item.nombre"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :md="12" :lg="8">
+            <el-form-item label="Fuente financiamiento" prop="fte_financiamiento_id">
+              <el-select
+                v-model="nuevoProducto.fte_financiamiento_id"
+                placeholder="Selecionar"
+                style="width: 100% !important"
+              >
+                <el-option
+                  v-for="item in opcionesFteFinanciamiento"
                   :key="item.id"
                   :label="item.nombre"
                   :value="item.id"
@@ -134,6 +166,32 @@
             </el-form-item>
           </el-col>
           <el-col :xs="24" :md="12" :lg="8">
+            <el-form-item label="Tipo comprobante" prop="tipo_comprobante">
+              <el-select
+                v-model="nuevoProducto.tipo_comprobante"
+                placeholder="Selecionar"
+                style="width: 100% !important"
+              >
+                <el-option
+                  v-for="item in opcTipoComprobante"
+                  :key="item.id"
+                  :label="item.value"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :md="12" :lg="8">
+            <el-form-item label="Nro comprobante" prop="nro_comprobante">
+              <el-input v-model="nuevoProducto.nro_comprobante" style="width: 100%" placeholder="Nro comprobante" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :md="12" :lg="8">
+            <el-form-item label="Orden de compra" prop="orden_compra">
+              <el-input v-model="nuevoProducto.orden_compra" style="width: 100%" placeholder="Orden de compra" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :md="12" :lg="8">
             <el-form-item label="Proveedor" prop="proveedor_id">
               <el-select
                 v-model="nuevoProducto.proveedor_id"
@@ -171,6 +229,22 @@
                 value-format="YYYY-MM-DD"
                 format="DD-MM-YYYY"
                 style="width: 100% !important"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :md="12" :lg="8">
+            <el-form-item label="Valor de compra" prop="valor_compra">
+              <el-input-number v-model="nuevoProducto.valor_compra" :precision="2" :step="0.1" :min="0" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :md="24" :lg="34">
+            <el-form-item label="Comentarios" prop="comentarios">
+              <el-input
+                v-model="nuevoProducto.comentarios"
+                style="width: 100%"
+                :rows="2"
+                type="textarea"
+                placeholder="Comentarios"
               />
             </el-form-item>
           </el-col>
@@ -262,7 +336,7 @@
             </el-form-item>
           </el-col>
           <el-col :xs="24" :md="12" :lg="8">
-            <el-form-item label="EstadoProducto" prop="producto_estado_id">
+            <el-form-item label="Estado del producto" prop="producto_estado_id">
               <el-select
                 v-model="asignacionProducto.producto_estado_id"
                 placeholder="Selecionar"
@@ -477,7 +551,9 @@ export default {
         modelo: null,
         serie: null,
         tipo_bien_id: null,
+        fte_financiamiento_id: null,
         tipo_activo_id: null,
+        tipo_ingreso_id: null,
         proveedor_id: null,
         fecha_compra: null,
       },
@@ -491,6 +567,11 @@ export default {
         descripcion: null,
         producto_estado_id: null,
       },
+      opcTipoComprobante: [
+        { id: 'Recibo', value: 'Recibo' },
+        { id: 'Boleta', value: 'Boleta' },
+        { id: 'Factura', value: 'Factura' },
+      ],
       opcionesAlmacen: [],
       opcionesCategoria: [],
       opcionesTipoBien: [],
@@ -501,6 +582,8 @@ export default {
       opcionesUbicacion: [],
       opcionesResponsable: [],
       opcionesEstadoProducto: [],
+      opcionesTipoIngresos: [],
+      opcionesFteFinanciamiento: [],
     };
   },
   mounted() {
@@ -518,7 +601,9 @@ export default {
         modelo: null,
         serie: null,
         tipo_bien_id: null,
+        fte_financiamiento_id: null,
         tipo_activo_id: null,
+        tipo_ingreso_id: null,
         proveedor_id: null,
         fecha_compra: null,
       }
@@ -541,6 +626,8 @@ export default {
         opcionesresource.load("tipobien", null),
         opcionesresource.load("tipoactivo", null),
         opcionesresource.load("productoestado", null),
+        opcionesresource.load("tipoingresos", null),
+        opcionesresource.load("ftefinanciamiento", null),
       ])
         .then((respuestas) => {
           this.opcionesAlmacen =
@@ -562,6 +649,14 @@ export default {
           this.opcionesEstadoProducto =
             respuestas[4].data && Array.isArray(respuestas[4].data)
               ? respuestas[4].data
+              : [];
+          this.opcionesTipoIngresos =
+            respuestas[5].data && Array.isArray(respuestas[5].data)
+              ? respuestas[5].data
+              : [];
+          this.opcionesFteFinanciamiento =
+            respuestas[6].data && Array.isArray(respuestas[6].data)
+              ? respuestas[6].data
               : [];
         })
         .catch((error) => {
