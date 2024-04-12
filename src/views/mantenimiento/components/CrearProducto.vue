@@ -540,6 +540,7 @@ export default {
         tipo_ingreso_id: null,
         proveedor_id: null,
         fecha_compra: null,
+        comentarios: null
       },
       asignacionProducto: {
         codigo: null, // se autogenera en el backend
@@ -590,6 +591,7 @@ export default {
         tipo_ingreso_id: null,
         proveedor_id: null,
         fecha_compra: null,
+        comentarios: null
       }
       this.asignacionProducto = {
         codigo: null, // se autogenera en el backend
