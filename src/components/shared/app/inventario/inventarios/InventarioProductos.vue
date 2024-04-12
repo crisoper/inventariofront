@@ -7,13 +7,17 @@
           style="max-width: 600px"
           placeholder="Buscar"
           class="input-with-select"
+          @keyup.enter="loadData"
+          :clearable="true"
+          @clear="loadData"
         >
           <template #prepend>
             <el-select
-              v-model="query.area_id"
-              placeholder="Área"
+              v-model="query.ubicacion_id"
+              placeholder="Ubicación"
               style="width: 140px"
               :clearable="true"
+              @clear="loadData"
             >
               <el-option
                 v-for="area in lAreas"
@@ -76,7 +80,7 @@
         </template>
       </el-table-column>
       <el-table-column type="selection" width="47" />
-      <el-table-column prop="area_nombre" label="ÁREA" min-width="180" />
+      <el-table-column prop="ubicacion_nombre" label="UBICACIÓN" min-width="180" />
       <el-table-column prop="producto_codigo" label="CÓDIGO" width="110" />
       <el-table-column prop="producto_nombre" label="PRODUCTO" min-width="180" />
       <el-table-column label="Acciones" width="90">
@@ -92,12 +96,12 @@
           <div class="text-center">
             <el-icon
               v-if="scope.row.eliminable"
-              @click="editarItem(scope.row)"
+              @click="eliminarItem(scope.row)"
               color="#e94560"
               size="18px"
               class="icon-btn pointer"
-              title="Detalle
-            ">
+              title="Eliminar"
+            >
               <Delete />
             </el-icon>
             <el-icon
@@ -135,17 +139,16 @@
       Por favor, inténtelo nuevamente.
     </p>
   </div>
-  <div>This</div>
   <div style="display: none;">
     <VuePdfEmbed v-if="srcFilePdf" ref="pdf" :source="srcFilePdf" @loaded="print"/>
   </div>
 </template>
 
 <script>
-import { ElNotification } from 'element-plus'
+import { ElNotification, ElMessage, ElMessageBox } from 'element-plus'
 import { Delete, Close, Refresh, Search, ScaleToOriginal, Printer } from "@element-plus/icons-vue"
 import Resource from "@/api/resource"
-const areasResource = new Resource("inventario/all/areas")
+const areasResource = new Resource("inventario/all/ubicaciones")
 const invdetalleResource = new Resource("inventario/inventariodetalle")
 const imprimirEtiquetas = new Resource("inventario/imprimiretiquetasmasivo")
 // PDF PREVIEW
@@ -177,7 +180,7 @@ export default {
       loadingData: false,
       lAreas: [],
       query: {
-        area_id: undefined,
+        ubicacion_id: undefined,
         keyBuscar: '',
         page: 1,
         limit: 7,
@@ -250,8 +253,39 @@ export default {
       }
       this.$emit("closeChild", status);
     },
-    editarItem(detalle) {
-      console.log(detalle)
+    eliminarItem(detalle) {
+      const message = `
+      ¿Esta seguro que desea eliminar el producto del inventario?<br>
+      <strong>${detalle.producto_codigo} - ${detalle.producto_nombre}</strong>
+      `
+      ElMessageBox.confirm(
+      message,
+      'Atención',
+      {
+        dangerouslyUseHTMLString: true,
+        confirmButtonText: 'Si, eliminar',
+        cancelButtonText: 'Cancelar',
+        type: 'warning',
+      }
+    )
+      .then(() => {
+        invdetalleResource
+        .destroy(detalle.id)
+        .then((response) => {
+          const { state, message } = response
+          ElMessage({
+            type: state,
+            message: message,
+          })
+          this.loadData()
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+      })
+      .catch(() => {
+        ElMessage('Operación cancelada')
+      })
     },
     imprimirItem(url) {
       this.loadingData = true

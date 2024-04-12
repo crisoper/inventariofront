@@ -13,16 +13,17 @@
         <el-card class="box-card" shadow="never">
           <el-row :gutter="12">
             <el-col :xs="24" :sm="24" :md="11">
-              <el-form-item label="Area" prop="area_id">
+              <el-form-item label="Ubicación" prop="ubicacion_id">
                 <el-select
-                  v-model="modelForm.area_id"
+                  v-model="modelForm.ubicacion_id"
                   placeholder="Seleccionar"
                   style="width: 100%"
                   :filterable="true"
                   :clearable="true"
+                  @clear="modelForm.ubicacion_id = undefined"
                 >
                   <el-option
-                    v-for="area in lAreas"
+                    v-for="area in lUbicaciones"
                     :key="area.id"
                     :label="area.nombre"
                     :value="area.id"
@@ -48,6 +49,7 @@
                 </template>
                 <div class="divSelectProducto">
                   <el-select
+                    :disabled="modelForm.ubicacion_id === undefined"
                     v-model="modelForm.producto_id"
                     placeholder="Buscar código o nombre"
                     popper-class="selectProducto"
@@ -73,7 +75,7 @@
                     >
                       <div class="optionProducto">
                         <p>{{ item.codigo }} - {{ item.nombre }}</p>
-                        <p>{{ item.descripcion }}</p>
+                        <!-- <p>{{ item.descripcion }}</p> -->
                         <p>
                           <strong>Responsable: </strong
                           ><small>{{
@@ -85,12 +87,12 @@
                           }}</small>
                         </p>
                         <p>
-                          <strong>Almacen: </strong
-                          ><small>{{
-                            item.almacen != null
-                              ? item.almacen.nombre
-                              : "No se reconoce almacen"
-                          }}</small>
+                          <strong>Área: </strong
+                          ><small>{{ item?.ultimaasignacionresponsable?.area?.nombre }}</small>
+                        </p>
+                        <p>
+                          <strong>Ubicación: </strong
+                          ><small>{{ item?.ultimaasignacionresponsable?.ubicacion?.nombre }}</small>
                         </p>
                       </div>
                     </el-option>
@@ -114,7 +116,7 @@
             :data="detalleInventario"
             style="width: 100% !important; font-size: 95%;"
           >
-            <el-table-column prop="area.nombre" label="ÁREA" min-width="180" />
+            <el-table-column prop="ubicacion.nombre" label="UBICACION" min-width="180" />
             <el-table-column
               prop="producto.codigo"
               label="CÓDIGO"
@@ -126,10 +128,10 @@
               min-width="180"
             />
             <!-- Campos de formulario -->
-            <el-table-column label="UBICACIÓN" min-width="210">
+            <el-table-column label="ÁREA" min-width="210">
               <template #default="scope">
                 <el-select
-                  v-model="scope.row.ubicacion_id"
+                  v-model="scope.row.area_id"
                   placeholder="Seleccionar"
                   style="width: 100%"
                   :filterable="true"
@@ -141,7 +143,7 @@
                     handleBuscarOpciones(query, 'ubicacion', scope.$index)
                 " -->
                   <el-option
-                    v-for="item in lUbicaciones"
+                    v-for="item in lAreas"
                     :key="item.id"
                     :label="item.nombre"
                     :value="item.id"
@@ -352,6 +354,7 @@ export default {
         area_id: undefined,
         producto_id: undefined,
       },
+      productoFound: {},
       showPrintBtn: false,
       reglasValidacionForm: {
         area_id: [
@@ -492,6 +495,14 @@ export default {
           .then((response) => {
             const { data } = response;
             this.listProductos = data;
+            setTimeout(() => {
+              console.log('Agregando producto')
+              if (this.listProductos.length === 1) {
+                this.productoFound = {... this.listProductos[0]}
+                this.modelForm.producto_id = this.productoFound.id
+                this.addProductoDetalle()
+              }
+            }, 250)
           })
           .catch((error) => {
             console.log(error);
@@ -525,15 +536,17 @@ export default {
       });
     },
     processAddItem() {
-      const foundArea = this.lAreas.find(
-        (area) => area.id === this.modelForm.area_id
+      const foundUbicacion = this.lUbicaciones.find(
+        (ubicacion) => ubicacion.id === this.modelForm.ubicacion_id
       )
+
       const foundProducto = this.listProductos.find(
         (producto) => producto.id === this.modelForm.producto_id
       )
+
       this.detalleInventario.push({
-        area: foundArea,
-        area_id: foundArea.id,
+        ubicacion: foundUbicacion,
+        ubicacion_id: foundUbicacion.id,
         producto: foundProducto,
         producto_id: foundProducto.id,
         producto_codigo: foundProducto.codigo,
@@ -541,15 +554,17 @@ export default {
         archivo_url: "",
         archivo_existe: false,
         id: undefined,
-        ubicacion_id: foundProducto.ultimaasignacionresponsable?.ubicacion_id,
+        area_id: foundProducto.ultimaasignacionresponsable?.area_id,
         responsable_id: foundProducto.ultimaasignacionresponsable?.responsable_id,
         producto_estado_id: foundProducto.ultimaasignacionresponsable?.producto_estado_id,
         descripcion: null,
-        opcionesUbicacion: foundProducto.ultimaasignacionresponsable != null ? [foundProducto.ultimaasignacionresponsable?.ubicacion] : [],
+        opcionesArea: foundProducto.ultimaasignacionresponsable != null ? [foundProducto.ultimaasignacionresponsable?.area] : [],
         opcionesResponsable: foundProducto.ultimaasignacionresponsable != null ? [foundProducto.ultimaasignacionresponsable?.responsable] : [],
       });
       this.modelForm.producto_id = undefined;
-      console.log(this.detalleInventario);
+      this.$nextTick(() => {
+        this.listProductos = []
+      })
     },
     nuevoProducto() {
       // console.log('Nuevo producto')

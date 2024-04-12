@@ -18,7 +18,11 @@
         </el-col>
         <el-col :xs="24" :sm="12" :md="8">
           <el-form-item label="Número de documento" prop="documento_numero">
-            <el-input v-model="nuevaPersona.documento_numero" />
+            <el-input v-model="nuevaPersona.documento_numero" :disabled="nuevaPersona.documento_tipo === undefined">
+              <template #append>
+                <el-button :icon="Search" @click="consultaDatos()"/>
+              </template>
+            </el-input>
           </el-form-item>
         </el-col>
         <el-col :xs="24" :sm="12" :md="8">
@@ -87,14 +91,37 @@
 </template>
 
 <script>
+import { Search } from '@element-plus/icons-vue'
 import { ElMessage } from "element-plus";
 import PersonaResource from "@/api/mantenimiento/persona";
+import Resource from "@/api/resource"
 const personaResource = new PersonaResource();
+const consultaResource = new Resource("inventario/personadni");
 
 export default {
   name: "CrearPersona",
+  components: {
+    Search
+  },
   data() {
+    var ValidDocumentoIdentidad = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('Please input the age'));
+      }
+      setTimeout(() => {
+        if (!Number.isInteger(value)) {
+          callback(new Error('Please input digits'));
+        } else {
+          if (value < 18) {
+            callback(new Error('Age must be greater than 18'));
+          } else {
+            callback();
+          }
+        }
+      }, 1000);   
+    }
     return {
+      Search,
       nuevaPersona: {},
       rules: {
         documento_tipo: [
@@ -217,6 +244,28 @@ export default {
     close() {
       this.$emit("close");
     },
+    consultaDatos() {
+
+      consultaResource
+        .get(this.nuevaPersona.documento_numero)
+        .then((response) => {
+          const { state, data, message } = response
+          console.log(data)
+          if (state === 'success') {
+            const { data } = response.data
+            this.nuevaPersona.documento_numero = data.numero
+            this.nuevaPersona.apellido_materno = data.apellido_materno
+            this.nuevaPersona.apellido_paterno = data.apellido_paterno
+            this.nuevaPersona.nombres = data.nombres
+            console.log(data)
+          } else {
+            ElMessage({ message });
+          }
+        })
+        .catch((erro) => {
+          console.log(erro)
+        })
+    }
   },
 };
 </script>

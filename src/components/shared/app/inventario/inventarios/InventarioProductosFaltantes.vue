@@ -7,6 +7,9 @@
           style="max-width: 600px"
           placeholder="Buscar"
           class="input-with-select"
+          @keyup.enter="loadData"
+          :clearable="true"
+          @clear="loadData"
         >
           <template #append>
             <el-button type="primary" :icon="Search" @click="loadData" />
@@ -46,23 +49,19 @@
                 </tr>
                 <tr>
                   <td class="font-weight-600">Área</td>
-                  <td>{{ props.row.area_nombre }}</td>
+                  <td>{{ props.row.ultimaasignacionresponsable?.area?.nombre }}</td>
                 </tr>
                 <tr>
                   <td class="font-weight-600">Ubicación</td>
-                  <td>{{ props.row.ubicacion_nombre }}</td>
+                  <td>{{ props.row.ultimaasignacionresponsable?.ubicacion?.nombre }}</td>
                 </tr>
                 <tr>
                   <td class="font-weight-600">Estado</td>
-                  <td>{{ props.row.producto_estado_nombre }}</td>
+                  <td>{{ props.row.ultimaasignacionresponsable?.productoestado?.nombre }}</td>
                 </tr>
                 <tr>
                   <td class="font-weight-600">Fecha</td>
-                  <td>{{ props.row.fecha_es }}</td>
-                </tr>
-                <tr>
-                  <td class="font-weight-600">Inventariador</td>
-                  <td>{{ props.row.inventariador_nombre }}</td>
+                  <td>{{ props.row.ultimaasignacionresponsable?.fecha_es }}</td>
                 </tr>
               </tbody>
             </table>
@@ -72,40 +71,6 @@
       <el-table-column prop="codigo" label="CÓDIGO" width="120" />
       <el-table-column prop="nombre" label="PRODUCTO" min-width="180" />
       <el-table-column prop="fecha_compra_es" label="FECHA COMPRA" width="150" />
-      <!-- <el-table-column label="Acciones" width="90"> -->
-        <!-- <template #header>
-          <el-button
-            :disabled="!multipleSelection.length > 0"
-            type="primary"
-            :icon="Printer"
-            @click="imprimirEtiquetasSeleccionados()"
-          />
-        </template> -->
-        <!-- <template #default="scope">
-          <div class="text-center">
-            <el-icon
-              v-if="scope.row.eliminable"
-              @click="editarItem(scope.row)"
-              color="#e94560"
-              size="18px"
-              class="icon-btn pointer"
-              title="Detalle
-            ">
-              <Delete />
-            </el-icon>
-            <el-icon
-              v-if="scope.row.archivo_existe"
-              @click="imprimirItem(scope.row.archivo_link)"
-              color="#333333"
-              size="18px"
-              class="icon-btn pointer"
-              title="Imprimir"
-            >
-              <ScaleToOriginal />
-            </el-icon>
-          </div>
-        </template> -->
-      <!-- </el-table-column> -->
     </el-table>
     <el-row type="flex" class="mt-4" justify="end">
       <el-pagination

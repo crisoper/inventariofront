@@ -1,4 +1,4 @@
-<template>
+  <template>
   <el-card shadow="never">
     <el-row
       :gutter="10"
@@ -102,11 +102,11 @@
       </el-col>
     </el-row>
     <!-- Nueva área -->
-    <el-dialog v-model="editarAreaDialog" title="Editar Persona">
+    <el-dialog width="90%" top="5vh" v-model="editarAreaDialog" title="Editar Persona">
       <EditarPersona :id="idRegistroEditar" @close="cerrarDialagoEditar" />
     </el-dialog>
     <!-- Editar área -->
-    <el-dialog v-model="crearAreaDialog" title="Crear Persona">
+    <el-dialog width="90%" top="5vh" v-model="crearAreaDialog" title="Crear Persona">
       <CrearPersona @close="cerrarDialago" />
     </el-dialog>
     <!-- Dialog Asignaciones Persona -->
