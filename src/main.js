@@ -12,12 +12,14 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import './assets/variables.css'
 import Permision from './directives/permission'
 
-import { OhVueIcon, addIcons } from 'oh-vue-icons'
+// import { OhVueIcon, addIcons } from 'oh-vue-icons'
 
-import * as Icons from "oh-vue-icons/icons";
+// import * as Icons from "oh-vue-icons/icons";
 
-const AllIcons = Object.values({ ...Icons });
-addIcons(...AllIcons);
+// const AllIcons = Object.values({ ...Icons });
+// addIcons(...AllIcons);
+
+import SvgIcon from '@/components/SvgIcon/SvgIcon.vue'
 
 
 
@@ -28,7 +30,8 @@ app.use(pinia)
 app.use(router)
 
 app.directive('permission', Permision)
-app.component('v-icon', OhVueIcon)
+// app.component('v-icon', OhVueIcon)
+app.component('v-icon', SvgIcon)
 app.use(ElementPlus)
 
 app.mount('#app')
