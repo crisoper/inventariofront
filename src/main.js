@@ -1,4 +1,10 @@
+import 'element-plus/dist/index.css'
+import 'element-plus/theme-chalk/dark/css-vars.css'
 import './assets/main.css'
+import './assets/variables.css'
+
+import ElementPlus from 'element-plus'
+import Permision from './directives/permission'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -6,18 +12,15 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import 'element-plus/theme-chalk/dark/css-vars.css'
-import './assets/variables.css'
-import Permision from './directives/permission'
 
-import { OhVueIcon, addIcons } from 'oh-vue-icons'
+// import { OhVueIcon, addIcons } from 'oh-vue-icons'
 
-import * as Icons from "oh-vue-icons/icons";
+import SvgIcon from '@/components/SvgIcon/SvgIcon.vue'
 
-const AllIcons = Object.values({ ...Icons });
-addIcons(...AllIcons);
+// import * as Icons from "oh-vue-icons/icons";
+
+// const AllIcons = Object.values({ ...Icons });
+// addIcons(...AllIcons);
 
 
 
@@ -28,7 +31,7 @@ app.use(pinia)
 app.use(router)
 
 app.directive('permission', Permision)
-app.component('v-icon', OhVueIcon)
+app.component('v-icon', SvgIcon)
 app.use(ElementPlus)
 
 app.mount('#app')

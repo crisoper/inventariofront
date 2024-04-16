@@ -86,7 +86,7 @@
   <script>
   import Resource from '@/api/resource'
   const PERSONASResource = new Resource('maestros/personas')
-  const lTipoDocIdentidadResource = new Resource('tipodocidentidadall')
+  const lTipoDocIdentidadResource = new Resource('tipodocidentidadad')
   
   export default {
     name: 'FormDepartamento',

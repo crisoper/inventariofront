@@ -1,7 +1,7 @@
 <template>
   <div v-if="query.inventario_id > 0" v-loading="loadingData" class="box-card mt-3" shadow="never">
     <el-row :gutter="12" class="mb-3">
-      <el-col :xs="24" :sm="18" :md="20" class="mb-2">
+      <el-col :xs="24" :sm="18" :md="16" class="mb-2">
         <el-input
           v-model="query.keyBuscar"
           style="max-width: 600px"
@@ -15,6 +15,15 @@
             <el-button type="primary" :icon="Search" @click="loadData" />
           </template>
         </el-input>
+      </el-col>
+      <el-col :xs="12" :sm="6" :md="4">
+        <el-button
+          type="primary"
+          style="width: 100% !important"
+          @click="nuevoProducto()"
+        >
+          Nuevo producto
+        </el-button>
       </el-col>
       <el-col :xs="12" :sm="6" :md="4">
         <el-button
@@ -84,6 +93,18 @@
         @current-change="loadData"
       />
     </el-row>
+    <el-dialog
+      v-model="dialogBuscarProducto"
+      title="Registrar producto"
+      width="85%"
+      top="5vh"
+      :close-on-click-modal="false"
+      :appeappend-to-body="true"
+    >
+      <div>
+        <CrearProducto ref="refCrearProducto" @close="cerrarDialogCrear($event)" />
+      </div>
+    </el-dialog>
   </div>
   <div v-else>
     <p>
@@ -105,13 +126,14 @@ import {
   // ScaleToOriginal,
   Printer } from "@element-plus/icons-vue"
 import Resource from "@/api/resource"
+import CrearProducto from "@/components/shared/app/productos/FormAddProducto.vue";
 const faltantesResource = new Resource("inventario/productosfaltantes")
 const exportResource = new Resource("exportar/productosfaltantes/inventario");
-// const imprimirEtiquetas = new Resource("inventario/imprimiretiquetasmasivo")
 
 export default {
   name: "FormUser",
   components: {
+    CrearProducto
     // Delete,
     // ScaleToOriginal
     // formBuscarPersona,
@@ -140,6 +162,7 @@ export default {
         limit: 7,
         inventario_id: -99
       },
+      dialogBuscarProducto: false,
       total: 0,
       detalleInventario: [],
       multipleSelection: []
@@ -221,6 +244,15 @@ export default {
     handleSelectionChange(value) {
       this.multipleSelection = value
     },
+    nuevoProducto() {
+      this.dialogBuscarProducto = true;
+      this.$nextTick(() => {
+        this.$refs['refCrearProducto'].resetModel()
+      })
+    },
+    cerrarDialogCrear(data) {
+      this.dialogBuscarProducto = false
+    }
   },
 };
 </script>

@@ -68,7 +68,7 @@ service.interceptors.response.use(
     // console.log('err ', error.response.status) // for debug
     let mimsgerror = error.message
     // let mititle = 'Error inesperado'
-    let mimsg = '<ul>'
+    let mimsg = ''
 
     // Este error devuelto con codigo 422, Request Laravel
     if (error.response.status === 422) {
@@ -77,13 +77,13 @@ service.interceptors.response.use(
         if (Object.getOwnPropertyDescriptor(error.response.data, 'errors')) {
           Object.entries(error.response.data.errors).forEach(function(item) {
             item[1].forEach(function(elemento) {
-              mimsg += '<li>' + elemento + '</li>'
+              mimsg += '<p>' + elemento + '</p>'
             })
           })
         }
         ElMessage({
           dangerouslyUseHTMLString: true,
-          message: '<strong>Operación no realizada!</strong> <em> las razones pueden ser:</em><br>' + mimsg,
+          message: '<strong>Operación no realizada!</strong><br />las razones pueden ser:<br><br>' + mimsg,
           type: 'info',
           duration: 6.25 * 1000
         })

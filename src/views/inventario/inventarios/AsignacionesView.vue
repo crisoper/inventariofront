@@ -108,7 +108,7 @@
             </template>
           </el-button>
         </template>
-        <!-- <template #default="scope">
+        <template #default="scope">
           <div>
             <el-icon
               @click="verDetalle(scope.row)"
@@ -120,16 +120,7 @@
               <List />
             </el-icon>
             <el-icon
-              @click="editItem(scope.row)"
-              color="#409EFC"
-              size="18px"
-              class="icon-btn pointer"
-              title="Editar"
-            >
-              <Edit />
-            </el-icon>
-            <el-icon
-              v-if="scope.row.eliminable"
+              v-if="scope.row.inventario_detalle_id === null"
               @click="deleteItem(scope.row)"
               color="#f9616d"
               size="18px"
@@ -138,17 +129,8 @@
             >
               <Delete />
             </el-icon>
-            <el-icon
-              @click="exportarInventario(scope.row.id)"
-              color="#67C23A"
-              size="18px"
-              class="icon-btn pointer"
-              title="Exportar a Excel"
-            >
-              <List />
-            </el-icon>
           </div>
-        </template> -->
+        </template>
       </el-table-column>
     </el-table>
     <el-divider />
@@ -164,31 +146,17 @@
         @current-change="getList"
       />
     </el-row>
+    <!-- :width="calcularAnchoDialog('80%', '90%')" -->
     <el-dialog
-      v-model="openDialog"
-      :width="calcularAnchoDialog('80%', '90%')"
-      top="5vh"
-      :before-close="handleClose"
-    >
-      <template #header>
-        <h2>{{ titleForm }}</h2>
-      </template>
-      <FormInventario
-        ref="formFormInventario"
-        :itemid="item_id"
-        @closeChild="handleCloseCreate($event)"
-      />
-    </el-dialog>
-    <el-dialog
-      v-model="dialogoDetalleInventario"
+      v-model="dialogAsignacionMasivo"
       :fullscreen="true"
       :before-close="handleCloseDetalle"
     >
       <template #header>
-        <h2>{{ titleDialogoDetalleInventario }}</h2>
+        <h2>Registrar asignaciones</h2>
       </template>
-      <InventarioLayoutDetalle
-        ref="refInventarioLayoutDetalle"
+      <AsignacionMasivo
+        ref="refAsignacionMasivo"
         :inventarioid="inventario_id"
         @closeChild="closeInventarioLayoutDetalle($event)"
       />
@@ -198,12 +166,11 @@
 
 <script>
 // import axios from "axios";
-// import { Edit, List, Delete } from "@element-plus/icons-vue";
+import { List, Delete } from "@element-plus/icons-vue";
 import Resource from "@/api/resource";
 import { ElMessageBox, ElNotification } from "element-plus";
 import { calcularAnchoDialog } from "@/utils/responsive";
-import FormInventario from "@/components/shared/app/inventario/inventarios/InventarioForm.vue";
-import InventarioLayoutDetalle from "@/components/shared/app/inventario/inventarios/InventarioLayoutDetalle.vue";
+import AsignacionMasivo from "@/components/shared/app/inventario/asignar/asignacionMasivo.vue";
 const asignacionesRequest = new Resource("inventario/asignaciones");
 const exportResource = new Resource("exportar/asignaciones");
 
@@ -211,15 +178,13 @@ const exportResource = new Resource("exportar/asignaciones");
 export default {
   name: "AsignacionesView",
   components: {
-    FormInventario,
-    InventarioLayoutDetalle,
-    // Edit,
-    // List,
-    // Delete,
+    AsignacionMasivo,
+    List,
+    Delete,
   },
   data() {
     return {
-      openDialog: false,
+      dialogAsignacionMasivo: false,
       openDialogEdit: false,
       loading: false,
       tableData: [],
@@ -232,7 +197,6 @@ export default {
         page: 1,
         buscarpor: 'producto'
       },
-      dialogoDetalleInventario: false,
       idItemToEdit: "",
       calcularAnchoDialog,
       titleForm: "Agregar registro",
@@ -256,7 +220,6 @@ export default {
           this.$nextTick(() => {
             this.tableData.forEach((element, index) => {
               element['index'] = (page - 1) * limit + index + 1
-              console.log((page - 1) * limit + index + 1)
             })
           })
           this.total = meta.total;
@@ -269,7 +232,7 @@ export default {
     },
     handleCloseCreate(status) {
       console.log(status);
-      this.openDialog = false;
+      this.dialogAsignacionMasivo = false;
       if (status == "success") {
         this.getList();
       }
@@ -279,32 +242,37 @@ export default {
     },
     addItem() {
       this.titleForm = "Agregar registro";
-      this.openDialog = true;
+      this.dialogAsignacionMasivo = true;
       this.$nextTick(() => {
+        this.$refs["refAsignacionMasivo"].resetData()
         this.item_id = "create";
       });
     },
     editItem(item) {
       this.titleForm = "Modificar registro";
-      this.openDialog = true;
+      this.dialogAsignacionMasivo = true;
       this.$nextTick(() => {
         this.item_id = item.id;
       });
     },
     deleteItem(item) {
-      console.log(item);
+      const message = `
+      ¿Está seguro que desea eliminar el registro? <br>
+      <strong>${item.producto_codigo} - ${item.producto_nombre}</strong><br><br>
+      `
       ElMessageBox.confirm(
-        "¿Está seguro que desea eliminar el usuario?",
-        "Eliminar usuario",
+        message,
+        "Eliminar registro",
         {
-          confirmButtonText: "Sí",
+          dangerouslyUseHTMLString: true,
+          confirmButtonText: "Sí, eliminar",
           cancelButtonText: "Cancelar",
           type: "warning",
         }
       )
         .then(() => {
           asignacionesRequest
-            .destroy(item)
+            .destroy(item.id)
             .then((response) => {
               ElNotification({
                 title: "Usuario eliminado",
@@ -350,14 +318,14 @@ export default {
     verDetalle(model) {
       // console.log(model)
       this.titleDialogoDetalleInventario = model.nombre;
-      this.dialogoDetalleInventario = true;
+      this.dialogAsignacionMasivo = true;
       this.$nextTick(() => {
         this.inventario_id = model.id;
         this.$refs["refInventarioLayoutDetalle"].activeName = "first";
       });
     },
     closeInventarioLayoutDetalle() {
-      this.dialogoDetalleInventario = false;
+      this.dialogAsignacionMasivo = false;
       this.$nextTick(() => {
         this.inventario_id = "action";
       });

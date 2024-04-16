@@ -5,7 +5,7 @@
         <h3>{{ UserEmail }}</h3>
       </div>
       <el-avatar :size="30" style="overflow: hidden; margin-right: 12px">
-        <img src="@/assets/avatar/avatar0.svg" alt="User Avatar" />
+        <img :src="avatar" alt="User Avatar" />
       </el-avatar>
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
@@ -15,8 +15,8 @@
           <el-dropdown-menu>
             <el-dropdown-item @click="openProfile">
               <span>
-                <el-avatar :size="18" style="margin-right: 10px">
-                  <img src="@/assets/avatar/avatar0.svg" alt="User Avatar" />
+                <el-avatar :size="18" style="margin-right: 10px">∫
+                  <img :src="avatar" alt="User Avatar" />
                 </el-avatar>
                 Perfil
               </span>
@@ -36,7 +36,7 @@
     </el-row>
     <el-dialog
       v-model="dialogVisible"
-      title="CERRAR SESIÓN"
+      title="Cerrar sesión"
       width="20%"
       top="30vh"
       center
@@ -61,6 +61,7 @@
 import { computed, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import avatar from '@/assets/avatar/user.png'
 
 // import { useDark, useToggle } from '@vueuse/core'
 // const isDark = useDark()

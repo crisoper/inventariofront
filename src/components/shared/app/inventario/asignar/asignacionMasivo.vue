@@ -1,5 +1,5 @@
 <template>
-  <div v-if="inventario_id > 0" v-loading="loadingData">
+  <div v-loading="loadingData">
     <!-- <h2>{{ inventario_id }}</h2> -->
     <el-form
       ref="formAdditem"
@@ -13,20 +13,20 @@
         <el-card class="box-card" shadow="never">
           <el-row :gutter="12">
             <el-col :xs="24" :sm="24" :md="11">
-              <el-form-item label="Ubicación" prop="ubicacion_id">
+              <el-form-item label="Responsable" prop="responsable_id">
                 <el-select
-                  v-model="modelForm.ubicacion_id"
+                  v-model="modelForm.responsable_id"
                   placeholder="Seleccionar"
                   style="width: 100%"
                   :filterable="true"
                   :clearable="true"
-                  @clear="modelForm.ubicacion_id = undefined"
+                  @clear="modelForm.responsable_id = undefined"
                 >
                   <el-option
-                    v-for="area in lUbicaciones"
-                    :key="area.id"
-                    :label="area.nombre"
-                    :value="area.id"
+                    v-for="responsable in lResponsables"
+                    :key="responsable.id"
+                    :label="responsable.documento_numero + ' - ' + responsable.full_name"
+                    :value="responsable.id"
                   />
                 </el-select>
               </el-form-item>
@@ -49,7 +49,7 @@
                 </template>
                 <div class="divSelectProducto">
                   <el-select
-                    :disabled="modelForm.ubicacion_id === undefined"
+                    :disabled="modelForm.responsable_id === undefined"
                     v-model="modelForm.producto_id"
                     placeholder="Buscar código o nombre"
                     popper-class="selectProducto"
@@ -116,7 +116,6 @@
             :data="detalleInventario"
             style="width: 100% !important; font-size: 95%;"
           >
-            <el-table-column prop="ubicacion.nombre" label="UBICACION" min-width="180" />
             <el-table-column
               prop="producto.codigo"
               label="CÓDIGO"
@@ -136,12 +135,6 @@
                   style="width: 100%"
                   :filterable="true"
                 >
-                <!-- remote
-                reserve-keyword
-                :remote-method="
-                  (query) =>
-                    handleBuscarOpciones(query, 'ubicacion', scope.$index)
-                " -->
                   <el-option
                     v-for="item in lAreas"
                     :key="item.id"
@@ -151,26 +144,37 @@
                 </el-select>
               </template>
             </el-table-column>
-            <el-table-column label="RESPONSABLE" min-width="200">
+            <el-table-column label="UBICACION" min-width="200">
               <template #default="scope">
                 <el-select
-                  v-model="scope.row.responsable_id"
+                  v-model="scope.row.ubicacion_id"
                   :filterable="true"
                   style="width: 100% !important"
                   placeholder="Seleccionar"
                 >
-                <!-- remote
-                reserve-keyword
-                :remote-method="
-                  (query) =>
-                    handleBuscarOpciones(query, 'persona', scope.$index)
-                " -->
                   <el-option
-                    v-for="item in lResponsables"
-                    :key="item.id"
-                    :label="item.documento_numero + ' - ' + item.full_name"
-                    :value="item.id"
+                    v-for="ubicacion in lUbicaciones"
+                    :key="ubicacion.id"
+                    :label="ubicacion.nombre"
+                    :value="ubicacion.id"
                   ></el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column label="CONDICIÓN" width="160">
+              <template #default="scope">
+                <el-select
+                  v-model="scope.row.condicion"
+                  style="width: 100%"
+                  :filterable="true"
+                  placeholder="Seleccionar"
+                >
+                  <el-option
+                    v-for="item in lCondiciones"
+                    :key="item.id"
+                    :label="item.nombre"
+                    :value="item.id"
+                  />
                 </el-select>
               </template>
             </el-table-column>
@@ -214,8 +218,7 @@
             </el-table-column>
             <el-table-column fixed="right" label="ACCIONES" width="180">
               <template #header>
-                <el-button
-                  v-if="!showPrintBtn"
+                <el-button  
                   :disabled="!detalleInventario.length > 0"
                   type="primary"
                   @click="submitDetalleInventario"
@@ -223,13 +226,7 @@
                   {{ modelForm.id === undefined ? "Guardar" : "Actualizar" }}
                 </el-button>
                 <el-button
-                  v-if="showPrintBtn && detalleInventario.length > 0"
-                  type="primary"
-                  :icon="Printer"
-                  @click="imprimirEtiquetasSeleccionados()"
-                />
-                <el-button
-                  ref="btnAddProduct"
+                  ref="btnCancelar"
                   type="danger"
                   :icon="Close"
                   @click="cancelar()"
@@ -246,16 +243,6 @@
                   >
                     <Remove />
                   </el-icon>
-                  <el-icon
-                    v-if="scope.row.archivo_existe"
-                    @click="imprimirItem(scope.row.archivo_url)"
-                    color="#333333"
-                    size="18px"
-                    class="icon-btn pointer"
-                    title="Imprimir"
-                  >
-                    <ScaleToOriginal />
-                  </el-icon>
                 </div>
               </template>
             </el-table-column>
@@ -265,63 +252,35 @@
     </el-form>
     <el-dialog
       v-model="dialogBuscarProducto"
-      title="Registrar producto"
+      title="Buscar producto"
       width="85%"
       top="5vh"
       :close-on-click-modal="false"
       :appeappend-to-body="true"
     >
       <div>
-        <CrearProducto ref="refCrearProducto" @close="cerrarDialogCrear($event)" />
+        Modal buscar producto
       </div>
     </el-dialog>
-  </div>
-  <div v-else>
-    <p>Los datos no fueron cargados correctamente.</p>
-    <p>Por favor, inténtelo nuevamente.</p>
-  </div>
-  
-  <div style="display: none;">
-      <!-- <VuePdfEmbed v-if="srcFilePdf" ref="pdf" :source="pdfSource" /> -->
-    <VuePdfEmbed v-if="srcFilePdf" ref="pdf" :source="srcFilePdf" @loaded="print"/>
   </div>
 </template>
 
 <script>
-// import { h } from 'vue'
 import { format } from "@formkit/tempo";
 import { ElNotification, ElMessageBox } from "element-plus";
-import { Plus, Remove, Close, ScaleToOriginal, Printer } from "@element-plus/icons-vue";
+import { Plus, Remove, Close, Printer } from "@element-plus/icons-vue";
 import Resource from "@/api/resource";
 import OpcionesResource from "@/api/opcionesresource";
-import CrearProducto from "@/components/shared/app/productos/FormAddProducto.vue";
 const opcionesResource = new OpcionesResource();
 const areasResource = new Resource("inventario/all/areas");
 const ubicacionesResource = new Resource("inventario/all/ubicaciones");
 const responsablesResource = new Resource("inventario/all/responsables");
-const invdetalleResource = new Resource("inventario/inventariodetalle");
-const imprimirEtiquetas = new Resource("inventario/imprimiretiquetasmasivo")
-
-
-// PDF PREVIEW
-import VuePdfEmbed from 'vue-pdf-embed'
+const asignacionesResource = new Resource("inventario/asignacionesmasivo");
 
 export default {
   name: "InventarioInventariarView",
   components: {
     Remove,
-    ScaleToOriginal,
-    VuePdfEmbed,
-    CrearProducto
-  },
-  props: {
-    inventarioid: {
-      type: Number,
-      required: true,
-      default: () => {
-        return -11;
-      },
-    },
   },
   data() {
     const validateProducto = (rule, value, callback) => {
@@ -336,7 +295,6 @@ export default {
       Remove,
       Close,
       Printer,
-      inventario_id: -19,
       loadingData: false,
       createUserForm: "",
       tiposDocIdentidad: [],
@@ -344,17 +302,22 @@ export default {
       lUbicaciones: [],
       lResponsables: [],
       lProductos: [],
+      lCondiciones: [
+        { id: 'NO ASIGNADO', nombre: 'NO ASIGNADO' },
+        { id: 'ASIGNADO', nombre: 'ASIGNADO' },
+        { id: 'PRESTADO', nombre: 'PRESTADO' },
+      ],
       loadingProducto: false,
       listProductos: [],
       dialogBuscarPersona: false,
       modelForm: {
-        area_id: undefined,
+        responsable_id: undefined,
         producto_id: undefined,
       },
       productoFound: {},
       showPrintBtn: false,
       reglasValidacionForm: {
-        area_id: [
+        responsable_id: [
           { required: true, message: "Campo requerido", trigger: "blur" },
         ],
         producto_id: [{ validator: validateProducto, trigger: "blur" }],
@@ -365,21 +328,11 @@ export default {
       srcFilePdf: null,
     };
   },
-  watch: {
-    inventarioid: function () {
-      this.setCrearOUpdate();
-    },
-  },
   computed: {},
   created() {},
   mounted() {
+    this.resetData()
     this.cargarOpcionesIniciales()
-    setTimeout(function () {
-      if (this.inventario_id <= 0) {
-        console.log("Invetario inválido");
-        this.$emit("close", {});
-      }
-    }, 500);
   },
   methods: {
     cargarOpcionesIniciales() {
@@ -404,70 +357,20 @@ export default {
           this.loadingData = false
         });
     },
-    setCrearOUpdate() {
-      console.log("Inventariar inventario_id: " + this.inventarioid);
-      this.$nextTick(() => {
-        if (
-          this.inventario_id !== "action" &&
-          this.inventario_id !== "create"
-        ) {
-          this.inventario_id = this.inventarioid;
-          this.resetData();
-        } else {
-          this.item_id = undefined;
-          this.handleCreate();
-        }
-        // this.resetForm("formAdditem")
-        this.resetModel();
-      });
-    },
     resetData() {
       this.modelForm = {
-        area_id: undefined,
+        responsable_id: undefined,
         producto_id: undefined,
       };
       this.listProductos = [];
       this.detalleInventario = [];
       this.showPrintBtn = false
     },
-    handleCreate() {
-      console.log("Open form create, set focus");
-      // this.$refs['inputFocusCreate'].focus()
-    },
-    saveEditForm() {
-      this.loadingData = true;
-      areasResource
-        .update(this.item_id, this.modelForm)
-        .then((response) => {
-          const { state, message } = response;
-          this.$message({
-            type: state,
-            message,
-          });
-          this.loadingData = false;
-          this.close("success");
-        })
-        .catch(() => {
-          this.loadingData = false;
-        });
-    },
     close(status) {
       // if (this.createUserForm) {
       //   this.createUserForm.resetFields()
       // }
       this.$emit("closeChild", status);
-    },
-    searchAsociacion() {
-      this.dialogBuscarPersona = true;
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-    },
-    resetModel() {
-      this.modelForm = {
-        area_id: undefined,
-        producto_id: undefined,
-      };
     },
     parentProcessEmitPersona(data) {
       console.log(data);
@@ -483,12 +386,8 @@ export default {
           page: 1,
         };
         this.listProductos = [];
-        // await productosResource.list({ keybuscar: query }).then((response) => {
-        //   const { data } = response
-        //   this.listProductos = data
-        // })
         opcionesResource
-          .load("productosparainventario", queryToSend)
+          .load("productosporaasignar", queryToSend)
           .then((response) => {
             const { data } = response;
             this.listProductos = data;
@@ -533,26 +432,27 @@ export default {
       });
     },
     processAddItem() {
-      const foundUbicacion = this.lUbicaciones.find(
-        (ubicacion) => ubicacion.id === this.modelForm.ubicacion_id
+      const foundResponsable = this.lResponsables.find(
+        (responsable) => responsable.id === this.modelForm.responsable_id 
       )
 
       const foundProducto = this.listProductos.find(
         (producto) => producto.id === this.modelForm.producto_id
       )
 
-      this.detalleInventario.unshift({
-        ubicacion: foundUbicacion,
-        ubicacion_id: foundUbicacion.id,
+      this.detalleInventario. unshift({
+        responsable: foundResponsable,
+        responsable_id: foundResponsable?.id,
         producto: foundProducto,
         producto_id: foundProducto.id,
         producto_codigo: foundProducto.codigo,
         fecha: format(new Date(), "YYYY-MM-DD"),
+        condicion: undefined,
         archivo_url: "",
         archivo_existe: false,
         id: undefined,
         area_id: foundProducto.ultimaasignacionresponsable?.area_id,
-        responsable_id: foundProducto.ultimaasignacionresponsable?.responsable_id,
+        ubicacion_id: foundProducto.ultimaasignacionresponsable?.ubicacion_id,
         producto_estado_id: foundProducto.ultimaasignacionresponsable?.producto_estado_id,
         descripcion: null,
         opcionesArea: foundProducto.ultimaasignacionresponsable != null ? [foundProducto.ultimaasignacionresponsable?.area] : [],
@@ -564,11 +464,7 @@ export default {
       })
     },
     nuevoProducto() {
-      // console.log('Nuevo producto')
       this.dialogBuscarProducto = true;
-      this.$nextTick(() => {
-        this.$refs['refCrearProducto'].resetModel()
-      })
     },
     cancelar() {
       this.resetData()
@@ -593,14 +489,13 @@ export default {
     submitDetalleInventario() {
       if (this.formDataValida()) {
         this.loadingData = true;
-        invdetalleResource
+        asignacionesResource
           .store({
-            inventario_id: this.inventario_id,
+            responsable_id: this.modelForm.responsable_id,
             detalle: this.detalleInventario,
           })
           .then((response) => {
             this.loadingData = false;
-            // console.log(response)
             const { data, state, message } = response;
             if (state === "success") {
               this.showPrintBtn = true
@@ -625,8 +520,6 @@ export default {
       // console.log(this.detalleInventario)
       this.detalleInventario.forEach((objeto) => {
         if (objeto.producto_id === data[objeto.producto_id]?.producto_id) {
-          // console.log(objeto)
-          // console.log(data[objeto.producto_id])
           objeto.id = data[objeto.producto_id].id
           objeto.archivo_url = data[objeto.producto_id].archivo_url
           objeto.archivo_existe = data[objeto.producto_id].archivo_existe
@@ -636,59 +529,28 @@ export default {
     imprimirItem(url) {
       this.loadingData = true
       this.srcFilePdf = url
-      // console.log(url)
-      // const link = document.createElement("a");
-      // link.href = url;
-      // document.body.appendChild(link);
-      // link.click();
     },
     mostrarNotificacion(title, message) {
       ElNotification({ title, message });
     },
     deseaImprimirEtiquetas() {
       ElMessageBox.confirm(
-        'Los productos fueron agregados al inventario. <br /><br /><b>¿Desea imprimir todas las etiquetas?</b>',
+        'Los productos fueron asignados. <br /><br /><b>¿Desea realizar otra asignación?</b>',
         'Atención',
         {
-          confirmButtonText: 'Si, imprimir',
+          confirmButtonText: 'Si',
           cancelButtonText: 'No',
           dangerouslyUseHTMLString: true,
           type: 'info',
         }
       )
         .then(() => {
-          this.imprimirEtiquetasSeleccionados()
+          this.resetData()
         })
-    },
-    imprimirEtiquetasSeleccionados() {
-      let detalleIDs = []
-      this.detalleInventario.forEach(objeto => {
-        if (objeto.archivo_existe) {
-          detalleIDs.push(objeto.id)
-        }
-      });
-
-      console.log(detalleIDs)
-
-      this.loadingData = true
-      imprimirEtiquetas
-      .list({
-        ids: detalleIDs
-      })
-      .then((response) => {
-
-        const { state, message, url } = response
-        if (state === 'success') {
-          this.srcFilePdf = url
-        } else {
-            ElNotification({title: 'Atención', message})
-            this.loadingData = false
-        }
-      })
-      .catch((err) => {
-        this.loadingData = false
-        console.log('Error', err)
-      })
+        .catch(() => {
+          this.resetData()
+          this.close()
+        })
     },
     formDataValida() {
       const filasNoValidads = []
@@ -702,9 +564,6 @@ export default {
     print() {
       this.$refs['pdf'].print()
       this.loadingData = false
-    },
-    cerrarDialogCrear(data) {
-      this.dialogBuscarProducto = false
     }
   },
 };
