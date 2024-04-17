@@ -12,7 +12,11 @@
           v-model="query.keyword"
           @keyup.enter="fetchData()"
           placeholder="Buscar producto"
-        />
+        >
+          <template #append>
+            <el-button :icon="Search" @click="fetchData" />
+          </template>
+        </el-input>
       </el-col>
 
       <el-col :span="5">
@@ -26,30 +30,40 @@
       </el-col>
       <el-col :span="5">
         <el-button
-          type="primary"
+          type="danger"
           style="width: 100% !important"
-          @click="exportarDatos()"
+          @click="registrarBajas()"
         >
-          Exportar
+          Bajas
         </el-button>
       </el-col>
-      <!-- <el-col :span="5">
-        <el-button
-          type="primary"
-          style="width: 100% !important"
-          @click="importarDatos()"
-        >
-          Import
-        </el-button>
-      </el-col> -->
     </el-row>
     <el-table v-loading="loading" :data="listaItem" style="width: 100%">
       <el-table-column prop="codigo" label="Codigo" width="150" />
       <el-table-column prop="nombre" label="Nombre" />
       <el-table-column prop="descripcion" label="descripcion" />
-      <el-table-column label="Opciones" width="100">
+      <el-table-column label="Opciones" width="140">
+        <template #header>
+          <el-button
+            type="primary"
+            style="width: 100% !important"
+            @click="exportarDatos()"
+          >
+            Exportar
+          </el-button>
+        </template>
         <template #default="scope">
           <el-icon
+            v-if="scope.row.baja"
+            color="#909090"
+            size="18px"
+            class="icon-btn pointer"
+            title="Eliminar"
+          >
+            <TurnOff />
+          </el-icon>
+          <el-icon
+            v-if="!scope.row.baja"
             @click="abrirDialogEditar(scope.row.id)"
             color="#409EFC"
             size="18px"
@@ -59,6 +73,7 @@
             <Edit />
           </el-icon>
           <el-icon
+            v-if="scope.row.eliminable && !scope.row.baja"
             @click="eliminarRegistro(scope.row.id)"
             color="#f9616d"
             size="18px"
@@ -105,29 +120,40 @@
         @close="cerrarDialagoEditar"
       />
     </el-dialog>
+    <el-dialog
+      v-model="showDialogFormBajas"
+      title="Registrar bajas"
+      top="5vh"
+      width="90%"
+    >
+      <FormBajas
+        ref="refFormBajas"
+        @close="cerrarFormBajas"
+      />
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
-// Componentes
+import { Search } from '@element-plus/icons-vue'
 import EditarProducto from "./components/EditarProducto.vue";
 import CrearProducto from "./components/CrearProducto.vue";
-import { Edit, Delete } from "@element-plus/icons-vue";
-
-// Recurso
+import { Edit, Delete, TurnOff } from "@element-plus/icons-vue";
 import ProductoResource from "@/api/mantenimiento/producto";
 import { ElMessage } from "element-plus";
-const productoResource = new ProductoResource();
-
 import Resource from "@/api/resource";
+import FormBajas from "@/components/shared/app/inventario/bajas/bajasMasivo.vue"
+
+const productoResource = new ProductoResource();
 const exportResource = new Resource("exportar/producto");
 const importarResource = new Resource("importarproductos");
 
 export default {
   name: "TipoBienView",
-  components: { CrearProducto, EditarProducto, Edit, Delete },
+  components: { CrearProducto, EditarProducto, Edit, Delete, TurnOff, FormBajas },
   data() {
     return {
+      Search,
       loading: false,
       query: {
         keyword: "",
@@ -141,6 +167,7 @@ export default {
       crearProductoDialog: false,
       editarProductoDialog: false,
       idRegistroEditar: null,
+      showDialogFormBajas: false,
     };
   },
   created() {
@@ -226,6 +253,9 @@ export default {
           this.$message("Se ha producido una excepción");
         });
     },
+    registrarBajas() {
+      this.showDialogFormBajas = true
+    }
   },
 };
 </script>
